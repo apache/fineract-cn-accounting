@@ -1,0 +1,63 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.1.RELEASE'
+    }
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'com.github.hierynomus.license' version '0.13.1'
+}
+
+apply from: '../shared.gradle'
+
+apply plugin: 'spring-boot'
+
+springBoot {
+    executable = true
+    classifier = 'boot'
+}
+
+dependencies {
+    compile(
+            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'],
+            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka'],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'],
+            [group: 'io.mifos.accounting', name: 'api', version: project.version],
+            [group: 'io.mifos.anubis', name: 'library', version: versions.frameworkanubis],
+            [group: 'com.google.code.gson', name: 'gson'],
+            [group: 'io.mifos.core', name: 'lang', version: versions.frameworkanubis],
+            [group: 'io.mifos.core', name: 'async', version: versions.frameworkasync],
+            [group: 'io.mifos.core', name: 'cassandra', version: versions.frameworkcassandra],
+            [group: 'io.mifos.core', name: 'mariadb', version: versions.frameworkmariadb],
+            [group: 'io.mifos.core', name: 'command', version: versions.frameworkcommand],
+            [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
+    )
+}
+
+publishToMavenLocal.dependsOn bootRepackage
+
+publishing {
+    publications {
+        service(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.name
+            version project.version
+        }
+        bootService(MavenPublication) {
+            // "boot" jar
+            artifact ("$buildDir/libs/$project.name-$version-boot.jar")
+            groupId project.group
+            artifactId ("$project.name-boot")
+            version project.version
+        }
+    }
+}
