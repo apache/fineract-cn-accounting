@@ -27,7 +27,7 @@ import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
 import io.mifos.accounting.api.v1.client.AccountValidationException;
-import io.mifos.accounting.api.v1.client.AccountingService;
+import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.accounting.service.AccountingServiceConfiguration;
 import io.mifos.accounting.util.AccountGenerator;
@@ -71,7 +71,7 @@ public class TestAccount {
   public final TenantApplicationSecurityEnvironmentTestRule tenantApplicationSecurityEnvironment
           = new TenantApplicationSecurityEnvironmentTestRule(testEnvironment, this::waitForInitialize);
   @Autowired
-  private AccountingService testSubject;
+  private LedgerManager testSubject;
   @Autowired
   private EventRecorder eventRecorder;
 

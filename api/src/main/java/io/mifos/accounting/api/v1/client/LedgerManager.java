@@ -32,7 +32,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @FeignClient(value = "accounting-v1", path = "/accounting/v1", configuration = CustomFeignClientsConfiguration.class)
-public interface AccountingService {
+public interface LedgerManager {
 
   @RequestMapping(
       value = "/ledgers",

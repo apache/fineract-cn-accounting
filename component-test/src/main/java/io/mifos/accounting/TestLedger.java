@@ -75,7 +75,7 @@ public class TestLedger {
           = new TenantApplicationSecurityEnvironmentTestRule(testEnvironment, this::waitForInitialize);
 
   @Autowired
-  private AccountingService testSubject;
+  private LedgerManager testSubject;
   @Autowired
   private Logger logger;
   @SuppressWarnings("SpringJavaAutowiringInspection")

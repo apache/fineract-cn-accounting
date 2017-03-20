@@ -24,7 +24,7 @@ import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
 import io.mifos.core.test.listener.EnableEventRecording;
 import io.mifos.core.test.listener.EventRecorder;
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.client.AccountingService;
+import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
@@ -73,7 +73,7 @@ public class TestJournalEntry {
           = new TenantApplicationSecurityEnvironmentTestRule(testEnvironment, this::waitForInitialize);
 
   @Autowired
-  private AccountingService testSubject;
+  private LedgerManager testSubject;
   @Autowired
   private EventRecorder eventRecorder;
 
