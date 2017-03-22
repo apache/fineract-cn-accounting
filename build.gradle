@@ -28,14 +28,6 @@ task prepareForTest {
     dependsOn gradle.includedBuild('component-test').task(':build')
 }
 
-task bintrayUpload {
-    group 'all'
-    dependsOn publishApiToMavenLocal
-    dependsOn publishServiceToMavenLocal
-    dependsOn gradle.includedBuild('api').task(':bintrayUpload')
-    dependsOn gradle.includedBuild('service').task(':bintrayUpload')
-}
-
 task licenseFormat {
     group 'all'
     dependsOn gradle.includedBuild('api').task(':licenseFormat')
