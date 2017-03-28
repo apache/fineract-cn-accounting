@@ -26,7 +26,6 @@ import io.mifos.core.test.listener.EventRecorder;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
-import io.mifos.accounting.api.v1.client.AccountValidationException;
 import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.accounting.service.AccountingServiceConfiguration;
@@ -134,8 +133,7 @@ public class TestAccount {
     try {
       this.testSubject.createAccount(account);
       Assert.fail();
-    } catch (final AccountAlreadyExistsException ex) {
-      // do nothing, expected
+    } catch (final AccountAlreadyExistsException ignored) {
     }
   }
 
@@ -153,20 +151,20 @@ public class TestAccount {
     try {
       this.testSubject.createAccount(account);
       Assert.fail();
-    } catch (AccountValidationException ex) {
-      // do nothing, expected
+    } catch (final IllegalArgumentException ex) {
+      Assert.assertTrue(ex.getMessage().contains(account.getReferenceAccount()));
     }
   }
 
   @Test
-  public void shouldNotCreatedAccountUnknownLedger() throws Exception {
+  public void shouldNotCreateAccountUnknownLedger() throws Exception {
     final Account account = AccountGenerator.createRandomAccount(RandomStringUtils.randomAlphanumeric(8));
 
     try {
       this.testSubject.createAccount(account);
       Assert.fail();
-    } catch (AccountValidationException ex) {
-      // do nothing, expected
+    } catch (final IllegalArgumentException ex) {
+      Assert.assertTrue(ex.getMessage().contains(account.getLedger()));
     }
   }
 
@@ -184,8 +182,8 @@ public class TestAccount {
     try {
       this.testSubject.createAccount(account);
       Assert.fail();
-    } catch (AccountValidationException ex) {
-      // do nothing, expected
+    } catch (final IllegalArgumentException ex) {
+      Assert.assertTrue(ex.getMessage().contains(account.getType()));
     }
   }
 
@@ -227,11 +225,11 @@ public class TestAccount {
 
   @Test
   public void shouldNotFindAccountUnknown() {
+    final String randomName = RandomStringUtils.randomAlphanumeric(8);
     try {
-      this.testSubject.findAccount(RandomStringUtils.randomAlphanumeric(8));
+      this.testSubject.findAccount(randomName);
       Assert.fail();
-    } catch (final AccountNotFoundException ex) {
-      //do nothing, expected
+    } catch (final AccountNotFoundException ignored) {
     }
   }
 

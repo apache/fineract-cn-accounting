@@ -286,10 +286,12 @@ public class TestLedger {
 
     this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
 
+    final String randomName = RandomStringUtils.randomAlphanumeric(8);
     try {
-      this.testSubject.modifyLedger(RandomStringUtils.randomAlphanumeric(8), ledger);
+      this.testSubject.modifyLedger(randomName, ledger);
       Assert.fail();
-    } catch (final LedgerValidationException ex) {
+    } catch (final IllegalArgumentException ex) {
+      Assert.assertTrue(ex.getMessage().contains(randomName));
       // do nothing, expected
     }
   }
