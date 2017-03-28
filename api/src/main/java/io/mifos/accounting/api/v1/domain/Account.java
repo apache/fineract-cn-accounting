@@ -18,9 +18,10 @@ package io.mifos.accounting.api.v1.domain;
 import io.mifos.core.lang.validation.constraints.ValidIdentifier;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class Account {
 
   private AccountType type;
@@ -29,6 +30,7 @@ public final class Account {
   @NotEmpty
   private Set<String> holders;
   private Set<String> signatureAuthorities;
+  @NotNull
   private Double balance;
   private String referenceAccount;
   @ValidIdentifier
