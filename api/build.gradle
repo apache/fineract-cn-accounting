@@ -20,6 +20,10 @@ dependencies {
             [group: 'io.mifos.core', name: 'api', version: versions.frameworkapi],
             [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
     )
+
+    testCompile(
+            [group: 'io.mifos.core', name: 'test', version: versions.frameworktest],
+    )
 }
 
 publishing {
