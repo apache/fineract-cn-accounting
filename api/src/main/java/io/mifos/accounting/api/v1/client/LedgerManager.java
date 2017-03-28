@@ -41,8 +41,7 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   @ThrowsExceptions({
-      @ThrowsException(status = HttpStatus.CONFLICT, exception = LedgerAlreadyExistsException.class),
-      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = LedgerValidationException.class)
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = LedgerAlreadyExistsException.class)
   })
   void createLedger(@RequestBody final Ledger ledger);
 
@@ -71,8 +70,7 @@ public interface LedgerManager {
   )
   @ThrowsExceptions({
       @ThrowsException(status = HttpStatus.NOT_FOUND, exception = LedgerNotFoundException.class),
-      @ThrowsException(status = HttpStatus.CONFLICT, exception = LedgerAlreadyExistsException.class),
-      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = LedgerValidationException.class)
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = LedgerAlreadyExistsException.class)
   })
   void addSubLedger(@PathVariable("identifier") final String identifier, @RequestBody final Ledger subLedger);
 
@@ -83,8 +81,7 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   @ThrowsExceptions({
-      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = LedgerNotFoundException.class),
-      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = LedgerValidationException.class)
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = LedgerNotFoundException.class)
   })
   void modifyLedger(@PathVariable("identifier") final String identifier, @RequestBody final Ledger subLedger);
 
@@ -120,8 +117,7 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   @ThrowsExceptions({
-      @ThrowsException(status = HttpStatus.CONFLICT, exception = AccountAlreadyExistsException.class),
-      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = AccountValidationException.class)
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = AccountAlreadyExistsException.class)
   })
   void createAccount(@RequestBody final Account account);
 
@@ -154,8 +150,7 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   @ThrowsExceptions({
-      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class),
-      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = AccountValidationException.class)
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class)
   })
   void modifyAccount(@PathVariable("identifier") final String identifier,
                      @RequestBody final Account account);
