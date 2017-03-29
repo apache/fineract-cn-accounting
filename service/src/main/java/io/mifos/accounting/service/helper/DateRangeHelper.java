@@ -29,7 +29,7 @@ public final class DateRangeHelper {
       dates[0] = today;
       dates[1] = today;
     } else {
-      dates = dateRange.split("..");
+      dates = dateRange.split("\\.\\.");
     }
 
     return dates;
