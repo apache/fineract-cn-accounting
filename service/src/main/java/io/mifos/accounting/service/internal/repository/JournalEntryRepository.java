@@ -23,9 +23,13 @@ import com.datastax.driver.mapping.Result;
 import io.mifos.core.cassandra.core.CassandraSessionProvider;
 import io.mifos.core.cassandra.core.TenantAwareCassandraMapperProvider;
 import io.mifos.core.cassandra.core.TenantAwareEntityTemplate;
+import io.mifos.core.lang.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,13 +63,21 @@ public class JournalEntryRepository {
   public List<JournalEntryEntity> fetchJournalEntries(final String dateBucketFrom, final String dateBucketTo) {
     final Session tenantSession = this.cassandraSessionProvider.getTenantSession();
 
+    LocalDate start = LocalDate.parse(dateBucketFrom);
+    final LocalDate end = LocalDate.parse(dateBucketTo);
+    final List<String> datesInBetweenRange = new ArrayList<>(Math.toIntExact(ChronoUnit.DAYS.between(start, end)));
+
+    while (!start.isAfter(end)) {
+      datesInBetweenRange.add(DateConverter.toIsoString(start));
+      start = start.plusDays(1);
+    }
+
     final ResultSet resultSet = tenantSession.execute(QueryBuilder
-        .select()
-        .all()
-        .from("thoth_journal_entries")
-        .where(QueryBuilder.gte(QueryBuilder.token("date_bucket"), dateBucketFrom))
-        .and(QueryBuilder.lte(QueryBuilder.token("date_bucket"), dateBucketTo))
-        .getQueryString()
+            .select()
+            .all()
+            .from("thoth_journal_entries")
+            .where(QueryBuilder.in("date_bucket", datesInBetweenRange))
+            .getQueryString(), datesInBetweenRange.toArray()
     );
 
     final Mapper<JournalEntryEntity> mapper = this.tenantAwareCassandraMapperProvider.getMapper(JournalEntryEntity.class);
