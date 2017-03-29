@@ -44,7 +44,7 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_POST_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onPostLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onCreateAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                            final String payload) {
     this.logger.debug("Account created.");
     this.eventRecorder.event(tenant, EventConstants.POST_ACCOUNT, payload, String.class);
@@ -55,7 +55,7 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_PUT_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onPutLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onChangeAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                           final String payload) {
     this.logger.debug("Account modified.");
     this.eventRecorder.event(tenant, EventConstants.PUT_ACCOUNT, payload, String.class);
@@ -66,7 +66,7 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_CLOSE_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onCloseLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onCloseAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                             final String payload) {
     this.logger.debug("Account closed.");
     this.eventRecorder.event(tenant, EventConstants.CLOSE_ACCOUNT, payload, String.class);
@@ -77,7 +77,7 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_LOCK_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onLockLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onLockAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                            final String payload) {
     this.logger.debug("Account locked.");
     this.eventRecorder.event(tenant, EventConstants.LOCK_ACCOUNT, payload, String.class);
@@ -88,7 +88,7 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_UNLOCK_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onUnlockLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onUnlockAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                              final String payload) {
     this.logger.debug("Account unlocked.");
     this.eventRecorder.event(tenant, EventConstants.UNLOCK_ACCOUNT, payload, String.class);
@@ -99,9 +99,9 @@ public class AccountEventListener {
       selector = EventConstants.SELECTOR_REOPEN_ACCOUNT,
       subscription = EventConstants.DESTINATION
   )
-  public void onReopenLedger(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+  public void onReopenAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
                              final String payload) {
-    this.logger.debug("Account closed.");
+    this.logger.debug("Account reopened.");
     this.eventRecorder.event(tenant, EventConstants.REOPEN_ACCOUNT, payload, String.class);
   }
 }
