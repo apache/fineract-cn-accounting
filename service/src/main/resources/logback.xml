@@ -17,11 +17,11 @@
 -->
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>accounting.log</file>
+        <file>logs/accounting.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>accounting.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>3GB</totalSizeCap>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -33,8 +33,23 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="com" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="org" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="io" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="net" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="DEBUG">
         <appender-ref ref="FILE"/>
-        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
