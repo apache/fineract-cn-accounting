@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.service.rest;
 
+import io.mifos.accounting.api.v1.domain.LedgerPage;
 import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
@@ -81,8 +82,13 @@ public class LedgerRestController {
       consumes = {MediaType.ALL_VALUE}
   )
   @ResponseBody
-  ResponseEntity<List<Ledger>> fetchLedgers() {
-    return ResponseEntity.ok(this.ledgerService.fetchLedgerHierarchy());
+  ResponseEntity<LedgerPage> fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
+                                          @RequestParam(value = "term", required = false) final String term,
+                                          @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+                                          @RequestParam(value = "size", required = false) final Integer size,
+                                          @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+                                          @RequestParam(value = "sortDirection", required = false) final String sortDirection) {
+    return ResponseEntity.ok(this.ledgerService.fetchLedgers(includeSubLedgers, term, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_LEDGER)

@@ -51,7 +51,12 @@ public interface LedgerManager {
       produces = {MediaType.ALL_VALUE},
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
-  List<Ledger> fetchLedgers();
+  LedgerPage fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
+                            @RequestParam(value = "term", required = false) final String term,
+                            @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+                            @RequestParam(value = "size", required = false) final Integer size,
+                            @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+                            @RequestParam(value = "sortDirection", required = false) final String sortDirection);
 
   @RequestMapping(
       value = "/ledgers/{identifier}",

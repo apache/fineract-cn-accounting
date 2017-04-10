@@ -15,6 +15,8 @@
  */
 package io.mifos.accounting;
 
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.LedgerPage;
 import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
 import io.mifos.core.api.context.AutoUserContext;
 import io.mifos.core.test.env.TestEnvironment;
@@ -135,43 +137,33 @@ public class TestLedger {
   }
 
   @Test
-  public void shouldFetchLedgerHierarchy() throws Exception {
+  public void shouldFetchLedgers() throws Exception {
+      final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null);
+
+      final Ledger ledger = LedgerGenerator.createRandomLedger();
+
+      this.testSubject.createLedger(ledger);
+
+      this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
+
+      final LedgerPage ledgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null);
+      Assert.assertEquals(currentLedgerPage.getTotalElements() + 1L, ledgerPage.getTotalElements().longValue());
+  }
+
+  @Test
+  public void shouldFetchSubLedgers() throws Exception {
     final Ledger parent = LedgerGenerator.createRandomLedger();
     final Ledger child = LedgerGenerator.createRandomLedger();
     parent.setSubLedgers(Collections.singletonList(child));
-    final Ledger grandChild = LedgerGenerator.createRandomLedger();
-    child.setSubLedgers(Collections.singletonList(grandChild));
-    final Ledger grandGrandChild = LedgerGenerator.createRandomLedger();
-    grandChild.setSubLedgers(Collections.singletonList(grandGrandChild));
+
+    final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null);
 
     this.testSubject.createLedger(parent);
 
     this.eventRecorder.wait(EventConstants.POST_LEDGER, parent.getIdentifier());
 
-    final List<Ledger> ledgers = this.testSubject.fetchLedgers();
-    Assert.assertTrue(ledgers.size() > 0);
-
-    final Optional<Ledger> optionalLedger = ledgers
-        .stream()
-        .filter(ledger -> ledger.getIdentifier().equals(parent.getIdentifier()))
-        .findAny();
-
-    Assert.assertTrue(optionalLedger.isPresent());
-    final Ledger savedParent = optionalLedger.get();
-    Assert.assertEquals(parent.getIdentifier(), savedParent.getIdentifier());
-    Assert.assertEquals(1, savedParent.getSubLedgers().size());
-
-    final Ledger savedChild = savedParent.getSubLedgers().get(0);
-    Assert.assertEquals(child.getIdentifier(), savedChild.getIdentifier());
-    Assert.assertEquals(1, savedChild.getSubLedgers().size());
-
-    final Ledger savedGrandChild = savedChild.getSubLedgers().get(0);
-    Assert.assertEquals(grandChild.getIdentifier(), savedGrandChild.getIdentifier());
-    Assert.assertEquals(1, savedGrandChild.getSubLedgers().size());
-
-    final Ledger savedGrandGrandChild = savedGrandChild.getSubLedgers().get(0);
-    Assert.assertEquals(grandGrandChild.getIdentifier(), savedGrandGrandChild.getIdentifier());
-    Assert.assertEquals(0, savedGrandGrandChild.getSubLedgers().size());
+    final LedgerPage ledgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null);
+    Assert.assertEquals(currentLedgerPage.getTotalElements() + 1L, ledgerPage.getTotalElements().longValue());
   }
 
   @Test
