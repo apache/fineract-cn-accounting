@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.service.internal.service;
 
+import io.mifos.accounting.api.v1.domain.LedgerPage;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
 import io.mifos.accounting.service.internal.mapper.LedgerMapper;
 import io.mifos.accounting.service.internal.repository.AccountEntity;
@@ -55,20 +56,39 @@ public class LedgerService {
     this.accountRepository = accountRepository;
   }
 
-  public List<Ledger> fetchLedgerHierarchy() {
-    final List<LedgerEntity> ledgerEntities = this.ledgerRepository.findByParentLedgerIsNull();
-    if (ledgerEntities != null) {
-      return ledgerEntities.stream().map(ledgerEntity -> {
-        final Ledger ledger = LedgerMapper.map(ledgerEntity);
-        final List<LedgerEntity> subLedgerEntities =
-            this.ledgerRepository.findByParentLedger(ledgerEntity);
-        addSubLedgers(ledger, subLedgerEntities);
-        return ledger;
-      }).collect(Collectors.toList());
+  public LedgerPage fetchLedgers(final boolean includeSubLedgers, final String term, final Pageable pageable) {
+    Page<LedgerEntity> ledgerEntities;
 
+    final LedgerPage ledgerPage = new LedgerPage();
+
+    if(includeSubLedgers) {
+      ledgerEntities = this.ledgerRepository.findByIdentifierContaining(term, pageable);
     } else {
-      return Collections.emptyList();
+      ledgerEntities = this.fetchRootLedgers(term, pageable);
     }
+
+    ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
+    ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
+
+    if(ledgerEntities.getSize() > 0) {
+      final List<Ledger> ledgers = new ArrayList<>(ledgerEntities.getSize());
+      ledgerEntities.forEach(ledgerEntity -> ledgers.add(LedgerMapper.map(ledgerEntity)));
+      ledgerPage.setLedgers(ledgers);
+    }
+
+    return ledgerPage;
+  }
+
+  private Page<LedgerEntity> fetchRootLedgers(final String term, final Pageable pageable) {
+    Page<LedgerEntity> ledgerEntities;
+
+    if(term != null){
+      ledgerEntities = this.ledgerRepository.findByIdentifierContainingAndParentLedgerIsNull(term, pageable);
+    }else{
+      ledgerEntities = this.ledgerRepository.findByParentLedgerIsNull(pageable);
+    }
+
+    return ledgerEntities;
   }
 
   public Optional<Ledger> findLedger(final String identifier) {
