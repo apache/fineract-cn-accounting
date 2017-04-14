@@ -28,6 +28,7 @@ public final class Account {
   @ValidIdentifier
   private String identifier;
   @NotEmpty
+  private String name;
   private Set<String> holders;
   private Set<String> signatureAuthorities;
   @NotNull
@@ -59,6 +60,14 @@ public final class Account {
 
   public void setIdentifier(final String identifier) {
     this.identifier = identifier;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
   }
 
   public Set<String> getHolders() {

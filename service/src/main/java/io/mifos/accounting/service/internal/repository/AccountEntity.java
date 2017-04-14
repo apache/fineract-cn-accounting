@@ -42,6 +42,8 @@ public class AccountEntity {
   private String type;
   @Column(name = "identifier")
   private String identifier;
+  @Column(name = "a_name")
+  private String name;
   @Column(name = "holders")
   private String holders;
   @Column(name = "signature_authorities")
@@ -93,6 +95,14 @@ public class AccountEntity {
 
   public void setIdentifier(final String identifier) {
     this.identifier = identifier;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
   }
 
   public String getHolders() {

@@ -210,6 +210,7 @@ public class TestAccount {
     final Account savedAccount = this.testSubject.findAccount(account.getIdentifier());
     Assert.assertNotNull(savedAccount);
     Assert.assertEquals(account.getIdentifier(), savedAccount.getIdentifier());
+    Assert.assertEquals(account.getName(), savedAccount.getName());
     Assert.assertEquals(account.getType(), savedAccount.getType());
     Assert.assertEquals(account.getLedger(), savedAccount.getLedger());
     Assert.assertEquals(account.getReferenceAccount(), savedAccount.getReferenceAccount());
