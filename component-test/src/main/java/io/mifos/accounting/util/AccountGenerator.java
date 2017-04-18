@@ -30,11 +30,12 @@ public class AccountGenerator {
 
   public static Account createRandomAccount(final String ledgerIdentifier) {
     final Account account = new Account();
-    account.setIdentifier(RandomStringUtils.randomAlphanumeric(8));
+    account.setIdentifier(RandomStringUtils.randomAlphanumeric(32));
+    account.setName(RandomStringUtils.randomAlphanumeric(256));
     account.setType(AccountType.ASSET.name());
     account.setLedger(ledgerIdentifier);
-    account.setHolders(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(8))));
-    account.setSignatureAuthorities(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(8))));
+    account.setHolders(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(32))));
+    account.setSignatureAuthorities(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(32))));
     account.setBalance(0.00D);
     return account;
   }

@@ -32,6 +32,7 @@ public class AccountMapper {
   public static Account map(final AccountEntity accountEntity) {
     final Account account = new Account();
     account.setIdentifier(accountEntity.getIdentifier());
+    account.setName(accountEntity.getName());
     account.setType(accountEntity.getType());
     account.setLedger(accountEntity.getLedger().getIdentifier());
     account.setHolders(

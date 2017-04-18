@@ -71,6 +71,7 @@ public class AccountCommandHandler {
     final Account account = createAccountCommand.account();
     final AccountEntity accountEntity = new AccountEntity();
     accountEntity.setIdentifier(account.getIdentifier());
+    accountEntity.setName(account.getName());
     accountEntity.setType(account.getType());
 
     final LedgerEntity ledger = this.ledgerRepository.findByIdentifier(account.getLedger());
@@ -124,6 +125,10 @@ public class AccountCommandHandler {
   public String modifyAccount(final ModifyAccountCommand modifyAccountCommand) {
     final Account account = modifyAccountCommand.account();
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(account.getIdentifier());
+
+    if (account.getName() != null) {
+      accountEntity.setName(account.getName());
+    }
 
     LedgerEntity ledger = null;
     if (!account.getLedger().equals(accountEntity.getLedger().getIdentifier())) {
