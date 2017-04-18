@@ -87,11 +87,13 @@ public class AccountCommandHandler {
       }
     }
 
-    accountEntity.setHolders(
-        account.getHolders()
-            .stream()
-            .collect(Collectors.joining(","))
-    );
+    if (account.getHolders() != null) {
+      accountEntity.setHolders(
+              account.getHolders()
+                      .stream()
+                      .collect(Collectors.joining(","))
+      );
+    }
 
     if (account.getSignatureAuthorities() != null) {
       accountEntity.setSignatureAuthorities(
@@ -146,11 +148,15 @@ public class AccountCommandHandler {
       accountEntity.setReferenceAccount(null);
     }
 
-    accountEntity.setHolders(
-        account.getHolders()
-            .stream()
-            .collect(Collectors.joining(","))
-    );
+    if (account.getHolders() != null) {
+      accountEntity.setHolders(
+              account.getHolders()
+                      .stream()
+                      .collect(Collectors.joining(","))
+      );
+    } else {
+      accountEntity.setHolders(null);
+    }
 
     if (account.getSignatureAuthorities() != null) {
       accountEntity.setSignatureAuthorities(
