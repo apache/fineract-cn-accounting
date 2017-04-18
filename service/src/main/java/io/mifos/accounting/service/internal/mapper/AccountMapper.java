@@ -35,9 +35,13 @@ public class AccountMapper {
     account.setName(accountEntity.getName());
     account.setType(accountEntity.getType());
     account.setLedger(accountEntity.getLedger().getIdentifier());
-    account.setHolders(
-        new HashSet<>(Arrays.asList(StringUtils.split(accountEntity.getHolders(), ",")))
-    );
+
+    if (accountEntity.getHolders() != null) {
+      account.setHolders(
+              new HashSet<>(Arrays.asList(StringUtils.split(accountEntity.getHolders(), ",")))
+      );
+    }
+
     if (accountEntity.getSignatureAuthorities() != null) {
       account.setSignatureAuthorities(
           new HashSet<>(Arrays.asList(StringUtils.split(accountEntity.getSignatureAuthorities(), ",")))

@@ -26,6 +26,7 @@ import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -88,6 +89,9 @@ public class TrialBalanceService {
             .mapToDouble(TrialBalanceEntry::getAmount)
             .sum()
     );
+
+    // Sort by ledger identifier ASC
+    trialBalance.getTrialBalanceEntries().sort(Comparator.comparing(o -> o.getLedger().getIdentifier()));
 
     return trialBalance;
   }

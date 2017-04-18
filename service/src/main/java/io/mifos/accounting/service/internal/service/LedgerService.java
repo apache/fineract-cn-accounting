@@ -72,7 +72,11 @@ public class LedgerService {
 
     if(ledgerEntities.getSize() > 0) {
       final List<Ledger> ledgers = new ArrayList<>(ledgerEntities.getSize());
-      ledgerEntities.forEach(ledgerEntity -> ledgers.add(LedgerMapper.map(ledgerEntity)));
+      ledgerEntities.forEach(ledgerEntity -> {
+        final Ledger ledger = LedgerMapper.map(ledgerEntity);
+        this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedger(ledgerEntity));
+        ledgers.add(ledger);
+      });
       ledgerPage.setLedgers(ledgers);
     }
 
@@ -129,13 +133,7 @@ public class LedgerService {
                              final List<LedgerEntity> subLedgerEntities) {
     if (subLedgerEntities != null) {
       final List<Ledger> subLedgers = new ArrayList<>(subLedgerEntities.size());
-      subLedgerEntities.forEach(subLedgerEntity -> {
-        final Ledger subLedger = LedgerMapper.map(subLedgerEntity);
-        final List<LedgerEntity> subSubLedgerEntities =
-            this.ledgerRepository.findByParentLedger(subLedgerEntity);
-        this.addSubLedgers(subLedger, subSubLedgerEntities);
-        subLedgers.add(subLedger);
-      });
+      subLedgerEntities.forEach(subLedgerEntity -> subLedgers.add(LedgerMapper.map(subLedgerEntity)));
       parentLedger.setSubLedgers(subLedgers);
     }
   }
