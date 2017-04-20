@@ -31,6 +31,9 @@ public class LedgerMapper {
     ledger.setIdentifier(ledgerEntity.getIdentifier());
     ledger.setName(ledgerEntity.getName());
     ledger.setDescription(ledgerEntity.getDescription());
+    if (ledgerEntity.getParentLedger() != null) {
+      ledger.setParentLedgerIdentifier(ledgerEntity.getParentLedger().getIdentifier());
+    }
     ledger.setCreatedBy(ledgerEntity.getCreatedBy());
     ledger.setCreatedOn(DateConverter.toIsoString(ledgerEntity.getCreatedOn()));
     if (ledgerEntity.getLastModifiedBy() != null) {
