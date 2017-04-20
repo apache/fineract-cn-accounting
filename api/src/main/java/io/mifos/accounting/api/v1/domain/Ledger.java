@@ -32,6 +32,7 @@ public final class Ledger {
   @NotEmpty
   private String name;
   private String description;
+  private String parentLedgerIdentifier;
   @Valid
   private List<Ledger> subLedgers;
   private String createdOn;
@@ -69,6 +70,14 @@ public final class Ledger {
 
   public String getDescription() {
     return this.description;
+  }
+
+  public String getParentLedgerIdentifier() {
+    return this.parentLedgerIdentifier;
+  }
+
+  public void setParentLedgerIdentifier(final String parentLedgerIdentifier) {
+    this.parentLedgerIdentifier = parentLedgerIdentifier;
   }
 
   public void setDescription(final String description) {

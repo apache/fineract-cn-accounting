@@ -164,6 +164,8 @@ public class TestLedger {
 
     final LedgerPage ledgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null);
     Assert.assertEquals(currentLedgerPage.getTotalElements() + 1L, ledgerPage.getTotalElements().longValue());
+    final Ledger fetchedSubLedger = ledgerPage.getLedgers().get(0);
+    Assert.assertEquals(parent.getIdentifier(), fetchedSubLedger.getParentLedgerIdentifier());
   }
 
   @Test
@@ -181,6 +183,7 @@ public class TestLedger {
     Assert.assertEquals(ledger.getType(), foundLedger.getType());
     Assert.assertEquals(ledger.getName(), foundLedger.getName());
     Assert.assertEquals(ledger.getDescription(), foundLedger.getDescription());
+    Assert.assertNull(ledger.getParentLedgerIdentifier());
     Assert.assertTrue(foundLedger.getSubLedgers().size() == 0);
     Assert.assertNotNull(foundLedger.getCreatedBy());
     Assert.assertNotNull(foundLedger.getCreatedOn());
