@@ -15,9 +15,9 @@
  */
 package io.mifos.accounting.listener;
 
+import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.core.lang.config.TenantHeaderFilter;
 import io.mifos.core.test.listener.EventRecorder;
-import io.mifos.accounting.api.v1.EventConstants;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
@@ -103,5 +103,16 @@ public class AccountEventListener {
                              final String payload) {
     this.logger.debug("Account reopened.");
     this.eventRecorder.event(tenant, EventConstants.REOPEN_ACCOUNT, payload, String.class);
+  }
+
+  @JmsListener(
+      destination = EventConstants.DESTINATION,
+      selector = EventConstants.SELECTOR_DELETE_ACCOUNT,
+      subscription = EventConstants.DESTINATION
+  )
+  public void onDeleteAccount(@Header(TenantHeaderFilter.TENANT_HEADER) final String tenant,
+                              final String payload) {
+    this.logger.debug("Account deleted.");
+    this.eventRecorder.event(tenant, EventConstants.DELETE_ACCOUNT, payload, String.class);
   }
 }

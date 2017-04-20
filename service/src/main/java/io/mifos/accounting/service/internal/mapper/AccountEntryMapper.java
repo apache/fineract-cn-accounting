@@ -15,9 +15,9 @@
  */
 package io.mifos.accounting.service.internal.mapper;
 
+import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
 import io.mifos.core.lang.DateConverter;
-import io.mifos.accounting.api.v1.domain.AccountEntry;
 
 public class AccountEntryMapper {
 

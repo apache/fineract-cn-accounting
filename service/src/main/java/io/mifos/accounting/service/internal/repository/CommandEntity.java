@@ -17,7 +17,6 @@ package io.mifos.accounting.service.internal.repository;
 
 import io.mifos.core.mariadb.util.LocalDateTimeConverter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -38,7 +37,7 @@ public class CommandEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+  @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "account_id")
   private AccountEntity account;
   @Column(name = "a_type")

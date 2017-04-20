@@ -15,13 +15,21 @@
  */
 package io.mifos.accounting.service.internal.service;
 
-import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
-import io.mifos.accounting.service.internal.repository.*;
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntry;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
 import io.mifos.accounting.service.internal.mapper.AccountEntryMapper;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
-import io.mifos.accounting.service.internal.repository.*;
+import io.mifos.accounting.service.internal.repository.AccountEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryRepository;
+import io.mifos.accounting.service.internal.repository.AccountRepository;
+import io.mifos.accounting.service.internal.repository.CommandEntity;
+import io.mifos.accounting.service.internal.repository.CommandRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -120,5 +128,15 @@ public class AccountService {
     } else {
       return Collections.emptyList();
     }
+  }
+
+  public Boolean hasEntries(final String identifier) {
+    final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+    return this.accountEntryRepository.existsByAccount(accountEntity);
+  }
+
+  public Boolean hasReferenceAccounts(final String identifier) {
+    final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+    return this.accountRepository.existsByReference(accountEntity);
   }
 }

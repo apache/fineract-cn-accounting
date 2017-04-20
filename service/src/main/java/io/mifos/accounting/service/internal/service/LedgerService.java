@@ -15,15 +15,15 @@
  */
 package io.mifos.accounting.service.internal.service;
 
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
 import io.mifos.accounting.service.internal.mapper.LedgerMapper;
 import io.mifos.accounting.service.internal.repository.AccountEntity;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountPage;
-import io.mifos.accounting.api.v1.domain.Ledger;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.repository.LedgerEntity;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import org.slf4j.Logger;
@@ -34,10 +34,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LedgerService {

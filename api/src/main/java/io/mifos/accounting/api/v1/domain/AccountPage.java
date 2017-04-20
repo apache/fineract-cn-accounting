@@ -15,8 +15,6 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import io.mifos.accounting.api.v1.domain.Account;
-
 import java.util.List;
 
 public class AccountPage {

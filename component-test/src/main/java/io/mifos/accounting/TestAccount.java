@@ -15,6 +15,21 @@
  */
 package io.mifos.accounting;
 
+import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
+import io.mifos.accounting.api.v1.client.AccountNotFoundException;
+import io.mifos.accounting.api.v1.client.AccountReferenceException;
+import io.mifos.accounting.api.v1.client.LedgerManager;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.AccountType;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.service.AccountingServiceConfiguration;
+import io.mifos.accounting.util.AccountGenerator;
+import io.mifos.accounting.util.JournalEntryGenerator;
+import io.mifos.accounting.util.LedgerGenerator;
 import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
 import io.mifos.core.api.context.AutoUserContext;
 import io.mifos.core.test.env.TestEnvironment;
@@ -23,16 +38,13 @@ import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
 import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
 import io.mifos.core.test.listener.EnableEventRecording;
 import io.mifos.core.test.listener.EventRecorder;
-import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
-import io.mifos.accounting.api.v1.client.AccountNotFoundException;
-import io.mifos.accounting.api.v1.client.LedgerManager;
-import io.mifos.accounting.api.v1.domain.*;
-import io.mifos.accounting.service.AccountingServiceConfiguration;
-import io.mifos.accounting.util.AccountGenerator;
-import io.mifos.accounting.util.LedgerGenerator;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
@@ -430,6 +442,112 @@ public class TestAccount {
     unlockAccountCommand.setComment("unlock it!");
     this.testSubject.accountCommand(randomAccount.getIdentifier(), unlockAccountCommand);
     Assert.assertTrue(this.eventRecorder.wait(EventConstants.UNLOCK_ACCOUNT, randomAccount.getIdentifier()));
+  }
+
+  @Test
+  public void shouldDeleteAccount() throws Exception {
+    final Ledger randomLedger = LedgerGenerator.createRandomLedger();
+    this.testSubject.createLedger(randomLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, randomLedger.getIdentifier());
+
+    final Account randomAccount = AccountGenerator.createRandomAccount(randomLedger.getIdentifier());
+    this.testSubject.createAccount(randomAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, randomAccount.getIdentifier());
+
+    final AccountCommand accountCommand = new AccountCommand();
+    accountCommand.setAction(AccountCommand.Action.CLOSE.name());
+    accountCommand.setComment("close this!");
+    this.testSubject.accountCommand(randomAccount.getIdentifier(), accountCommand);
+    this.eventRecorder.wait(EventConstants.CLOSE_ACCOUNT, randomAccount.getIdentifier());
+
+    this.testSubject.deleteAccount(randomAccount.getIdentifier());
+    Assert.assertTrue(this.eventRecorder.wait(EventConstants.DELETE_ACCOUNT, randomAccount.getIdentifier()));
+  }
+
+  @Test
+  public void shouldNotDeleteAccountStillOpen() throws Exception {
+    final Ledger randomLedger = LedgerGenerator.createRandomLedger();
+    this.testSubject.createLedger(randomLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, randomLedger.getIdentifier());
+
+    final Account randomAccount = AccountGenerator.createRandomAccount(randomLedger.getIdentifier());
+    this.testSubject.createAccount(randomAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, randomAccount.getIdentifier());
+
+    try {
+      this.testSubject.deleteAccount(randomAccount.getIdentifier());
+      Assert.fail();
+    } catch (final AccountReferenceException ex) {
+      // do nothing, expected
+    }
+  }
+
+  @Test
+  public void shouldNotDeleteAccountEntriesExists() throws Exception {
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
+    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(debtorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(liabilityLedger.getIdentifier());
+    creditorAccount.setType(AccountType.LIABILITY.name());
+    creditorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(creditorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final JournalEntry journalEntry = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    this.testSubject.createJournalEntry(journalEntry);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntry.getTransactionIdentifier());
+
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntry.getTransactionIdentifier());
+
+    final AccountCommand closeAccountCommand = new AccountCommand();
+    closeAccountCommand.setAction(AccountCommand.Action.CLOSE.name());
+    closeAccountCommand.setComment("close this!");
+    this.testSubject.accountCommand(debtorAccount.getIdentifier(), closeAccountCommand);
+    this.eventRecorder.wait(EventConstants.CLOSE_ACCOUNT, debtorAccount.getIdentifier());
+
+    try {
+      this.testSubject.deleteAccount(debtorAccount.getIdentifier());
+      Assert.fail();
+    } catch (final AccountReferenceException ex) {
+      // do nothing, expected
+    }
+  }
+
+  @Test
+  public void shouldNotDeleteAccountIsReferenced() throws Exception {
+    final Ledger randomLedger = LedgerGenerator.createRandomLedger();
+    this.testSubject.createLedger(randomLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, randomLedger.getIdentifier());
+
+    final Account randomAccount = AccountGenerator.createRandomAccount(randomLedger.getIdentifier());
+    this.testSubject.createAccount(randomAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, randomAccount.getIdentifier());
+
+    final Account referencingAccount = AccountGenerator.createRandomAccount(randomLedger.getIdentifier());
+    referencingAccount.setReferenceAccount(randomAccount.getIdentifier());
+    this.testSubject.createAccount(referencingAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, referencingAccount.getIdentifier());
+
+    try {
+      this.testSubject.deleteAccount(randomAccount.getIdentifier());
+      Assert.fail();
+    } catch (final AccountReferenceException ex) {
+      // do nothing, expected
+    }
   }
 
   @Configuration

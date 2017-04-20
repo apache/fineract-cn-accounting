@@ -19,7 +19,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/accounting.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>accounting.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/archive/accounting.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>

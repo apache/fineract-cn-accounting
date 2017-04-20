@@ -15,11 +15,11 @@
  */
 package io.mifos.accounting.service.rest;
 
+import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
-import io.mifos.accounting.service.ServiceConstants;
-import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

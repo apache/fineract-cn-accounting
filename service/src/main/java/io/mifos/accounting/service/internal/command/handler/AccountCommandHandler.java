@@ -15,24 +15,44 @@
  */
 package io.mifos.accounting.service.internal.command.handler;
 
-import io.mifos.accounting.service.internal.command.*;
-import io.mifos.accounting.service.internal.repository.*;
+import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntry;
+import io.mifos.accounting.api.v1.domain.AccountType;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
+import io.mifos.accounting.service.internal.command.CloseAccountCommand;
+import io.mifos.accounting.service.internal.command.CreateAccountCommand;
+import io.mifos.accounting.service.internal.command.DeleteAccountCommand;
+import io.mifos.accounting.service.internal.command.LockAccountCommand;
+import io.mifos.accounting.service.internal.command.ModifyAccountCommand;
+import io.mifos.accounting.service.internal.command.ReleaseJournalEntryCommand;
+import io.mifos.accounting.service.internal.command.ReopenAccountCommand;
+import io.mifos.accounting.service.internal.command.UnlockAccountCommand;
+import io.mifos.accounting.service.internal.repository.AccountEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryRepository;
+import io.mifos.accounting.service.internal.repository.AccountRepository;
+import io.mifos.accounting.service.internal.repository.CommandEntity;
+import io.mifos.accounting.service.internal.repository.CommandRepository;
+import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
+import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
+import io.mifos.accounting.service.internal.repository.LedgerEntity;
+import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import io.mifos.core.api.util.UserContextHolder;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
-import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.domain.*;
-import io.mifos.accounting.service.internal.command.*;
-import io.mifos.accounting.service.internal.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -357,5 +377,19 @@ public class AccountCommandHandler {
     } else {
       return null;
     }
+  }
+
+  @Transactional
+  @CommandHandler
+  @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.DELETE_ACCOUNT)
+  public String deleteAccount(final DeleteAccountCommand deleteAccountCommand) {
+    final String accountIdentifier = deleteAccountCommand.identifier();
+    final AccountEntity accountEntity = this.accountRepository.findByIdentifier(accountIdentifier);
+
+    final List<CommandEntity> commandEntities = this.commandRepository.findByAccount(accountEntity);
+    this.commandRepository.delete(commandEntities);
+
+    this.accountRepository.delete(accountEntity);
+    return accountIdentifier;
   }
 }

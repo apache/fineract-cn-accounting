@@ -15,14 +15,6 @@
  */
 package io.mifos.accounting;
 
-import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
-import io.mifos.core.api.context.AutoUserContext;
-import io.mifos.core.test.env.TestEnvironment;
-import io.mifos.core.test.fixture.TenantDataStoreContextTestRule;
-import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
-import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
-import io.mifos.core.test.listener.EnableEventRecording;
-import io.mifos.core.test.listener.EventRecorder;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.Account;
@@ -33,7 +25,20 @@ import io.mifos.accounting.service.AccountingServiceConfiguration;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
-import org.junit.*;
+import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
+import io.mifos.core.api.context.AutoUserContext;
+import io.mifos.core.test.env.TestEnvironment;
+import io.mifos.core.test.fixture.TenantDataStoreContextTestRule;
+import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
+import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
+import io.mifos.core.test.listener.EnableEventRecording;
+import io.mifos.core.test.listener.EventRecorder;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;

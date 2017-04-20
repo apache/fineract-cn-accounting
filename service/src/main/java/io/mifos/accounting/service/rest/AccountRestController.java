@@ -17,9 +17,19 @@ package io.mifos.accounting.service.rest;
 
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.service.helper.DateRangeHelper;
-import io.mifos.accounting.service.internal.command.*;
+import io.mifos.accounting.service.internal.command.CloseAccountCommand;
+import io.mifos.accounting.service.internal.command.CreateAccountCommand;
+import io.mifos.accounting.service.internal.command.DeleteAccountCommand;
+import io.mifos.accounting.service.internal.command.LockAccountCommand;
+import io.mifos.accounting.service.internal.command.ModifyAccountCommand;
+import io.mifos.accounting.service.internal.command.ReopenAccountCommand;
+import io.mifos.accounting.service.internal.command.UnlockAccountCommand;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.LedgerService;
 import io.mifos.accounting.service.rest.paging.PageableBuilder;
@@ -33,7 +43,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -217,6 +233,34 @@ public class AccountRestController {
         this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
         break;
     }
+    return ResponseEntity.accepted().build();
+  }
+
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
+  @RequestMapping(
+      value = "/{identifier}",
+      method = RequestMethod.DELETE,
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.ALL_VALUE}
+  )
+  @ResponseBody
+  ResponseEntity<Void> deleteAccount(@PathVariable("identifier") final String identifier) {
+    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
+    final Account account = optionalAccount.orElseThrow(() -> ServiceException.notFound("Account {0} not found", identifier));
+    if (!account.getState().equals(Account.State.CLOSED.name())) {
+      throw ServiceException.conflict("Account {0} is not closed.", identifier);
+    }
+
+    if (this.accountService.hasEntries(identifier)) {
+      throw ServiceException.conflict("Account {0} has valid entries.", identifier);
+    }
+
+    if (this.accountService.hasReferenceAccounts(identifier)) {
+      throw ServiceException.conflict("Account {0} is referenced.", identifier);
+    }
+
+    this.commandGateway.process(new DeleteAccountCommand(identifier));
+
     return ResponseEntity.accepted().build();
   }
 

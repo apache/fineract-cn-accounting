@@ -39,6 +39,7 @@ public interface EventConstants {
   // account events
   String POST_ACCOUNT = "post-account";
   String PUT_ACCOUNT = "put-account";
+  String DELETE_ACCOUNT = "delete-account";
   String LOCK_ACCOUNT = "lock-account";
   String UNLOCK_ACCOUNT = "unlock-account";
   String CLOSE_ACCOUNT = "close-account";
@@ -46,6 +47,7 @@ public interface EventConstants {
 
   String SELECTOR_POST_ACCOUNT = SELECTOR_NAME + " = '" + POST_ACCOUNT + "'";
   String SELECTOR_PUT_ACCOUNT = SELECTOR_NAME + " = '" + PUT_ACCOUNT + "'";
+  String SELECTOR_DELETE_ACCOUNT = SELECTOR_NAME + " = '" + DELETE_ACCOUNT + "'";
   String SELECTOR_LOCK_ACCOUNT = SELECTOR_NAME + " = '" + LOCK_ACCOUNT + "'";
   String SELECTOR_UNLOCK_ACCOUNT = SELECTOR_NAME + " = '" + UNLOCK_ACCOUNT + "'";
   String SELECTOR_CLOSE_ACCOUNT = SELECTOR_NAME + " = '" + CLOSE_ACCOUNT + "'";
