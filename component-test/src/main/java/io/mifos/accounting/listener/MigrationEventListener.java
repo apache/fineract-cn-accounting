@@ -15,9 +15,9 @@
  */
 package io.mifos.accounting.listener;
 
+import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.core.lang.config.TenantHeaderFilter;
 import io.mifos.core.test.listener.EventRecorder;
-import io.mifos.accounting.api.v1.EventConstants;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;

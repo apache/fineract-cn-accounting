@@ -17,6 +17,8 @@ package io.mifos.accounting.service.internal.command.handler;
 
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.schemabuilder.SchemaBuilder;
+import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.core.cassandra.core.CassandraJourneyFactory;
 import io.mifos.core.cassandra.core.CassandraJourneyRoute;
@@ -25,8 +27,6 @@ import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.mariadb.domain.FlywayFactoryBean;
-import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.service.ServiceConstants;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

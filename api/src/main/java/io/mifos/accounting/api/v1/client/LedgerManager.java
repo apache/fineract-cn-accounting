@@ -15,7 +15,14 @@
  */
 package io.mifos.accounting.api.v1.client;
 
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.api.v1.domain.TrialBalance;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.api.annotation.ThrowsExceptions;
 import io.mifos.core.api.util.CustomFeignClientsConfiguration;
@@ -159,6 +166,19 @@ public interface LedgerManager {
   })
   void modifyAccount(@PathVariable("identifier") final String identifier,
                      @RequestBody final Account account);
+
+
+  @RequestMapping(
+      value = "/accounts/{identifier}",
+      method = RequestMethod.DELETE,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class),
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = AccountReferenceException.class)
+  })
+  void deleteAccount(@PathVariable("identifier") final String identifier);
 
   @RequestMapping(
       value = "/accounts/{identifier}/entries",

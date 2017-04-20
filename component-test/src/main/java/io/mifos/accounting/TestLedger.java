@@ -15,8 +15,17 @@
  */
 package io.mifos.accounting;
 
-import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.api.v1.client.LedgerAlreadyExistsException;
+import io.mifos.accounting.api.v1.client.LedgerManager;
+import io.mifos.accounting.api.v1.client.LedgerNotFoundException;
+import io.mifos.accounting.api.v1.client.LedgerReferenceExistsException;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.service.AccountingServiceConfiguration;
+import io.mifos.accounting.util.AccountGenerator;
+import io.mifos.accounting.util.LedgerGenerator;
 import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
 import io.mifos.core.api.context.AutoUserContext;
 import io.mifos.core.test.env.TestEnvironment;
@@ -25,15 +34,13 @@ import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
 import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
 import io.mifos.core.test.listener.EnableEventRecording;
 import io.mifos.core.test.listener.EventRecorder;
-import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.client.*;
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.Ledger;
-import io.mifos.accounting.service.AccountingServiceConfiguration;
-import io.mifos.accounting.util.AccountGenerator;
-import io.mifos.accounting.util.LedgerGenerator;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
@@ -50,8 +57,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

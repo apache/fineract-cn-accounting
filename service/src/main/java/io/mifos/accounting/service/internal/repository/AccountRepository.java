@@ -18,6 +18,8 @@ package io.mifos.accounting.service.internal.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,4 +38,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
   Page<AccountEntity> findByIdentifierContainingAndStateNot(final String identifier, final String state, final Pageable pageable);
 
   Page<AccountEntity> findByStateNot(final String state, final Pageable pageable);
+
+  @Query("SELECT CASE WHEN count(a) > 0 THEN true ELSE false END FROM AccountEntity a where a.referenceAccount = :accountEntity")
+  Boolean existsByReference(@Param("accountEntity") final AccountEntity accountEntity);
 }

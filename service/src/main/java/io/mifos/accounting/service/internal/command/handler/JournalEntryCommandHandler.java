@@ -15,9 +15,16 @@
  */
 package io.mifos.accounting.service.internal.command.handler;
 
+import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.api.v1.domain.Creditor;
+import io.mifos.accounting.api.v1.domain.Debtor;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.CreateJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.ReleaseJournalEntryCommand;
 import io.mifos.accounting.service.internal.repository.CreditorType;
+import io.mifos.accounting.service.internal.repository.DebtorType;
 import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
 import io.mifos.core.command.annotation.Aggregate;
@@ -25,13 +32,6 @@ import io.mifos.core.command.annotation.CommandHandler;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.DateConverter;
-import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.domain.Creditor;
-import io.mifos.accounting.api.v1.domain.Debtor;
-import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.ServiceConstants;
-import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
-import io.mifos.accounting.service.internal.repository.DebtorType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
