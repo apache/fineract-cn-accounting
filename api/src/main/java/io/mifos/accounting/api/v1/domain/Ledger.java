@@ -39,6 +39,8 @@ public final class Ledger {
   private String createdBy;
   private String lastModifiedOn;
   private String lastModifiedBy;
+  @NotNull
+  private Boolean showAccountsInChart;
 
   public Ledger() {
     super();
@@ -122,5 +124,13 @@ public final class Ledger {
 
   public void setLastModifiedBy(final String lastModifiedBy) {
     this.lastModifiedBy = lastModifiedBy;
+  }
+
+  public Boolean getShowAccountsInChart() {
+    return this.showAccountsInChart;
+  }
+
+  public void setShowAccountsInChart(final Boolean showAccountsInChart) {
+    this.showAccountsInChart = showAccountsInChart;
   }
 }
