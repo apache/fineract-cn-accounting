@@ -194,6 +194,7 @@ public class TestLedger {
     Assert.assertNotNull(foundLedger.getCreatedOn());
     Assert.assertNull(foundLedger.getLastModifiedBy());
     Assert.assertNull(foundLedger.getLastModifiedOn());
+    Assert.assertEquals(ledger.getShowAccountsInChart(), foundLedger.getShowAccountsInChart());
   }
 
   @Test
@@ -266,6 +267,7 @@ public class TestLedger {
 
     ledger.setName(RandomStringUtils.randomAlphabetic(256));
     ledger.setDescription(RandomStringUtils.randomAlphabetic(2048));
+    ledger.setShowAccountsInChart(Boolean.TRUE);
 
     this.testSubject.modifyLedger(ledger.getIdentifier(), ledger);
 
@@ -276,6 +278,7 @@ public class TestLedger {
     Assert.assertEquals(ledger.getDescription(), modifiedLedger.getDescription());
     Assert.assertNotNull(modifiedLedger.getLastModifiedBy());
     Assert.assertNotNull(modifiedLedger.getLastModifiedOn());
+    Assert.assertEquals(ledger.getShowAccountsInChart(), modifiedLedger.getShowAccountsInChart());
   }
 
   @Test

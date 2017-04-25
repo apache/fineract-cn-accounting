@@ -40,6 +40,7 @@ public class LedgerMapper {
       ledger.setLastModifiedBy(ledgerEntity.getLastModifiedBy());
       ledger.setLastModifiedOn(DateConverter.toIsoString(ledgerEntity.getLastModifiedOn()));
     }
+    ledger.setShowAccountsInChart(ledgerEntity.getShowAccountsInChart());
     return ledger;
   }
 }

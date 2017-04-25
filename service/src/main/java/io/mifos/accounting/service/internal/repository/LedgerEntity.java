@@ -59,6 +59,8 @@ public class LedgerEntity {
   private LocalDateTime lastModifiedOn;
   @Column(name = "last_modified_by")
   private String lastModifiedBy;
+  @Column(name = "show_accounts_in_chart")
+  private Boolean showAccountsInChart;
 
   public LedgerEntity() {
     super();
@@ -142,6 +144,14 @@ public class LedgerEntity {
 
   public void setLastModifiedBy(final String lastModifiedBy) {
     this.lastModifiedBy = lastModifiedBy;
+  }
+
+  public Boolean getShowAccountsInChart() {
+    return this.showAccountsInChart;
+  }
+
+  public void setShowAccountsInChart(final Boolean showAccountsInChart) {
+    this.showAccountsInChart = showAccountsInChart;
   }
 
   @Override

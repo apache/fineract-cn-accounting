@@ -31,6 +31,7 @@ public class LedgerGenerator {
     ledger.setIdentifier(RandomStringUtils.randomAlphanumeric(8));
     ledger.setName(RandomStringUtils.randomAlphanumeric(256));
     ledger.setDescription(RandomStringUtils.randomAlphanumeric(2048));
+    ledger.setShowAccountsInChart(Boolean.FALSE);
     return ledger;
   }
 }

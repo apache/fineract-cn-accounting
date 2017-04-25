@@ -69,6 +69,7 @@ public class LedgerCommandHandler {
     parentLedgerEntity.setDescription(ledger.getDescription());
     parentLedgerEntity.setCreatedBy(UserContextHolder.checkedGetUser());
     parentLedgerEntity.setCreatedOn(LocalDateTime.now(Clock.systemUTC()));
+    parentLedgerEntity.setShowAccountsInChart(ledger.getShowAccountsInChart());
     final LedgerEntity savedParentLedger = this.ledgerRepository.save(parentLedgerEntity);
     this.addSubLedgersInternal(ledger.getSubLedgers(), savedParentLedger);
 
@@ -110,6 +111,7 @@ public class LedgerCommandHandler {
     ledgerEntity.setDescription(ledger2modify.getDescription());
     ledgerEntity.setLastModifiedBy(UserContextHolder.checkedGetUser());
     ledgerEntity.setLastModifiedOn(LocalDateTime.now(Clock.systemUTC()));
+    ledgerEntity.setShowAccountsInChart(ledger2modify.getShowAccountsInChart());
     this.ledgerRepository.save(ledgerEntity);
     return ledger2modify.getIdentifier();
   }
@@ -152,6 +154,7 @@ public class LedgerCommandHandler {
         subLedgerEntity.setDescription(subLedger.getDescription());
         subLedgerEntity.setCreatedBy(UserContextHolder.checkedGetUser());
         subLedgerEntity.setCreatedOn(LocalDateTime.now(Clock.systemUTC()));
+        subLedgerEntity.setShowAccountsInChart(subLedger.getShowAccountsInChart());
         subLedgerEntity.setParentLedger(parentLedgerEntity);
         final LedgerEntity savedSubLedger = this.ledgerRepository.save(subLedgerEntity);
         this.addSubLedgersInternal(subLedger.getSubLedgers(), savedSubLedger);
