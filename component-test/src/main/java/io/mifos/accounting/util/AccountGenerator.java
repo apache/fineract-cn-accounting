@@ -39,4 +39,16 @@ public class AccountGenerator {
     account.setBalance(0.00D);
     return account;
   }
+
+  public static Account createAccount(final String ledgerIdentifier, final String accountIdentifier, final AccountType accountType) {
+    final Account account = new Account();
+    account.setIdentifier(accountIdentifier);
+    account.setName(RandomStringUtils.randomAlphanumeric(256));
+    account.setType(accountType.name());
+    account.setLedger(ledgerIdentifier);
+    account.setHolders(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(32))));
+    account.setSignatureAuthorities(new HashSet<>(Collections.singletonList(RandomStringUtils.randomAlphanumeric(32))));
+    account.setBalance(0.00D);
+    return account;
+  }
 }

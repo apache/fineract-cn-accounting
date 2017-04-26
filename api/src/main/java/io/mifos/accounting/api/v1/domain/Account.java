@@ -16,6 +16,7 @@
 package io.mifos.accounting.api.v1.domain;
 
 import io.mifos.core.lang.validation.constraints.ValidIdentifier;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
@@ -28,6 +29,7 @@ public final class Account {
   @ValidIdentifier
   private String identifier;
   @NotEmpty
+  @Length(max = 256)
   private String name;
   private Set<String> holders;
   private Set<String> signatureAuthorities;

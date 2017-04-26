@@ -380,6 +380,40 @@ public class TestLedger {
     }
   }
 
+  @Test
+  public void shouldFindLedgerWithSeparatorInIdentifier() throws Exception {
+    // RFC 3986 unreserved characters: ALPHA  DIGIT  "-", ".", "_", "~"
+    final String[] unreservedCharacters = new String[] {
+        "-",
+        ".",
+        "_"
+    };
+
+    this.logger.info("Creating {} ledgers with unreserved characters.", unreservedCharacters.length);
+    boolean failed = false;
+    for (int i = 0; i < unreservedCharacters.length; i++) {
+      final Ledger ledger = LedgerGenerator.createRandomLedger();
+      final String identifier = RandomStringUtils.randomAlphanumeric(3) + unreservedCharacters[i] + RandomStringUtils.randomAlphanumeric(2);
+      ledger.setIdentifier(identifier);
+
+      this.logger.info("Creating ledger '{}' with unreserved character '{}' in identifier.", identifier, unreservedCharacters[i]);
+      this.testSubject.createLedger(ledger);
+
+      Assert.assertTrue(this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier()));
+
+      try {
+        this.testSubject.findLedger(ledger.getIdentifier());
+        this.logger.info("Ledger '{}' with unreserved character '{}' in identifier found.", identifier, unreservedCharacters[i]);
+      } catch (final Exception ex) {
+        this.logger.error("Ledger '{}' with unreserved character '{}' in identifier not found.", identifier, unreservedCharacters[i]);
+        failed = true;
+      }
+    }
+
+    Assert.assertFalse(failed);
+  }
+
+
   @Configuration
   @EnableEventRecording
   @EnableFeignClients(basePackages = {"io.mifos.accounting.api.v1"})

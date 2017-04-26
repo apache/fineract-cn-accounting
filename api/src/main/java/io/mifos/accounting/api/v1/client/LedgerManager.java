@@ -19,6 +19,7 @@ import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.AccountCommand;
 import io.mifos.accounting.api.v1.domain.AccountEntryPage;
 import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
@@ -246,4 +247,12 @@ public interface LedgerManager {
   )
   TrialBalance getTrialBalance(
       @RequestParam(value = "includeEmptyEntries", required = false) final boolean includeEmptyEntries);
+
+  @RequestMapping(
+      value = "/chartofaccounts",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  List<ChartOfAccountEntry> getChartOfAccounts();
 }
