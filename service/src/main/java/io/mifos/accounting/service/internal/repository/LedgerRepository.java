@@ -31,6 +31,8 @@ public interface LedgerRepository extends JpaRepository<LedgerEntity, Long> {
 
   Page<LedgerEntity> findByParentLedgerIsNull(final Pageable pageable);
 
+  List<LedgerEntity> findByParentLedgerIsNull();
+
   List<LedgerEntity> findByParentLedger(final LedgerEntity parentLedger);
 
   LedgerEntity findByIdentifier(final String identifier);

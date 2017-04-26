@@ -34,4 +34,14 @@ public class LedgerGenerator {
     ledger.setShowAccountsInChart(Boolean.FALSE);
     return ledger;
   }
+
+  public static Ledger createLedger(final String identifier, final AccountType accountType) {
+    final Ledger ledger = new Ledger();
+    ledger.setType(accountType.name());
+    ledger.setIdentifier(identifier);
+    ledger.setName(RandomStringUtils.randomAlphanumeric(256));
+    ledger.setDescription(RandomStringUtils.randomAlphanumeric(2048));
+    ledger.setShowAccountsInChart(Boolean.TRUE);
+    return ledger;
+  }
 }

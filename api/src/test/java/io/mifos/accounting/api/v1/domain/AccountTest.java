@@ -17,6 +17,7 @@ package io.mifos.accounting.api.v1.domain;
 
 import io.mifos.core.test.domain.ValidationTest;
 import io.mifos.core.test.domain.ValidationTestCase;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class AccountTest extends ValidationTest<Account> {
     ret.add(new ValidationTestCase<Account>("nullBalance")
             .adjustment(x -> x.setBalance(null))
             .valid(false));
+    ret.add(new ValidationTestCase<Account>("nameTooLong")
+        .adjustment(x -> x.setName(RandomStringUtils.randomAlphanumeric(257)))
+        .valid(false));
 
     return ret;
   }
@@ -46,6 +50,7 @@ public class AccountTest extends ValidationTest<Account> {
   protected Account createValidTestSubject() {
     final Account ret = new Account();
     ret.setBalance(0d);
+    ret.setName(RandomStringUtils.randomAlphanumeric(256));
     ret.setIdentifier("validAccountIdentifier");
     ret.setState(Account.State.OPEN.name());
     ret.setType(AccountType.ASSET.name());

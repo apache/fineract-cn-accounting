@@ -29,6 +29,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableAutoConfiguration
@@ -44,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
     "io.mifos.accounting.service.rest",
     "io.mifos.accounting.service.internal"
 })
-public class AccountingServiceConfiguration {
+public class AccountingServiceConfiguration extends WebMvcConfigurerAdapter {
 
   public AccountingServiceConfiguration() {
     super();
@@ -53,5 +55,10 @@ public class AccountingServiceConfiguration {
   @Bean(name = ServiceConstants.LOGGER_NAME)
   public Logger logger() {
     return LoggerFactory.getLogger(ServiceConstants.LOGGER_NAME);
+  }
+
+  @Override
+  public void configurePathMatch(final PathMatchConfigurer configurer) {
+    configurer.setUseSuffixPatternMatch(Boolean.FALSE);
   }
 }
