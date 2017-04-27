@@ -48,36 +48,49 @@ public class ChartOfAccountsService {
     final List<LedgerEntity> parentLedgers = this.ledgerRepository.findByParentLedgerIsNull();
     parentLedgers.sort(Comparator.comparing(LedgerEntity::getIdentifier));
 
-    parentLedgers.forEach(ledgerEntity -> chartOfAccountEntries.add(this.traverseHierarchy(ledgerEntity)));
+    final int level = 0;
+    parentLedgers.forEach(ledgerEntity -> {
+      final ChartOfAccountEntry chartOfAccountEntry = new ChartOfAccountEntry();
+      chartOfAccountEntries.add(chartOfAccountEntry);
+      chartOfAccountEntry.setCode(ledgerEntity.getIdentifier());
+      chartOfAccountEntry.setName(ledgerEntity.getName());
+      chartOfAccountEntry.setDescription(ledgerEntity.getDescription());
+      chartOfAccountEntry.setType(ledgerEntity.getType());
+      chartOfAccountEntry.setLevel(Integer.valueOf(level));
+      final int nextLevel = level + 1;
+      this.traverseHierarchy(chartOfAccountEntries, nextLevel, ledgerEntity);
+    });
 
     return chartOfAccountEntries;
   }
 
-  ChartOfAccountEntry traverseHierarchy(final LedgerEntity ledgerEntity) {
-    final ChartOfAccountEntry chartOfAccountEntry = new ChartOfAccountEntry();
-    chartOfAccountEntry.setCode(ledgerEntity.getIdentifier());
-    chartOfAccountEntry.setName(ledgerEntity.getName());
-    chartOfAccountEntry.setDescription(ledgerEntity.getDescription());
-    chartOfAccountEntry.setType(ledgerEntity.getType());
-
+  void traverseHierarchy(final List<ChartOfAccountEntry> chartOfAccountEntries, final int level, final LedgerEntity ledgerEntity) {
     if (ledgerEntity.getShowAccountsInChart()) {
       final List<AccountEntity> accountEntities = this.accountRepository.findByLedger(ledgerEntity);
       accountEntities.sort(Comparator.comparing(AccountEntity::getIdentifier));
       accountEntities.forEach(accountEntity -> {
-        final ChartOfAccountEntry innerChartOfAccountEntry = new ChartOfAccountEntry();
-        innerChartOfAccountEntry.setCode(accountEntity.getIdentifier());
-        innerChartOfAccountEntry.setName(accountEntity.getName());
-        innerChartOfAccountEntry.setType(accountEntity.getType());
-        chartOfAccountEntry.addChild(innerChartOfAccountEntry);
+        final ChartOfAccountEntry chartOfAccountEntry = new ChartOfAccountEntry();
+        chartOfAccountEntries.add(chartOfAccountEntry);
+        chartOfAccountEntry.setCode(accountEntity.getIdentifier());
+        chartOfAccountEntry.setName(accountEntity.getName());
+        chartOfAccountEntry.setType(accountEntity.getType());
+        chartOfAccountEntry.setLevel(level);
       });
     }
 
     final List<LedgerEntity> subLedgers = this.ledgerRepository.findByParentLedger(ledgerEntity);
     if (subLedgers != null && subLedgers.size() > 0) {
       subLedgers.sort(Comparator.comparing(LedgerEntity::getIdentifier));
-      subLedgers.forEach(subLedger -> chartOfAccountEntry.addChild(this.traverseHierarchy(subLedger)));
+      subLedgers.forEach(subLedger -> {
+        final ChartOfAccountEntry chartOfAccountEntry = new ChartOfAccountEntry();
+        chartOfAccountEntries.add(chartOfAccountEntry);
+        chartOfAccountEntry.setCode(subLedger.getIdentifier());
+        chartOfAccountEntry.setName(subLedger.getName());
+        chartOfAccountEntry.setType(subLedger.getType());
+        chartOfAccountEntry.setLevel(level);
+        final int nextLevel = level + 1;
+        this.traverseHierarchy(chartOfAccountEntries, nextLevel, subLedger);
+      });
     }
-
-    return chartOfAccountEntry;
   }
 }

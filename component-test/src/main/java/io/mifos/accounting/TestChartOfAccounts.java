@@ -118,6 +118,10 @@ public class TestChartOfAccounts {
     this.testSubject.addSubLedger(parentRevenueLedger.getIdentifier(), feeRevenueLedger);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, feeRevenueLedger.getIdentifier());
 
+    final Ledger specialFeeRevenueLedger = LedgerGenerator.createLedger("12100", AccountType.REVENUE);
+    this.testSubject.addSubLedger(feeRevenueLedger.getIdentifier(), specialFeeRevenueLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, specialFeeRevenueLedger.getIdentifier());
+
     final Ledger parentAssetLedger = LedgerGenerator.createLedger("70000", AccountType.ASSET);
     this.testSubject.createLedger(parentAssetLedger);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, parentAssetLedger.getIdentifier());
@@ -137,25 +141,14 @@ public class TestChartOfAccounts {
 
     final List<ChartOfAccountEntry> chartOfAccounts = this.testSubject.getChartOfAccounts();
     Assert.assertNotNull(chartOfAccounts);
-    Assert.assertEquals(2, chartOfAccounts.size());
-    // traverse first hierarchy
-    final ChartOfAccountEntry firstParent = chartOfAccounts.get(0);
-    Assert.assertEquals(parentRevenueLedger.getIdentifier(), firstParent.getCode());
-    Assert.assertEquals(2, firstParent.getChartOfAccountEntries().size());
-    final ChartOfAccountEntry firstChildFirstParent = firstParent.getChartOfAccountEntries().get(0);
-    Assert.assertEquals(interestRevenueLedger.getIdentifier(), firstChildFirstParent.getCode());
-    Assert.assertEquals(1, firstChildFirstParent.getChartOfAccountEntries().size());
-    final ChartOfAccountEntry accountFirstChildFirstParent = firstChildFirstParent.getChartOfAccountEntries().get(0);
-    Assert.assertEquals(consumerInterestRevenueAccount.getIdentifier(), accountFirstChildFirstParent.getCode());
-    final ChartOfAccountEntry secondChildFirstParent = firstParent.getChartOfAccountEntries().get(1);
-    Assert.assertEquals(feeRevenueLedger.getIdentifier(), secondChildFirstParent.getCode());
-    // traverse second hierarchy
-    final ChartOfAccountEntry secondParent = chartOfAccounts.get(1);
-    Assert.assertEquals(parentAssetLedger.getIdentifier(), secondParent.getCode());
-    Assert.assertEquals(1, secondParent.getChartOfAccountEntries().size());
-    final ChartOfAccountEntry firstChildSecondParent = secondParent.getChartOfAccountEntries().get(0);
-    Assert.assertEquals(consumerLoanAssetLedger.getIdentifier(), firstChildSecondParent.getCode());
-    Assert.assertEquals(0, firstChildSecondParent.getChartOfAccountEntries().size());
+    Assert.assertEquals(7, chartOfAccounts.size());
+    Assert.assertEquals(Integer.valueOf(0), chartOfAccounts.get(0).getLevel());
+    Assert.assertEquals(Integer.valueOf(1), chartOfAccounts.get(1).getLevel());
+    Assert.assertEquals(Integer.valueOf(2), chartOfAccounts.get(2).getLevel());
+    Assert.assertEquals(Integer.valueOf(1), chartOfAccounts.get(3).getLevel());
+    Assert.assertEquals(Integer.valueOf(2), chartOfAccounts.get(4).getLevel());
+    Assert.assertEquals(Integer.valueOf(0), chartOfAccounts.get(5).getLevel());
+    Assert.assertEquals(Integer.valueOf(1), chartOfAccounts.get(6).getLevel());
   }
 
   private boolean waitForInitialize() {
