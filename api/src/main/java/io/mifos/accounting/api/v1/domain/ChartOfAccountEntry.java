@@ -15,16 +15,13 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ChartOfAccountEntry {
 
   private String code;
   private String name;
   private String description;
   private String type;
-  private List<ChartOfAccountEntry> chartOfAccountEntries = new ArrayList<>();
+  private Integer level;
 
   public ChartOfAccountEntry() {
     super();
@@ -62,15 +59,11 @@ public class ChartOfAccountEntry {
     this.type = type;
   }
 
-  public List<ChartOfAccountEntry> getChartOfAccountEntries() {
-    return this.chartOfAccountEntries;
+  public Integer getLevel() {
+    return this.level;
   }
 
-  public void setChartOfAccountEntries(final List<ChartOfAccountEntry> chartOfAccountEntries) {
-    this.chartOfAccountEntries = chartOfAccountEntries;
-  }
-
-  public void addChild(final ChartOfAccountEntry child) {
-    this.chartOfAccountEntries.add(child);
+  public void setLevel(final Integer level) {
+    this.level = level;
   }
 }
