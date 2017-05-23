@@ -1,0 +1,4 @@
+identifier,parentIdentifier,type,name,show,description
+110,,ASSET,"LoanLedger",true,"Loan Ledger"
+111,110,ASSET,"LoanLedgerInterest",false,"Loan Ledger Interest"
+111.1,111,ASSET,"blub",true,"blub blah"

@@ -22,6 +22,7 @@ dependencies {
     compile(
             [group: 'io.mifos.accounting', name: 'api', version: project.version],
             [group: 'io.mifos.accounting', name: 'service', version: project.version],
+            [group: 'io.mifos.accounting', name: 'importer', version: project.version],
             [group: 'io.mifos.anubis', name: 'test', version: versions.frameworkanubis],
             [group: 'io.mifos.core', name: 'api', version: versions.frameworkapi],
             [group: 'io.mifos.core', name: 'test', version: versions.frameworktest],

@@ -4,6 +4,11 @@ task publishApiToMavenLocal {
     dependsOn gradle.includedBuild('api').task(':publishToMavenLocal')
 }
 
+task publishImportToMavenLocal {
+    mustRunAfter publishApiToMavenLocal
+    dependsOn gradle.includedBuild('importer').task(':publishToMavenLocal')
+}
+
 task publishServiceToMavenLocal {
     mustRunAfter publishApiToMavenLocal
     dependsOn gradle.includedBuild('service').task(':publishToMavenLocal')
@@ -11,6 +16,7 @@ task publishServiceToMavenLocal {
 
 task publishComponentTestToMavenLocal {
     mustRunAfter publishApiToMavenLocal
+    mustRunAfter publishImportToMavenLocal
     mustRunAfter publishServiceToMavenLocal
     dependsOn gradle.includedBuild('component-test').task(':publishToMavenLocal')
 }
@@ -18,6 +24,7 @@ task publishComponentTestToMavenLocal {
 task publishToMavenLocal {
     group 'all'
     dependsOn publishApiToMavenLocal
+    dependsOn publishImportToMavenLocal
     dependsOn publishServiceToMavenLocal
     dependsOn publishComponentTestToMavenLocal
 }
@@ -31,6 +38,7 @@ task prepareForTest {
 task licenseFormat {
     group 'all'
     dependsOn gradle.includedBuild('api').task(':licenseFormat')
+    dependsOn gradle.includedBuild('importer').task(':licenseFormat')
     dependsOn gradle.includedBuild('service').task(':licenseFormat')
     dependsOn gradle.includedBuild('component-test').task(':licenseFormat')
 }

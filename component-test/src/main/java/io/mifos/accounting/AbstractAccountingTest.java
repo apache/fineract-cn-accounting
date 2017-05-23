@@ -54,7 +54,7 @@ import org.springframework.test.context.junit4.SpringRunner;
         classes = {AbstractAccountingTest.TestConfiguration.class})
 public class AbstractAccountingTest {
   private static final String APP_NAME = "accounting-v1";
-  private static final String TEST_USER = "setna";
+  protected static final String TEST_USER = "setna";
   public static final String TEST_LOGGER = "test-logger";
 
   private final static TestEnvironment testEnvironment = new TestEnvironment(APP_NAME);
@@ -78,7 +78,7 @@ public class AbstractAccountingTest {
   @Qualifier(TEST_LOGGER)
   protected Logger logger;
   @Autowired
-  EventRecorder eventRecorder;
+  protected EventRecorder eventRecorder;
 
   private AutoUserContext autoUserContext;
 
