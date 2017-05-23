@@ -19,7 +19,6 @@ import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.AddSubLedgerCommand;
 import io.mifos.accounting.service.internal.command.CreateLedgerCommand;
 import io.mifos.accounting.service.internal.command.DeleteLedgerCommand;
@@ -30,18 +29,10 @@ import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -51,16 +42,13 @@ import java.util.Optional;
 @RequestMapping("/ledgers")
 public class LedgerRestController {
 
-  private final Logger logger;
   private final CommandGateway commandGateway;
   private final LedgerService ledgerService;
 
   @Autowired
-  public LedgerRestController(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                              final CommandGateway commandGateway,
+  public LedgerRestController(final CommandGateway commandGateway,
                               final LedgerService ledgerService) {
     super();
-    this.logger = logger;
     this.commandGateway = commandGateway;
     this.ledgerService = ledgerService;
   }
@@ -88,7 +76,7 @@ public class LedgerRestController {
   )
   @ResponseBody
   ResponseEntity<LedgerPage> fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
-                                          @RequestParam(value = "term", required = false) final String term,
+                                          @RequestParam(value = "term") final String term,
                                           @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
                                           @RequestParam(value = "size", required = false) final Integer size,
                                           @RequestParam(value = "sortColumn", required = false) final String sortColumn,

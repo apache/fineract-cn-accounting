@@ -15,11 +15,13 @@
  */
 package io.mifos.accounting.listener;
 
+import io.mifos.accounting.AbstractAccountingTest;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.core.lang.config.TenantHeaderFilter;
 import io.mifos.core.test.listener.EventRecorder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
@@ -33,7 +35,7 @@ public class MigrationEventListener {
 
   @SuppressWarnings("SpringJavaAutowiringInspection")
   @Autowired
-  public MigrationEventListener(final Logger logger, final EventRecorder eventRecorder) {
+  public MigrationEventListener(final @Qualifier(AbstractAccountingTest.TEST_LOGGER) Logger logger, final EventRecorder eventRecorder) {
     super();
     this.logger = logger;
     this.eventRecorder = eventRecorder;
