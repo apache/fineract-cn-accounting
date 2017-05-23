@@ -112,4 +112,24 @@ public class TestImport extends AbstractAccountingTest {
     Assert.assertEquals(true, ledger111dot1.get().getShowAccountsInChart());
     Assert.assertEquals(AbstractAccountingTest.TEST_USER, ledger111dot1.get().getCreatedBy());
   }
+
+  @Test
+  public void testLedgerImportMissingNameCase() throws IOException, InterruptedException {
+    final LedgerImporter ledgerImporter = new LedgerImporter(testSubject, logger);
+    final URL uri = ClassLoader.getSystemResource("importdata/ledger-missing-name-case.txt");
+    ledgerImporter.importCSV(uri);
+
+    //Import a second time.
+    ledgerImporter.importCSV(uri);
+
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "210"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "211"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "211.1"));
+
+    final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "21", null, null, null, null);
+    final List<Ledger> ledgers = ledgerPage.getLedgers();
+    Assert.assertEquals(3,ledgers.size());
+
+    ledgers.forEach(x -> Assert.assertEquals(x.getIdentifier(), x.getName()));
+  }
 }

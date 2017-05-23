@@ -83,7 +83,13 @@ public class LedgerImporter {
       final String identifier = csvRecord.get(IDENTIFIER_COLUMN);
       final String parentLedger = csvRecord.get(PARENT_IDENTIFIER_COLUMN);
       final String type = csvRecord.get(TYPE_COLUMN);
-      final String name = csvRecord.get(NAME_COLUMN);
+      String name;
+      try {
+        name = csvRecord.get(NAME_COLUMN);
+      }
+      catch (final IllegalArgumentException e) {
+        name = identifier;
+      }
       final boolean show = Boolean.valueOf(csvRecord.get(SHOW_ACCOUNTS_IN_CHART_COLUMN));
       final String description = csvRecord.get(DESCRIPTION_COLUMN);
 

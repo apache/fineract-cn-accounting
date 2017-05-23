@@ -83,7 +83,13 @@ public class AccountImporter {
     try {
       final String type = csvRecord.get(TYPE_COLUMN);
       final String identifier = csvRecord.get(IDENTIFIER_COLUMN);
-      final String name = csvRecord.get(NAME_COLUMN);
+      String name;
+      try {
+        name = csvRecord.get(NAME_COLUMN);
+      }
+      catch (final IllegalArgumentException e) {
+        name = identifier;
+      }
       final Set<String> holders = new HashSet<>(Arrays.asList(csvRecord.get(HOLDERS_COLUMN).split("/")));
       final Set<String> authorities = new HashSet<>(Arrays.asList(csvRecord.get(AUTHORITIES_COLUMN).split("/")));
       final String ledger = csvRecord.get(PARENT_IDENTIFIER_COLUMN);
