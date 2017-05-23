@@ -17,104 +17,20 @@ package io.mifos.accounting;
 
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.client.LedgerAlreadyExistsException;
-import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.client.LedgerNotFoundException;
 import io.mifos.accounting.api.v1.client.LedgerReferenceExistsException;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
-import io.mifos.accounting.service.AccountingServiceConfiguration;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
-import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
-import io.mifos.core.api.context.AutoUserContext;
-import io.mifos.core.test.env.TestEnvironment;
-import io.mifos.core.test.fixture.TenantDataStoreContextTestRule;
-import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
-import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
-import io.mifos.core.test.listener.EnableEventRecording;
-import io.mifos.core.test.listener.EventRecorder;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class TestLedger {
-
-  private static final String APP_NAME = "accounting-v1";
-  private static final String TEST_USER = "setna";
-
-  private final static TestEnvironment testEnvironment = new TestEnvironment(APP_NAME);
-  private final static CassandraInitializer cassandraInitializer = new CassandraInitializer();
-  private final static MariaDBInitializer mariaDBInitializer = new MariaDBInitializer();
-  private final static TenantDataStoreContextTestRule tenantDataStoreContext = TenantDataStoreContextTestRule.forRandomTenantName(cassandraInitializer, mariaDBInitializer);
-
-  @ClassRule
-  public static TestRule orderClassRules = RuleChain
-          .outerRule(testEnvironment)
-          .around(cassandraInitializer)
-          .around(mariaDBInitializer)
-          .around(tenantDataStoreContext);
-
-  @Rule
-  public final TenantApplicationSecurityEnvironmentTestRule tenantApplicationSecurityEnvironment
-          = new TenantApplicationSecurityEnvironmentTestRule(testEnvironment, this::waitForInitialize);
-
-  @Autowired
-  private LedgerManager testSubject;
-  @Autowired
-  private Logger logger;
-  @SuppressWarnings("SpringJavaAutowiringInspection")
-  @Autowired
-  private EventRecorder eventRecorder;
-
-  private AutoUserContext autoUserContext;
-
-  public TestLedger() {
-    super();
-  }
-
-  @Before
-  public void prepTest() throws Exception {
-    this.logger.error("Prepare test.");
-    this.autoUserContext = this.tenantApplicationSecurityEnvironment.createAutoUserContext(TestLedger.TEST_USER);
-  }
-
-  @After
-  public void cleanTest() throws Exception {
-    this.logger.error("Clean up test.");
-    this.autoUserContext.close();
-  }
-
-  public boolean waitForInitialize() {
-    try {
-      return this.eventRecorder.wait(EventConstants.INITIALIZE, "1");
-    } catch (final InterruptedException e) {
-      throw new IllegalStateException(e);
-    }
-  }
-
+public class TestLedger extends AbstractAccountingTest {
   @Test
   public void shouldCreateLedger() throws Exception {
     final Ledger ledger = LedgerGenerator.createRandomLedger();
@@ -391,43 +307,25 @@ public class TestLedger {
 
     this.logger.info("Creating {} ledgers with unreserved characters.", unreservedCharacters.length);
     boolean failed = false;
-    for (int i = 0; i < unreservedCharacters.length; i++) {
+    for (String unreservedCharacter : unreservedCharacters) {
       final Ledger ledger = LedgerGenerator.createRandomLedger();
-      final String identifier = RandomStringUtils.randomAlphanumeric(3) + unreservedCharacters[i] + RandomStringUtils.randomAlphanumeric(2);
+      final String identifier = RandomStringUtils.randomAlphanumeric(3) + unreservedCharacter + RandomStringUtils.randomAlphanumeric(2);
       ledger.setIdentifier(identifier);
 
-      this.logger.info("Creating ledger '{}' with unreserved character '{}' in identifier.", identifier, unreservedCharacters[i]);
+      this.logger.info("Creating ledger '{}' with unreserved character '{}' in identifier.", identifier, unreservedCharacter);
       this.testSubject.createLedger(ledger);
 
       Assert.assertTrue(this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier()));
 
       try {
         this.testSubject.findLedger(ledger.getIdentifier());
-        this.logger.info("Ledger '{}' with unreserved character '{}' in identifier found.", identifier, unreservedCharacters[i]);
+        this.logger.info("Ledger '{}' with unreserved character '{}' in identifier found.", identifier, unreservedCharacter);
       } catch (final Exception ex) {
-        this.logger.error("Ledger '{}' with unreserved character '{}' in identifier not found.", identifier, unreservedCharacters[i]);
+        this.logger.error("Ledger '{}' with unreserved character '{}' in identifier not found.", identifier, unreservedCharacter);
         failed = true;
       }
     }
 
     Assert.assertFalse(failed);
-  }
-
-
-  @Configuration
-  @EnableEventRecording
-  @EnableFeignClients(basePackages = {"io.mifos.accounting.api.v1"})
-  @RibbonClient(name = APP_NAME)
-  @Import({AccountingServiceConfiguration.class})
-  @ComponentScan("io.mifos.accounting.listener")
-  public static class TestConfiguration {
-    public TestConfiguration() {
-      super();
-    }
-
-    @Bean
-    public Logger logger() {
-      return LoggerFactory.getLogger("test-logger");
-    }
   }
 }
