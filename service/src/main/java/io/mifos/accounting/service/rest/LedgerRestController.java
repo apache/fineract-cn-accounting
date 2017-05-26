@@ -30,6 +30,7 @@ import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,12 +77,23 @@ public class LedgerRestController {
   )
   @ResponseBody
   ResponseEntity<LedgerPage> fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
-                                          @RequestParam(value = "term") final String term,
+                                          @RequestParam(value = "term", required = false) final String term,
                                           @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
                                           @RequestParam(value = "size", required = false) final Integer size,
                                           @RequestParam(value = "sortColumn", required = false) final String sortColumn,
                                           @RequestParam(value = "sortDirection", required = false) final String sortDirection) {
-    return ResponseEntity.ok(this.ledgerService.fetchLedgers(includeSubLedgers, term, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)));
+
+    final Pageable pageable = PageableBuilder.create(pageIndex, size, sortColumn, sortDirection);
+
+    final LedgerPage page;
+
+    if(includeSubLedgers) {
+      page = this.ledgerService.fetchAllLedgers(term, pageable);
+    }else {
+      page = this.ledgerService.fetchRootLedgers(term, pageable);
+    }
+
+    return ResponseEntity.ok(page);
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_LEDGER)
