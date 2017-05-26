@@ -54,43 +54,56 @@ public class LedgerService {
     this.accountRepository = accountRepository;
   }
 
-  public LedgerPage fetchLedgers(final boolean includeSubLedgers, final String term, final Pageable pageable) {
-    Page<LedgerEntity> ledgerEntities;
-
+  public LedgerPage fetchRootLedgers(final String term, final Pageable pageable) {
     final LedgerPage ledgerPage = new LedgerPage();
 
-    if(includeSubLedgers) {
-      ledgerEntities = this.ledgerRepository.findByIdentifierContaining(term, pageable);
-    } else {
-      ledgerEntities = this.fetchRootLedgers(term, pageable);
-    }
+    final Page<LedgerEntity> ledgerEntities;
 
-    ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
-    ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
-
-    if(ledgerEntities.getSize() > 0) {
-      final List<Ledger> ledgers = new ArrayList<>(ledgerEntities.getSize());
-      ledgerEntities.forEach(ledgerEntity -> {
-        final Ledger ledger = LedgerMapper.map(ledgerEntity);
-        this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedger(ledgerEntity));
-        ledgers.add(ledger);
-      });
-      ledgerPage.setLedgers(ledgers);
-    }
-
-    return ledgerPage;
-  }
-
-  private Page<LedgerEntity> fetchRootLedgers(final String term, final Pageable pageable) {
-    Page<LedgerEntity> ledgerEntities;
-
-    if(term != null){
+    if(term != null) {
       ledgerEntities = this.ledgerRepository.findByIdentifierContainingAndParentLedgerIsNull(term, pageable);
     }else{
       ledgerEntities = this.ledgerRepository.findByParentLedgerIsNull(pageable);
     }
 
-    return ledgerEntities;
+    ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
+    ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
+
+    ledgerPage.setLedgers(this.mapToLedger(ledgerEntities.getContent()));
+
+    return ledgerPage;
+  }
+
+  public LedgerPage fetchAllLedgers(final String term, final Pageable pageable) {
+    final LedgerPage ledgerPage = new LedgerPage();
+
+    final Page<LedgerEntity> ledgerEntities;
+
+    if(term != null) {
+      ledgerEntities = this.ledgerRepository.findByIdentifierContaining(term, pageable);
+    }else{
+      ledgerEntities = this.ledgerRepository.findAll(pageable);
+    }
+
+    ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
+    ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
+
+    ledgerPage.setLedgers(this.mapToLedger(ledgerEntities.getContent()));
+
+    return ledgerPage;
+  }
+
+  private List<Ledger> mapToLedger(List<LedgerEntity> ledgerEntities) {
+    final List<Ledger> result = new ArrayList<>(ledgerEntities.size());
+
+    if(!ledgerEntities.isEmpty()) {
+      ledgerEntities.forEach(ledgerEntity -> {
+        final Ledger ledger = LedgerMapper.map(ledgerEntity);
+        this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedger(ledgerEntity));
+        result.add(ledger);
+      });
+    }
+
+    return result;
   }
 
   public Optional<Ledger> findLedger(final String identifier) {
