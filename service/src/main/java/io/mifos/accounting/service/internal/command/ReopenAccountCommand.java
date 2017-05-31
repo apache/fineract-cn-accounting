@@ -32,4 +32,11 @@ public class ReopenAccountCommand {
   public String comment() {
     return this.comment;
   }
+
+  @Override
+  public String toString() {
+    return "ReopenAccountCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
+  }
 }

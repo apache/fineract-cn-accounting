@@ -29,4 +29,11 @@ public class ModifyLedgerCommand {
   public Ledger ledger() {
     return this.ledger;
   }
+
+  @Override
+  public String toString() {
+    return "ModifyLedgerCommand{" +
+            "ledger=" + ledger.getIdentifier() +
+            '}';
+  }
 }

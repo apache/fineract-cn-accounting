@@ -27,4 +27,11 @@ public class DeleteLedgerCommand {
   public String identifier() {
     return this.identifier;
   }
+
+  @Override
+  public String toString() {
+    return "DeleteLedgerCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
+  }
 }

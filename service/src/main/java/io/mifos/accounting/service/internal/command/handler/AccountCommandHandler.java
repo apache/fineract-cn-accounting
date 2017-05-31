@@ -43,6 +43,7 @@ import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import io.mifos.core.api.util.UserContextHolder;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
+import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
@@ -85,7 +86,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.POST_ACCOUNT)
   public String createAccount(final CreateAccountCommand createAccountCommand) {
     final Account account = createAccountCommand.account();
@@ -142,7 +143,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.PUT_ACCOUNT)
   public String modifyAccount(final ModifyAccountCommand modifyAccountCommand) {
     final Account account = modifyAccountCommand.account();
@@ -207,7 +208,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.CLOSE_ACCOUNT)
   public String closeAccount(final CloseAccountCommand closeAccountCommand) {
     final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -232,7 +233,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.LOCK_ACCOUNT)
   public String lockAccount(final LockAccountCommand lockAccountCommand) {
     final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -257,7 +258,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.UNLOCK_ACCOUNT)
   public String unlockAccount(final UnlockAccountCommand unlockAccountCommand) {
     final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -282,7 +283,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.REOPEN_ACCOUNT)
   public String reopenAccount(final ReopenAccountCommand reopenAccountCommand) {
     final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -307,7 +308,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.NONE, logFinish = CommandLogLevel.NONE)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.RELEASE_JOURNAL_ENTRY)
   public String bookJournalEntry(final BookJournalEntryCommand bookJournalEntryCommand) {
     final String transactionIdentifier = bookJournalEntryCommand.transactionIdentifier();
@@ -380,7 +381,7 @@ public class AccountCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.DELETE_ACCOUNT)
   public String deleteAccount(final DeleteAccountCommand deleteAccountCommand) {
     final String accountIdentifier = deleteAccountCommand.identifier();

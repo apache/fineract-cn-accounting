@@ -19,7 +19,6 @@ import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.domain.Creditor;
 import io.mifos.accounting.api.v1.domain.Debtor;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.CreateJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.ReleaseJournalEntryCommand;
@@ -29,12 +28,11 @@ import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
+import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.DateConverter;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -42,24 +40,22 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @Aggregate
 public class JournalEntryCommandHandler {
 
-  private final Logger logger;
   private final CommandGateway commandGateway;
   private final JournalEntryRepository journalEntryRepository;
 
   @Autowired
-  public JournalEntryCommandHandler(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                                    final CommandGateway commandGateway,
+  public JournalEntryCommandHandler(final CommandGateway commandGateway,
                                     final JournalEntryRepository journalEntryRepository) {
-    this.logger = logger;
     this.commandGateway = commandGateway;
     this.journalEntryRepository = journalEntryRepository;
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.NONE, logFinish = CommandLogLevel.NONE)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.POST_JOURNAL_ENTRY)
   public String createJournalEntry(final CreateJournalEntryCommand createJournalEntryCommand) {
     final JournalEntry journalEntry = createJournalEntryCommand.journalEntry();
@@ -100,7 +96,7 @@ public class JournalEntryCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.NONE, logFinish = CommandLogLevel.NONE)
   public void releaseJournalEntry(final ReleaseJournalEntryCommand releaseJournalEntryCommand) {
     final String transactionIdentifier = releaseJournalEntryCommand.transactionIdentifier();
     final Optional<JournalEntryEntity> optionalJournalEntry = this.journalEntryRepository.findJournalEntry(transactionIdentifier);

@@ -28,4 +28,11 @@ public class CreateJournalEntryCommand {
   public JournalEntry journalEntry() {
     return this.journalEntry;
   }
+
+  @Override
+  public String toString() {
+    return "CreateJournalEntryCommand{" +
+            "journalEntry=" + journalEntry.getTransactionIdentifier() +
+            '}';
+  }
 }

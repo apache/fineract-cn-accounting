@@ -32,4 +32,11 @@ public class UnlockAccountCommand {
   public String comment() {
     return this.comment;
   }
+
+  @Override
+  public String toString() {
+    return "UnlockAccountCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
+  }
 }
