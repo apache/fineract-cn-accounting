@@ -40,6 +40,7 @@ public class JournalEntryGenerator {
     final JournalEntry journalEntry = new JournalEntry();
     journalEntry.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(8));
     journalEntry.setTransactionDate(ZonedDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+    journalEntry.setTransactionType(RandomStringUtils.randomAlphabetic(4));
     journalEntry.setClerk("clark");
     final Debtor debtor = new Debtor();
     debtor.setAccountNumber(debtorAccount.getIdentifier());

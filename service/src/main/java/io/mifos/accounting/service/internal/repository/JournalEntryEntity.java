@@ -38,6 +38,8 @@ public class JournalEntryEntity {
   private String transactionIdentifier;
   @Column(name = "transaction_date")
   private LocalDateTime transactionDate;
+  @Column(name = "transaction_type")
+  private String transactionType;
   @Column(name = "clerk")
   private String clerk;
   @Column(name = "note")
@@ -79,6 +81,14 @@ public class JournalEntryEntity {
 
   public void setTransactionDate(final LocalDateTime transactionDate) {
     this.transactionDate = transactionDate;
+  }
+
+  public String getTransactionType() {
+    return this.transactionType;
+  }
+
+  public void setTransactionType(final String transactionType) {
+    this.transactionType = transactionType;
   }
 
   public String getClerk() {

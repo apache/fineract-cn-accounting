@@ -59,4 +59,9 @@ public interface EventConstants {
 
   String SELECTOR_POST_JOURNAL_ENTRY = SELECTOR_NAME + " = '" + POST_JOURNAL_ENTRY + "'";
   String SELECTOR_RELEASE_JOURNAL_ENTRY = SELECTOR_NAME + " = '" + RELEASE_JOURNAL_ENTRY + "'";
+
+  String POST_TX_TYPE = "post-tx-type";
+  String SELECTOR_POST_TX_TYPE = SELECTOR_NAME + " = '" + POST_TX_TYPE + "'";
+  String PUT_TX_TYPE = "put-tx-type";
+  String SELECTOR_PUT_TX_TYPE = SELECTOR_NAME + " = '" + PUT_TX_TYPE + "'";
 }

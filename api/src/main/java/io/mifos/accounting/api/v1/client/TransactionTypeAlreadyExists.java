@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mifos.accounting.api.v1;
+package io.mifos.accounting.api.v1.client;
 
-@SuppressWarnings("unused")
-public interface PermittableGroupIds {
-
-  String THOTH_LEDGER = "accounting__v1__ledger";
-  String THOTH_ACCOUNT = "accounting__v1__account";
-  String THOTH_JOURNAL = "accounting__v1__journal";
-  String THOTH_TX_TYPES = "accounting__v1__tx_types";
-
+public class TransactionTypeAlreadyExists extends RuntimeException {
 }
