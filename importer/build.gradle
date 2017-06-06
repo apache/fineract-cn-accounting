@@ -1,0 +1,34 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.1.RELEASE'
+    }
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'com.github.hierynomus.license' version '0.13.1'
+}
+
+apply from: '../shared.gradle'
+
+dependencies {
+    compile(
+            [group: 'io.mifos.accounting', name: 'api', version: project.version],
+            [group: 'org.apache.commons', name: 'commons-csv', version: versions.apachecsvreader]
+    )
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

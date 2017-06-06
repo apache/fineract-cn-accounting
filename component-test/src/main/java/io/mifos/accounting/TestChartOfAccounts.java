@@ -16,88 +16,18 @@
 package io.mifos.accounting;
 
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
-import io.mifos.accounting.service.AccountingServiceConfiguration;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
-import io.mifos.anubis.test.v1.TenantApplicationSecurityEnvironmentTestRule;
-import io.mifos.core.api.context.AutoUserContext;
-import io.mifos.core.test.env.TestEnvironment;
-import io.mifos.core.test.fixture.TenantDataStoreContextTestRule;
-import io.mifos.core.test.fixture.cassandra.CassandraInitializer;
-import io.mifos.core.test.fixture.mariadb.MariaDBInitializer;
-import io.mifos.core.test.listener.EnableEventRecording;
-import io.mifos.core.test.listener.EventRecorder;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.cloud.netflix.ribbon.RibbonClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class TestChartOfAccounts {
-
-  private static final String APP_NAME = "accounting-v1";
-  private static final String TEST_USER = "accountant";
-
-  private final static TestEnvironment testEnvironment = new TestEnvironment(APP_NAME);
-  private final static CassandraInitializer cassandraInitializer = new CassandraInitializer();
-  private final static MariaDBInitializer mariaDBInitializer = new MariaDBInitializer();
-  private final static TenantDataStoreContextTestRule tenantDataStoreContext = TenantDataStoreContextTestRule.forRandomTenantName(cassandraInitializer, mariaDBInitializer);
-
-  @ClassRule
-  public static TestRule orderClassRules = RuleChain
-      .outerRule(testEnvironment)
-      .around(cassandraInitializer)
-      .around(mariaDBInitializer)
-      .around(tenantDataStoreContext);
-
-  @Rule
-  public final TenantApplicationSecurityEnvironmentTestRule tenantApplicationSecurityEnvironment
-      = new TenantApplicationSecurityEnvironmentTestRule(testEnvironment, this::waitForInitialize);
-
-  @Autowired
-  private LedgerManager testSubject;
-  @Autowired
-  private EventRecorder eventRecorder;
-
-  private AutoUserContext autoUserContext;
-
-  public TestChartOfAccounts() {
-    super();
-  }
-
-  @Before
-  public void prepTest() throws Exception {
-    this.autoUserContext = this.tenantApplicationSecurityEnvironment.createAutoUserContext(TestChartOfAccounts.TEST_USER);
-  }
-
-  @After
-  public void cleanTest() throws Exception {
-    this.autoUserContext.close();
-  }
+public class TestChartOfAccounts extends AbstractAccountingTest {
 
   @Test
   public void shouldShowChartOfAccounts() throws Exception {
@@ -149,30 +79,5 @@ public class TestChartOfAccounts {
     Assert.assertEquals(Integer.valueOf(2), chartOfAccounts.get(4).getLevel());
     Assert.assertEquals(Integer.valueOf(0), chartOfAccounts.get(5).getLevel());
     Assert.assertEquals(Integer.valueOf(1), chartOfAccounts.get(6).getLevel());
-  }
-
-  private boolean waitForInitialize() {
-    try {
-      return this.eventRecorder.wait(EventConstants.INITIALIZE, "1");
-    } catch (final InterruptedException e) {
-      throw new IllegalStateException(e);
-    }
-  }
-
-  @Configuration
-  @EnableEventRecording
-  @EnableFeignClients(basePackages = {"io.mifos.accounting.api.v1"})
-  @RibbonClient(name = APP_NAME)
-  @Import({AccountingServiceConfiguration.class})
-  @ComponentScan("io.mifos.accounting.listener")
-  public static class TestConfiguration {
-    public TestConfiguration() {
-      super();
-    }
-
-    @Bean
-    public Logger logger() {
-      return LoggerFactory.getLogger("test-logger");
-    }
   }
 }

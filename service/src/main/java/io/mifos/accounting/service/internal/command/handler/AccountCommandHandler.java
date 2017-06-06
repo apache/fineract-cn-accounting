@@ -210,7 +210,7 @@ public class AccountCommandHandler {
   @CommandHandler
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.CLOSE_ACCOUNT)
   public String closeAccount(final CloseAccountCommand closeAccountCommand) {
-    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
     final LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
     final String identifier = closeAccountCommand.identifier();
 
@@ -235,7 +235,7 @@ public class AccountCommandHandler {
   @CommandHandler
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.LOCK_ACCOUNT)
   public String lockAccount(final LockAccountCommand lockAccountCommand) {
-    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
     final LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
     final String identifier = lockAccountCommand.identifier();
 
@@ -260,7 +260,7 @@ public class AccountCommandHandler {
   @CommandHandler
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.UNLOCK_ACCOUNT)
   public String unlockAccount(final UnlockAccountCommand unlockAccountCommand) {
-    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
     final LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
     final String identifier = unlockAccountCommand.identifier();
 
@@ -285,7 +285,7 @@ public class AccountCommandHandler {
   @CommandHandler
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.REOPEN_ACCOUNT)
   public String reopenAccount(final ReopenAccountCommand reopenAccountCommand) {
-    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    final String modifyingUser = SecurityContextHolder.getContext().getAuthentication().getName();
     final LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
     final String identifier = reopenAccountCommand.identifier();
 
