@@ -67,6 +67,7 @@ public class TestJournalEntry extends AbstractAccountingTest {
     final JournalEntry foundJournalEntry = this.testSubject.findJournalEntry(journalEntry.getTransactionIdentifier());
     Assert.assertNotNull(foundJournalEntry);
     Assert.assertEquals(JournalEntry.State.PROCESSED.name(), foundJournalEntry.getState());
+    Assert.assertEquals(journalEntry.getTransactionType(), foundJournalEntry.getTransactionType());
 
     final Account modifiedDebtorAccount = this.testSubject.findAccount(debtorAccount.getIdentifier());
     Assert.assertNotNull(modifiedDebtorAccount);

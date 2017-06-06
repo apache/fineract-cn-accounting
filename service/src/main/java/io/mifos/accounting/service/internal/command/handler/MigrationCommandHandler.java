@@ -20,6 +20,7 @@ import com.datastax.driver.core.schemabuilder.SchemaBuilder;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
+import io.mifos.core.cassandra.core.CassandraJourney;
 import io.mifos.core.cassandra.core.CassandraJourneyFactory;
 import io.mifos.core.cassandra.core.CassandraJourneyRoute;
 import io.mifos.core.cassandra.core.CassandraSessionProvider;
@@ -68,8 +69,8 @@ public class MigrationCommandHandler {
 
     final String versionNumber = "1";
 
-    final CassandraJourneyRoute cassandraJourneyRoute = CassandraJourneyRoute
-        .plan(versionNumber)
+    final CassandraJourneyRoute initialRoute = CassandraJourneyRoute
+        .plan("1")
         .addWaypoint(
             SchemaBuilder
                 .createType("thoth_debtor")
@@ -102,7 +103,20 @@ public class MigrationCommandHandler {
             .buildInternal())
         .build();
 
-    this.cassandraJourneyFactory.create(this.cassandraSessionProvider).start(cassandraJourneyRoute);
+
+    final CassandraJourneyRoute updateRouteVersion2 = CassandraJourneyRoute
+        .plan("2")
+        .addWaypoint(
+            SchemaBuilder
+                .alterTable("thoth_journal_entries")
+                .addColumn("transaction_type").type(DataType.text())
+                .getQueryString()
+        )
+        .build();
+
+    final CassandraJourney cassandraJourney = this.cassandraJourneyFactory.create(this.cassandraSessionProvider);
+    cassandraJourney.start(initialRoute);
+    cassandraJourney.start(updateRouteVersion2);
 
     return versionNumber;
   }

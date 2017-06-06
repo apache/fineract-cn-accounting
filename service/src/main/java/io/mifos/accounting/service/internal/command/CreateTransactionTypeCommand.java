@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mifos.accounting.api.v1;
+package io.mifos.accounting.service.internal.command;
 
-@SuppressWarnings("unused")
-public interface PermittableGroupIds {
+import io.mifos.accounting.api.v1.domain.TransactionType;
 
-  String THOTH_LEDGER = "accounting__v1__ledger";
-  String THOTH_ACCOUNT = "accounting__v1__account";
-  String THOTH_JOURNAL = "accounting__v1__journal";
-  String THOTH_TX_TYPES = "accounting__v1__tx_types";
+public class CreateTransactionTypeCommand {
+  private final TransactionType transactionType;
 
+  public CreateTransactionTypeCommand(final TransactionType transactionType) {
+    super();
+    this.transactionType = transactionType;
+  }
+
+  public TransactionType transactionType() {
+    return this.transactionType;
+  }
 }

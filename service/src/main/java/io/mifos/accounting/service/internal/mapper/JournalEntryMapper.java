@@ -33,6 +33,7 @@ public class JournalEntryMapper {
     final JournalEntry journalEntry = new JournalEntry();
     journalEntry.setTransactionIdentifier(journalEntryEntity.getTransactionIdentifier());
     journalEntry.setTransactionDate(DateConverter.toIsoString(journalEntryEntity.getTransactionDate()));
+    journalEntry.setTransactionType(journalEntryEntity.getTransactionType());
     journalEntry.setClerk(journalEntryEntity.getClerk());
     journalEntry.setNote(journalEntryEntity.getNote());
     journalEntry.setDebtors(
