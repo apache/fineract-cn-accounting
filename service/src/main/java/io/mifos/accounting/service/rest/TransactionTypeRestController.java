@@ -91,9 +91,10 @@ public class TransactionTypeRestController {
                                                             @RequestParam(value = "size", required = false) final Integer size,
                                                             @RequestParam(value = "sortColumn", required = false) final String sortColumn,
                                                             @RequestParam(value = "sortDirection", required = false) final String sortDirection) {
+    final String column2sort = sortColumn.equalsIgnoreCase("code") ? "identifier" : sortColumn;
     return ResponseEntity.ok(
         this.transactionTypeService.fetchTransactionTypes(term,
-            PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)));
+            PageableBuilder.create(pageIndex, size, column2sort, sortDirection)));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_TX_TYPES)
