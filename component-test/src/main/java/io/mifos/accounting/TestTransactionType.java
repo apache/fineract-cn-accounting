@@ -105,4 +105,24 @@ public class TestTransactionType extends AbstractAccountingTest {
 
     super.testSubject.changeTransactionType(code, transactionType);
   }
+
+  @Test
+  public void shouldFindTransactionType() throws Exception {
+    final TransactionType randomTransactionType = TransactionTypeGenerator.createRandomTransactionType();
+
+    super.testSubject.createTransactionType(randomTransactionType);
+
+    Assert.assertTrue(super.eventRecorder.wait(EventConstants.POST_TX_TYPE, randomTransactionType.getCode()));
+
+    final TransactionType fetchedTransactionType = super.testSubject.findTransactionType(randomTransactionType.getCode());
+    Assert.assertNotNull(fetchedTransactionType);
+    Assert.assertEquals(randomTransactionType.getCode(), fetchedTransactionType.getCode());
+    Assert.assertEquals(randomTransactionType.getName(), fetchedTransactionType.getName());
+    Assert.assertEquals(randomTransactionType.getDescription(), fetchedTransactionType.getDescription());
+  }
+
+  @Test(expected = TransactionTypeNotFoundException.class)
+  public void shouldNotFindTransactionTypeNotFound() {
+    super.testSubject.findTransactionType("unknown");
+  }
 }

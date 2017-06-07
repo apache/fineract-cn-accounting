@@ -296,4 +296,15 @@ public interface LedgerManager {
   })
   void changeTransactionType(@PathVariable("code") final String code,
                              @RequestBody @Valid final TransactionType transactionType);
+
+  @RequestMapping(
+      value = "/transactiontypes/{code}",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = TransactionTypeNotFoundException.class)
+  })
+  TransactionType findTransactionType(@PathVariable("code") final String code);
 }

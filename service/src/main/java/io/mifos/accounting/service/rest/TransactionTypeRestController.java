@@ -21,6 +21,7 @@ import io.mifos.accounting.api.v1.domain.TransactionTypePage;
 import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.ChangeTransactionTypeCommand;
 import io.mifos.accounting.service.internal.command.CreateTransactionTypeCommand;
+import io.mifos.accounting.service.internal.mapper.TransactionTypeMapper;
 import io.mifos.accounting.service.internal.service.TransactionTypeService;
 import io.mifos.accounting.service.rest.paging.PageableBuilder;
 import io.mifos.anubis.annotation.AcceptedTokenType;
@@ -91,7 +92,7 @@ public class TransactionTypeRestController {
                                                             @RequestParam(value = "size", required = false) final Integer size,
                                                             @RequestParam(value = "sortColumn", required = false) final String sortColumn,
                                                             @RequestParam(value = "sortDirection", required = false) final String sortDirection) {
-    final String column2sort = sortColumn.equalsIgnoreCase("code") ? "identifier" : sortColumn;
+    final String column2sort = "code".equalsIgnoreCase(sortColumn) ? "identifier" : sortColumn;
     return ResponseEntity.ok(
         this.transactionTypeService.fetchTransactionTypes(term,
             PageableBuilder.create(pageIndex, size, column2sort, sortDirection)));
@@ -118,5 +119,20 @@ public class TransactionTypeRestController {
     this.commandGateway.process(new ChangeTransactionTypeCommand(transactionType));
 
     return ResponseEntity.accepted().build();
+  }
+
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_TX_TYPES)
+  @RequestMapping(
+      value = "/{code}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.ALL_VALUE}
+  )
+  @ResponseBody
+  ResponseEntity<TransactionType> findTransactionType(@PathVariable("code") final String code) {
+    return ResponseEntity.ok(
+        this.transactionTypeService.findByIdentifier(code)
+            .orElseThrow(() -> ServiceException.notFound("Transaction type '{0}' not found.", code))
+    );
   }
 }
