@@ -28,4 +28,11 @@ public class ChangeTransactionTypeCommand {
   public TransactionType transactionType() {
     return this.transactionType;
   }
+
+  @Override
+  public String toString() {
+    return "ChangeTransactionTypeCommand{" +
+            "transactionType=" + transactionType.getCode() +
+            '}';
+  }
 }
