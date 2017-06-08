@@ -23,6 +23,8 @@ import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.api.v1.domain.TransactionType;
+import io.mifos.accounting.api.v1.domain.TransactionTypePage;
 import io.mifos.accounting.api.v1.domain.TrialBalance;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.api.annotation.ThrowsExceptions;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -255,4 +258,53 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   List<ChartOfAccountEntry> getChartOfAccounts();
+
+  @RequestMapping(
+      value = "/transactiontypes",
+      method = RequestMethod.POST,
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = TransactionTypeAlreadyExists.class),
+      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = TransactionTypeValidationException.class)
+  })
+  void createTransactionType(@RequestBody @Valid final TransactionType transactionType);
+
+
+  @RequestMapping(
+      value = "/transactiontypes",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  TransactionTypePage fetchTransactionTypes(@RequestParam(value = "term", required = false) final String term,
+                                            @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+                                            @RequestParam(value = "size", required = false) final Integer size,
+                                            @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+                                            @RequestParam(value = "sortDirection", required = false) final String sortDirection);
+
+  @RequestMapping(
+      value = "/transactiontypes/{code}",
+      method = RequestMethod.PUT,
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = TransactionTypeNotFoundException.class),
+      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = TransactionTypeValidationException.class)
+  })
+  void changeTransactionType(@PathVariable("code") final String code,
+                             @RequestBody @Valid final TransactionType transactionType);
+
+  @RequestMapping(
+      value = "/transactiontypes/{code}",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = TransactionTypeNotFoundException.class)
+  })
+  TransactionType findTransactionType(@PathVariable("code") final String code);
 }

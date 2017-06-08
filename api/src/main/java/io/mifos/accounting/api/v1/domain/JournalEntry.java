@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
+import io.mifos.core.lang.validation.constraints.ValidIdentifier;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
@@ -23,10 +24,12 @@ import java.util.Set;
 @SuppressWarnings({"unused"})
 public final class JournalEntry {
 
-  @NotNull
+  @ValidIdentifier
   private String transactionIdentifier;
   @NotNull
   private String transactionDate;
+  @ValidIdentifier
+  private String transactionType;
   @NotEmpty
   private String clerk;
   private String note;
@@ -55,6 +58,14 @@ public final class JournalEntry {
 
   public void setTransactionDate(final String transactionDate) {
     this.transactionDate = transactionDate;
+  }
+
+  public String getTransactionType() {
+    return this.transactionType;
+  }
+
+  public void setTransactionType(final String transactionType) {
+    this.transactionType = transactionType;
   }
 
   public String getClerk() {

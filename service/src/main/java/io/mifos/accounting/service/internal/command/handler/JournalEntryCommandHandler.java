@@ -84,6 +84,7 @@ public class JournalEntryCommandHandler {
     final LocalDateTime transactionDate = DateConverter.fromIsoString(journalEntry.getTransactionDate());
     journalEntryEntity.setDateBucket(DateConverter.toIsoString(DateConverter.toLocalDate(transactionDate)));
     journalEntryEntity.setTransactionDate(transactionDate);
+    journalEntryEntity.setTransactionType(journalEntry.getTransactionType());
     journalEntryEntity.setClerk(journalEntry.getClerk());
     journalEntryEntity.setNote(journalEntry.getNote());
     journalEntryEntity.setDebtors(debtorTypes);
