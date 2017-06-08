@@ -32,4 +32,11 @@ public class CloseAccountCommand {
   public String comment() {
     return this.comment;
   }
+
+  @Override
+  public String toString() {
+    return "CloseAccountCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
+  }
 }

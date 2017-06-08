@@ -27,4 +27,11 @@ public class BookJournalEntryCommand {
   public String transactionIdentifier() {
     return this.transactionIdentifier;
   }
+
+  @Override
+  public String toString() {
+    return "BookJournalEntryCommand{" +
+            "transactionIdentifier='" + transactionIdentifier + '\'' +
+            '}';
+  }
 }

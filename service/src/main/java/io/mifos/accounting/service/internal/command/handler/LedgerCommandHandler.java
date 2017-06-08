@@ -27,6 +27,7 @@ import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import io.mifos.core.api.util.UserContextHolder;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
+import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.lang.ServiceException;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class LedgerCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.POST_LEDGER)
   public String createLedger(final CreateLedgerCommand createLedgerCommand) {
     final Ledger ledger = createLedgerCommand.ledger();
@@ -79,7 +80,7 @@ public class LedgerCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.POST_LEDGER)
   public String addSubLedger(final AddSubLedgerCommand addSubLedgerCommand) {
     final LedgerEntity parentLedger =
@@ -101,7 +102,7 @@ public class LedgerCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.PUT_LEDGER)
   public String modifyLedger(final ModifyLedgerCommand modifyLedgerCommand) {
     final Ledger ledger2modify = modifyLedgerCommand.ledger();
@@ -117,7 +118,7 @@ public class LedgerCommandHandler {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.INFO, logFinish = CommandLogLevel.INFO)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.DELETE_LEDGER)
   public String deleteLedger(final DeleteLedgerCommand deleteLedgerCommand) {
     this.ledgerRepository.delete(this.ledgerRepository.findByIdentifier(deleteLedgerCommand.identifier()));

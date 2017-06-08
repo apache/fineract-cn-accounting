@@ -33,4 +33,11 @@ public class LockAccountCommand {
   public String comment() {
     return this.comment;
   }
+
+  @Override
+  public String toString() {
+    return "LockAccountCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
+  }
 }

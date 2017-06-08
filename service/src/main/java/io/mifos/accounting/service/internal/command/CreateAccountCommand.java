@@ -28,4 +28,11 @@ public class CreateAccountCommand {
   public Account account() {
     return this.account;
   }
+
+  @Override
+  public String toString() {
+    return "CreateAccountCommand{" +
+            "account=" + account.getIdentifier() +
+            '}';
+  }
 }

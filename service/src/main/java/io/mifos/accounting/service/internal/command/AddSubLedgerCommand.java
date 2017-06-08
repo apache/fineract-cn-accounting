@@ -35,4 +35,12 @@ public class AddSubLedgerCommand {
   public Ledger subLedger() {
     return this.subLedger;
   }
+
+  @Override
+  public String toString() {
+    return "AddSubLedgerCommand{" +
+            "parentLedgerIdentifier='" + parentLedgerIdentifier + '\'' +
+            ", subLedger=" + subLedger.getIdentifier() +
+            '}';
+  }
 }

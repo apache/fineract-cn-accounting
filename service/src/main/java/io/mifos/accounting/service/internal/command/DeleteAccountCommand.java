@@ -16,7 +16,7 @@
 package io.mifos.accounting.service.internal.command;
 
 public class DeleteAccountCommand {
-  final String identifier;
+  private final String identifier;
 
   public DeleteAccountCommand(final String identifier) {
     super();
@@ -25,5 +25,12 @@ public class DeleteAccountCommand {
 
   public String identifier() {
     return this.identifier;
+  }
+
+  @Override
+  public String toString() {
+    return "DeleteAccountCommand{" +
+            "identifier='" + identifier + '\'' +
+            '}';
   }
 }

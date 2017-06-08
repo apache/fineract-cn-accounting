@@ -18,7 +18,6 @@ package io.mifos.accounting.service.internal.command.handler;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.schemabuilder.SchemaBuilder;
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.core.cassandra.core.CassandraJourney;
 import io.mifos.core.cassandra.core.CassandraJourneyFactory;
@@ -26,11 +25,10 @@ import io.mifos.core.cassandra.core.CassandraJourneyRoute;
 import io.mifos.core.cassandra.core.CassandraSessionProvider;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
+import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.mariadb.domain.FlywayFactoryBean;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.sql.DataSource;
 
@@ -40,7 +38,6 @@ import javax.sql.DataSource;
 @Aggregate
 public class MigrationCommandHandler {
 
-  private final Logger logger;
   private final DataSource dataSource;
   private final FlywayFactoryBean flywayFactoryBean;
   private final CassandraSessionProvider cassandraSessionProvider;
@@ -48,23 +45,20 @@ public class MigrationCommandHandler {
 
   @SuppressWarnings("SpringJavaAutowiringInspection")
   @Autowired
-  public MigrationCommandHandler(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                                 final DataSource dataSource,
+  public MigrationCommandHandler(final DataSource dataSource,
                                  final FlywayFactoryBean flywayFactoryBean,
                                  final CassandraSessionProvider cassandraSessionProvider,
                                  final CassandraJourneyFactory cassandraJourneyFactory) {
     super();
-    this.logger = logger;
     this.dataSource = dataSource;
     this.flywayFactoryBean = flywayFactoryBean;
     this.cassandraSessionProvider = cassandraSessionProvider;
     this.cassandraJourneyFactory = cassandraJourneyFactory;
   }
 
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.DEBUG, logFinish = CommandLogLevel.DEBUG)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.INITIALIZE)
   public String initialize(final InitializeServiceCommand initializeServiceCommand) {
-    this.logger.debug("Start service migration.");
     this.flywayFactoryBean.create(this.dataSource).migrate();
 
     final String versionNumber = "1";
