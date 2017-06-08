@@ -17,7 +17,6 @@ package io.mifos.accounting.service.internal.command.handler;
 
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.domain.TransactionType;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.ChangeTransactionTypeCommand;
 import io.mifos.accounting.service.internal.command.CreateTransactionTypeCommand;
 import io.mifos.accounting.service.internal.mapper.TransactionTypeMapper;
@@ -25,30 +24,26 @@ import io.mifos.accounting.service.internal.repository.TransactionTypeEntity;
 import io.mifos.accounting.service.internal.repository.TransactionTypeRepository;
 import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
+import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@SuppressWarnings("unused")
 @Aggregate
 public class TransactionTypeAggregate {
-
-  private final Logger logger;
   private final TransactionTypeRepository transactionTypeRepository;
 
   @Autowired
-  public TransactionTypeAggregate(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                                  final TransactionTypeRepository transactionTypeRepository) {
+  public TransactionTypeAggregate(final TransactionTypeRepository transactionTypeRepository) {
     super();
-    this.logger = logger;
     this.transactionTypeRepository = transactionTypeRepository;
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.DEBUG, logFinish = CommandLogLevel.DEBUG)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.POST_TX_TYPE)
   public String createTransactionType(final CreateTransactionTypeCommand createTransactionTypeCommand) {
     final TransactionType transactionType = createTransactionTypeCommand.transactionType();
@@ -59,7 +54,7 @@ public class TransactionTypeAggregate {
   }
 
   @Transactional
-  @CommandHandler
+  @CommandHandler(logStart = CommandLogLevel.DEBUG, logFinish = CommandLogLevel.DEBUG)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.PUT_TX_TYPE)
   public String changeTransactionType(final ChangeTransactionTypeCommand changeTransactionTypeCommand) {
     final TransactionType transactionType = changeTransactionTypeCommand.transactionType();
