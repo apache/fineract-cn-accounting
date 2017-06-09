@@ -56,7 +56,7 @@ public class TestImport extends AbstractAccountingTest {
 
 
     final AccountImporter accountImporter = new AccountImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/account-happy-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/account-happy-case.csv");
     accountImporter.importCSV(uri);
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "abcd"));
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "xyz"));
@@ -82,7 +82,7 @@ public class TestImport extends AbstractAccountingTest {
   @Test
   public void testLedgerImportHappyCase() throws IOException, InterruptedException {
     final LedgerImporter ledgerImporter = new LedgerImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/ledger-happy-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/ledger-happy-case.csv");
     ledgerImporter.importCSV(uri);
 
     //Import a second time.
@@ -94,7 +94,7 @@ public class TestImport extends AbstractAccountingTest {
 
     final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "11", null, null, null, null);
     final List<Ledger> ledgers = ledgerPage.getLedgers();
-    Assert.assertEquals(3,ledgers.size());
+    Assert.assertTrue(ledgers.size() >= 3); //3 from this test, but other tests may already have run.
     final Optional<Ledger> ledger110 = ledgers.stream().filter(x -> x.getIdentifier().equals("110")).findAny();
     Assert.assertTrue(ledger110.isPresent());
     Assert.assertEquals("Loan Ledger", ledger110.get().getDescription());
@@ -120,7 +120,7 @@ public class TestImport extends AbstractAccountingTest {
   @Test
   public void testLedgerImportMissingNameCase() throws IOException, InterruptedException {
     final LedgerImporter ledgerImporter = new LedgerImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/ledger-missing-name-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/ledger-missing-name-case.csv");
     ledgerImporter.importCSV(uri);
 
     //Import a second time.
