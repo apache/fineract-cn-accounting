@@ -56,7 +56,7 @@ public class TestImport extends AbstractAccountingTest {
 
 
     final AccountImporter accountImporter = new AccountImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/account-happy-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/account-happy-case.csv");
     accountImporter.importCSV(uri);
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "abcd"));
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "xyz"));
@@ -80,9 +80,66 @@ public class TestImport extends AbstractAccountingTest {
   }
 
   @Test
+  public void testAccountFromARealCase() throws IOException, InterruptedException {
+    final Ledger ledger1000 = new Ledger();
+    ledger1000.setType(AccountType.REVENUE.name());
+    ledger1000.setIdentifier("1000");
+    ledger1000.setName("Income");
+    ledger1000.setShowAccountsInChart(true);
+
+    testSubject.createLedger(ledger1000);
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, ledger1000.getIdentifier()));
+
+    final Ledger ledger1100 = new Ledger();
+    ledger1100.setType(AccountType.REVENUE.name());
+    ledger1100.setIdentifier("1100");
+    ledger1100.setName("Income from Loans");
+    ledger1100.setParentLedgerIdentifier("1000");
+    ledger1100.setShowAccountsInChart(true);
+
+    testSubject.createLedger(ledger1100);
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, ledger1100.getIdentifier()));
+
+
+    final AccountImporter accountImporter = new AccountImporter(testSubject, logger);
+    final URL uri = ClassLoader.getSystemResource("importdata/account-from-a-real-case.csv");
+    accountImporter.importCSV(uri);
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1101"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1102"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1103"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1104"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1105"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1120"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1121"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1140"));
+    Assert.assertTrue(eventRecorder.wait(EventConstants.POST_ACCOUNT, "1190"));
+
+    //Import a second time.
+    accountImporter.importCSV(uri);
+
+    final AccountPage accountsOfAssetLedger
+            = testSubject.fetchAccountsOfLedger(ledger1100.getIdentifier(), 0, 10, null, null);
+    final Account firstAccount = accountsOfAssetLedger.getAccounts().get(0);
+    Assert.assertEquals("1101", firstAccount.getIdentifier());
+    Assert.assertEquals("Interest on Business Loans", firstAccount.getName());
+    Assert.assertEquals(Double.valueOf(0.0), firstAccount.getBalance());
+    Assert.assertEquals(AccountType.REVENUE, AccountType.valueOf(firstAccount.getType()));
+    Assert.assertEquals(AbstractAccountingTest.TEST_USER, firstAccount.getCreatedBy());
+
+    final AccountPage accountsOfEquityLedger
+            = testSubject.fetchAccountsOfLedger(ledger1100.getIdentifier(), 0, 10, null, null);
+    final Account secondAccount = accountsOfEquityLedger.getAccounts().get(1);
+    Assert.assertEquals("1102", secondAccount.getIdentifier());
+    Assert.assertEquals("Interest on Agriculture Loans", secondAccount.getName());
+    Assert.assertEquals(Double.valueOf(0.0), secondAccount.getBalance());
+    Assert.assertEquals(AccountType.REVENUE, AccountType.valueOf(secondAccount.getType()));
+    Assert.assertEquals(AbstractAccountingTest.TEST_USER, secondAccount.getCreatedBy());
+  }
+
+  @Test
   public void testLedgerImportHappyCase() throws IOException, InterruptedException {
     final LedgerImporter ledgerImporter = new LedgerImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/ledger-happy-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/ledger-happy-case.csv");
     ledgerImporter.importCSV(uri);
 
     //Import a second time.
@@ -94,7 +151,7 @@ public class TestImport extends AbstractAccountingTest {
 
     final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "11", null, null, null, null);
     final List<Ledger> ledgers = ledgerPage.getLedgers();
-    Assert.assertEquals(3,ledgers.size());
+    Assert.assertTrue(ledgers.size() >= 3); //3 from this test, but other tests may already have run.
     final Optional<Ledger> ledger110 = ledgers.stream().filter(x -> x.getIdentifier().equals("110")).findAny();
     Assert.assertTrue(ledger110.isPresent());
     Assert.assertEquals("Loan Ledger", ledger110.get().getDescription());
@@ -120,7 +177,7 @@ public class TestImport extends AbstractAccountingTest {
   @Test
   public void testLedgerImportMissingNameCase() throws IOException, InterruptedException {
     final LedgerImporter ledgerImporter = new LedgerImporter(testSubject, logger);
-    final URL uri = ClassLoader.getSystemResource("importdata/ledger-missing-name-case.txt");
+    final URL uri = ClassLoader.getSystemResource("importdata/ledger-missing-name-case.csv");
     ledgerImporter.importCSV(uri);
 
     //Import a second time.

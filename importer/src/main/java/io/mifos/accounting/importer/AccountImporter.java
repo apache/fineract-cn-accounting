@@ -18,6 +18,7 @@ package io.mifos.accounting.importer;
 import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
 import io.mifos.accounting.api.v1.client.LedgerManager;
 import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,11 +27,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -85,7 +82,15 @@ public class AccountImporter {
 
   private RecordFromLineNumber<Account> toAccount(final CSVRecord csvRecord) {
     try {
-      final String type = csvRecord.get(TYPE_COLUMN);
+      final String ledgerIdentifier = csvRecord.get(PARENT_IDENTIFIER_COLUMN);
+      String type;
+      try {
+        type = csvRecord.get(TYPE_COLUMN);
+      }
+      catch (final IllegalArgumentException e) {
+        final Ledger ledger = ledgerManager.findLedger(ledgerIdentifier);
+        type = ledger.getType();
+      }
       final String identifier = csvRecord.get(IDENTIFIER_COLUMN);
       String name;
       try {
@@ -94,10 +99,27 @@ public class AccountImporter {
       catch (final IllegalArgumentException e) {
         name = identifier;
       }
-      final Set<String> holders = new HashSet<>(Arrays.asList(csvRecord.get(HOLDERS_COLUMN).split("/")));
-      final Set<String> authorities = new HashSet<>(Arrays.asList(csvRecord.get(AUTHORITIES_COLUMN).split("/")));
-      final String ledger = csvRecord.get(PARENT_IDENTIFIER_COLUMN);
-      final Double balance = Double.valueOf(csvRecord.get(BALANCE_COLUMN));
+      Set<String> holders;
+      try {
+        holders = new HashSet<>(Arrays.asList(csvRecord.get(HOLDERS_COLUMN).split("/")));
+      }
+      catch (final IllegalArgumentException e) {
+        holders = Collections.emptySet();
+      }
+      Set<String> authorities;
+      try {
+        authorities = new HashSet<>(Arrays.asList(csvRecord.get(AUTHORITIES_COLUMN).split("/")));
+      }
+      catch (final IllegalArgumentException e) {
+        authorities = Collections.emptySet();
+      }
+      Double balance;
+      try {
+        balance = Double.valueOf(csvRecord.get(BALANCE_COLUMN));
+      }
+      catch (final IllegalArgumentException e) {
+        balance = 0.0;
+      }
 
       final Account account = new Account();
 
@@ -106,7 +128,7 @@ public class AccountImporter {
       account.setName(name);
       account.setHolders(holders);
       account.setSignatureAuthorities(authorities);
-      account.setLedger(ledger);
+      account.setLedger(ledgerIdentifier);
       account.setBalance(balance);
 
       return new RecordFromLineNumber<>(csvRecord.getRecordNumber(), account);

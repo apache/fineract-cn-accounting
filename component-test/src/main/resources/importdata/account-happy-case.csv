@@ -1,0 +1,3 @@
+type,identifier,name,parentIdentifier,holders,authorities,balance
+ASSET,abcd,ABCD,assetLedger,märy/lamb,hoover/dam,0.0
+EQUITY,xyz,XYZ,equityLedger,mary/magdelena,hoover/fbi,20.0
