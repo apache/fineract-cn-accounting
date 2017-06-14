@@ -49,6 +49,7 @@ INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('CDPT', 'Cash Deposit');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('CHRG', 'Charges');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('CQRV', 'Cheque Reversal');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('CRCQ', 'Crossed Cheque');
+INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('CWDL', 'Cash Withdrawal');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('DAJT', 'Debit Adjustments');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('DDWN', 'Drawdown');
 INSERT INTO thoth_tx_types (identifier, a_name) VALUES ('DMCT', 'Domestic Credit Transfer');
