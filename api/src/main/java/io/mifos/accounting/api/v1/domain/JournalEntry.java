@@ -18,10 +18,11 @@ package io.mifos.accounting.api.v1.domain;
 import io.mifos.core.lang.validation.constraints.ValidIdentifier;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class JournalEntry {
 
   @ValidIdentifier
@@ -34,8 +35,10 @@ public final class JournalEntry {
   private String clerk;
   private String note;
   @NotNull
+  @Valid
   private Set<Debtor> debtors;
   @NotNull
+  @Valid
   private Set<Creditor> creditors;
   private State state;
   private String message;
