@@ -15,15 +15,14 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import io.mifos.core.lang.validation.constraints.ValidIdentifier;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Debtor {
-
-  @NotEmpty
+  @ValidIdentifier
   private String accountNumber;
   @NotNull
   @DecimalMin(value = "0.00", inclusive = false)
@@ -31,6 +30,11 @@ public final class Debtor {
 
   public Debtor() {
     super();
+  }
+
+  public Debtor(String accountNumber, String amount) {
+    this.accountNumber = accountNumber;
+    this.amount = amount;
   }
 
   public String getAccountNumber() {
