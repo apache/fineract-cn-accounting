@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Creditor {
-  @ValidIdentifier
+  @ValidIdentifier(maxLength = 34)
   private String accountNumber;
   @NotNull
   @DecimalMin(value = "0.00", inclusive = false)

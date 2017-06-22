@@ -26,7 +26,7 @@ import java.util.Set;
 public final class Account {
 
   private AccountType type;
-  @ValidIdentifier
+  @ValidIdentifier(maxLength = 34)
   private String identifier;
   @NotEmpty
   @Length(max = 256)
