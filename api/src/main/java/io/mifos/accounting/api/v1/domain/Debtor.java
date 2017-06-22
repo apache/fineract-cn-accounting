@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Debtor {
-  @ValidIdentifier
+  @ValidIdentifier(maxLength = 34)
   private String accountNumber;
   @NotNull
   @DecimalMin(value = "0.00", inclusive = false)
