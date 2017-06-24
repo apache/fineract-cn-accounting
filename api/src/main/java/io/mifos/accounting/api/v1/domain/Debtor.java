@@ -19,6 +19,7 @@ import io.mifos.core.lang.validation.constraints.ValidIdentifier;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Debtor {
@@ -51,5 +52,27 @@ public final class Debtor {
 
   public void setAmount(final String amount) {
     this.amount = amount;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Debtor debtor = (Debtor) o;
+    return Objects.equals(accountNumber, debtor.accountNumber) &&
+            Objects.equals(amount, debtor.amount);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(accountNumber, amount);
+  }
+
+  @Override
+  public String toString() {
+    return "Debtor{" +
+            "accountNumber='" + accountNumber + '\'' +
+            ", amount='" + amount + '\'' +
+            '}';
   }
 }
