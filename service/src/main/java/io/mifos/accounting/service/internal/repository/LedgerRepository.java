@@ -33,7 +33,7 @@ public interface LedgerRepository extends JpaRepository<LedgerEntity, Long> {
 
   List<LedgerEntity> findByParentLedgerIsNull();
 
-  List<LedgerEntity> findByParentLedger(final LedgerEntity parentLedger);
+  List<LedgerEntity> findByParentLedgerOrderByIdentifier(final LedgerEntity parentLedger);
 
   LedgerEntity findByIdentifier(final String identifier);
 }

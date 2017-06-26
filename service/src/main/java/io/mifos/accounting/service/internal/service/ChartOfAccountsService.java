@@ -78,7 +78,7 @@ public class ChartOfAccountsService {
       });
     }
 
-    final List<LedgerEntity> subLedgers = this.ledgerRepository.findByParentLedger(ledgerEntity);
+    final List<LedgerEntity> subLedgers = this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity);
     if (subLedgers != null && subLedgers.size() > 0) {
       subLedgers.sort(Comparator.comparing(LedgerEntity::getIdentifier));
       subLedgers.forEach(subLedger -> {

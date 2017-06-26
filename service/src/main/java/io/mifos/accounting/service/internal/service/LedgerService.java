@@ -98,7 +98,7 @@ public class LedgerService {
     if(!ledgerEntities.isEmpty()) {
       ledgerEntities.forEach(ledgerEntity -> {
         final Ledger ledger = LedgerMapper.map(ledgerEntity);
-        this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedger(ledgerEntity));
+        this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity));
         result.add(ledger);
       });
     }
@@ -110,7 +110,7 @@ public class LedgerService {
     final LedgerEntity ledgerEntity = this.ledgerRepository.findByIdentifier(identifier);
     if (ledgerEntity != null) {
       final Ledger ledger = LedgerMapper.map(ledgerEntity);
-      this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedger(ledgerEntity));
+      this.addSubLedgers(ledger, this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity));
       return Optional.of(ledger);
     } else {
       return Optional.empty();
