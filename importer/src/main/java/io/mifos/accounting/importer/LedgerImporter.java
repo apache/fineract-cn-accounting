@@ -62,7 +62,17 @@ public class LedgerImporter {
 
   private void createLedger(final RecordFromLineNumber<Ledger> toCreate) {
     try {
-      ledgerManager.createLedger(toCreate.getRecord());
+      final Ledger ledger = toCreate.getRecord();
+      if (ledger.getParentLedgerIdentifier() == null) {
+        ledgerManager.createLedger(toCreate.getRecord());
+      } else {
+        ledgerManager.addSubLedger(ledger.getParentLedgerIdentifier(), ledger);
+      }
+      try {
+        Thread.sleep(1000l);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
     catch (final LedgerAlreadyExistsException ignored) {
       final Ledger ledger = ledgerManager.findLedger(toCreate.getRecord().getIdentifier());

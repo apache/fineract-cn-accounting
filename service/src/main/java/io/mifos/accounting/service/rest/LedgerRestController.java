@@ -68,9 +68,14 @@ public class LedgerRestController {
   )
   @ResponseBody
   ResponseEntity<Void> createLedger(@RequestBody @Valid final Ledger ledger) {
+    if (ledger.getParentLedgerIdentifier() != null) {
+      throw ServiceException.badRequest("Ledger {0} is not a root.", ledger.getIdentifier());
+    }
+
     if (this.ledgerService.findLedger(ledger.getIdentifier()).isPresent()) {
       throw ServiceException.conflict("Ledger {0} already exists.", ledger.getIdentifier());
     }
+
     this.commandGateway.process(new CreateLedgerCommand(ledger));
     return ResponseEntity.accepted().build();
   }
