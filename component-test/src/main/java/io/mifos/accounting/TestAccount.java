@@ -171,7 +171,8 @@ public class TestAccount extends AbstractAccountingTest {
 
   @Test
   public void shouldFetchAccounts() throws Exception {
-    final AccountPage currentAccountPage = this.testSubject.fetchAccounts(true, null, null, null, null, null);
+    final AccountPage currentAccountPage =
+        this.testSubject.fetchAccounts(true, null, null, null, null, null, null);
 
     final Ledger ledger = LedgerGenerator.createRandomLedger();
 
@@ -185,7 +186,8 @@ public class TestAccount extends AbstractAccountingTest {
 
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
 
-    final AccountPage accountPage = this.testSubject.fetchAccounts(true, null, null, null, null, null);
+    final AccountPage accountPage =
+        this.testSubject.fetchAccounts(true, null, null, null, null, null, null);
     Assert.assertEquals(currentAccountPage.getTotalElements() + 1L, accountPage.getTotalElements().longValue());
   }
 
@@ -212,14 +214,16 @@ public class TestAccount extends AbstractAccountingTest {
 
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
 
-    final AccountPage accountPage = this.testSubject.fetchAccounts(true, "001", null, null, null, null);
-    Assert.assertTrue(accountPage.getTotalElements() == 2);
+    final AccountPage accountPage = this.testSubject.fetchAccounts(
+        true, "001", null, null, null, null, null);
+    Assert.assertEquals(Long.valueOf(2L), accountPage.getTotalElements());
   }
 
   @Test
   public void shouldNotFetchAccountUnknownTerm() throws Exception {
     final AccountPage accountPage =
-        this.testSubject.fetchAccounts(true, RandomStringUtils.randomAlphanumeric(8), null, null, null, null);
+        this.testSubject.fetchAccounts(
+            true, RandomStringUtils.randomAlphanumeric(8), null, null, null, null, null);
     Assert.assertTrue(accountPage.getTotalElements() == 0);
   }
 
@@ -246,8 +250,9 @@ public class TestAccount extends AbstractAccountingTest {
     this.testSubject.accountCommand(referenceAccount.getIdentifier(), accountCommand);
     Assert.assertTrue(this.eventRecorder.wait(EventConstants.CLOSE_ACCOUNT, referenceAccount.getIdentifier()));
 
-    final AccountPage accountPage = this.testSubject.fetchAccounts(false, null, null, null, null, null);
-    Assert.assertTrue(accountPage.getTotalElements() == 1);
+    final AccountPage accountPage = this.testSubject.fetchAccounts(
+        false, null, null, null, null, null, null);
+    Assert.assertEquals(Long.valueOf(1), accountPage.getTotalElements());
   }
 
   @Test

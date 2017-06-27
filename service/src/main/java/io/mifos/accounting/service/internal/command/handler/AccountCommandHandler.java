@@ -327,11 +327,11 @@ public class AccountCommandHandler {
             final AccountType accountType = AccountType.valueOf(accountEntity.getType());
             switch (accountType) {
               case ASSET:
-              case EQUITY:
+              case EXPENSE:
                 accountEntity.setBalance(accountEntity.getBalance() + debtor.getAmount());
                 break;
               case LIABILITY:
-              case EXPENSE:
+              case EQUITY:
               case REVENUE:
                 accountEntity.setBalance(accountEntity.getBalance() - debtor.getAmount());
                 break;
@@ -354,11 +354,11 @@ public class AccountCommandHandler {
             final AccountType accountType = AccountType.valueOf(accountEntity.getType());
             switch (accountType) {
               case ASSET:
-              case EQUITY:
+              case EXPENSE:
                 accountEntity.setBalance(accountEntity.getBalance() - creditor.getAmount());
                 break;
               case LIABILITY:
-              case EXPENSE:
+              case EQUITY:
               case REVENUE:
                 accountEntity.setBalance(accountEntity.getBalance() + creditor.getAmount());
                 break;
