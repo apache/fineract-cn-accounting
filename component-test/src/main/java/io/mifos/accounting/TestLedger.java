@@ -59,7 +59,7 @@ public class TestLedger extends AbstractAccountingTest {
 
   @Test
   public void shouldFetchLedgers() throws Exception {
-      final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null);
+      final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null, null);
 
       final Ledger ledger = LedgerGenerator.createRandomLedger();
 
@@ -67,7 +67,7 @@ public class TestLedger extends AbstractAccountingTest {
 
       this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
 
-      final LedgerPage ledgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null);
+      final LedgerPage ledgerPage = this.testSubject.fetchLedgers(false, null, null, null, null, null, null);
       Assert.assertEquals(currentLedgerPage.getTotalElements() + 1L, ledgerPage.getTotalElements().longValue());
   }
 
@@ -77,13 +77,13 @@ public class TestLedger extends AbstractAccountingTest {
     final Ledger child = LedgerGenerator.createRandomLedger();
     parent.setSubLedgers(Collections.singletonList(child));
 
-    final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null);
+    final LedgerPage currentLedgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null, null);
 
     this.testSubject.createLedger(parent);
 
     this.eventRecorder.wait(EventConstants.POST_LEDGER, parent.getIdentifier());
 
-    final LedgerPage ledgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null);
+    final LedgerPage ledgerPage = this.testSubject.fetchLedgers(true, child.getIdentifier(), null, null, null, null, null);
     Assert.assertEquals(currentLedgerPage.getTotalElements() + 1L, ledgerPage.getTotalElements().longValue());
     final Ledger fetchedSubLedger = ledgerPage.getLedgers().get(0);
     Assert.assertEquals(parent.getIdentifier(), fetchedSubLedger.getParentLedgerIdentifier());

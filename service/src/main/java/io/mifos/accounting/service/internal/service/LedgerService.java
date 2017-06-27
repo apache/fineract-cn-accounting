@@ -26,6 +26,7 @@ import io.mifos.accounting.service.internal.repository.AccountEntity;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
 import io.mifos.accounting.service.internal.repository.LedgerEntity;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
+import io.mifos.accounting.service.internal.repository.specification.LedgerSpecification;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,35 +55,15 @@ public class LedgerService {
     this.accountRepository = accountRepository;
   }
 
-  public LedgerPage fetchRootLedgers(final String term, final Pageable pageable) {
+  public LedgerPage fetchLedgers(final boolean includeSubLedgers,
+                                 final String term,
+                                 final String type,
+                                 final Pageable pageable) {
     final LedgerPage ledgerPage = new LedgerPage();
 
-    final Page<LedgerEntity> ledgerEntities;
-
-    if(term != null) {
-      ledgerEntities = this.ledgerRepository.findByIdentifierContainingAndParentLedgerIsNull(term, pageable);
-    }else{
-      ledgerEntities = this.ledgerRepository.findByParentLedgerIsNull(pageable);
-    }
-
-    ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
-    ledgerPage.setTotalElements(ledgerEntities.getTotalElements());
-
-    ledgerPage.setLedgers(this.mapToLedger(ledgerEntities.getContent()));
-
-    return ledgerPage;
-  }
-
-  public LedgerPage fetchAllLedgers(final String term, final Pageable pageable) {
-    final LedgerPage ledgerPage = new LedgerPage();
-
-    final Page<LedgerEntity> ledgerEntities;
-
-    if(term != null) {
-      ledgerEntities = this.ledgerRepository.findByIdentifierContaining(term, pageable);
-    }else{
-      ledgerEntities = this.ledgerRepository.findAll(pageable);
-    }
+    final Page<LedgerEntity> ledgerEntities = this.ledgerRepository.findAll(
+        LedgerSpecification.createSpecification(includeSubLedgers, term, type), pageable
+    );
 
     ledgerPage.setTotalPages(ledgerEntities.getTotalPages());
     ledgerPage.setTotalElements(ledgerEntities.getTotalElements());

@@ -22,7 +22,7 @@
         </encoder>
     </appender>
 
-    <logger name="org" level="OFF"/>
+    <logger name="org" level="ERROR"/>
     <logger name="com" level="OFF"/>
     <logger name="ch" level="OFF"/>
 

@@ -30,6 +30,7 @@ import io.mifos.accounting.service.internal.repository.AccountEntryRepository;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
 import io.mifos.accounting.service.internal.repository.CommandEntity;
 import io.mifos.accounting.service.internal.repository.CommandRepository;
+import io.mifos.accounting.service.internal.repository.specification.AccountSpecification;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,18 +74,12 @@ public class AccountService {
     }
   }
 
-  public AccountPage fetchAccounts(final boolean includeClosed, final String term, final Pageable pageable) {
-    final Page<AccountEntity> accountEntities;
+  public AccountPage fetchAccounts(
+      final boolean includeClosed, final String term, final String type, final Pageable pageable) {
 
-    if (term != null && includeClosed) {
-      accountEntities = this.accountRepository.findByIdentifierContaining(term, pageable);
-    } else if(term != null) {
-      accountEntities = this.accountRepository.findByIdentifierContainingAndStateNot(term, Account.State.CLOSED.name(), pageable);
-    } else if(!includeClosed) {
-      accountEntities = this.accountRepository.findByStateNot(Account.State.CLOSED.name(), pageable);
-    } else{
-      accountEntities = this.accountRepository.findAll(pageable);
-    }
+    final Page<AccountEntity> accountEntities = this.accountRepository.findAll(
+        AccountSpecification.createSpecification(includeClosed, term, type), pageable
+    );
 
     final AccountPage accountPage = new AccountPage();
     accountPage.setTotalPages(accountEntities.getTotalPages());

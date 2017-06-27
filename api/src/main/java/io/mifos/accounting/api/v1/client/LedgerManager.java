@@ -63,11 +63,12 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   LedgerPage fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
-                            @RequestParam(value = "term", required = false) final String term,
-                            @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
-                            @RequestParam(value = "size", required = false) final Integer size,
-                            @RequestParam(value = "sortColumn", required = false) final String sortColumn,
-                            @RequestParam(value = "sortDirection", required = false) final String sortDirection);
+                          @RequestParam(value = "term", required = false) final String term,
+                          @RequestParam(value = "type", required = false) final String type,
+                          @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+                          @RequestParam(value = "size", required = false) final Integer size,
+                          @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+                          @RequestParam(value = "sortDirection", required = false) final String sortDirection);
 
   @RequestMapping(
       value = "/ledgers/{identifier}",
@@ -145,6 +146,7 @@ public interface LedgerManager {
   )
   AccountPage fetchAccounts(@RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
                             @RequestParam(value = "term", required = false) final String term,
+                            @RequestParam(value = "type", required = false) final String type,
                             @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
                             @RequestParam(value = "size", required = false) final Integer size,
                             @RequestParam(value = "sortColumn", required = false) final String sortColumn,
