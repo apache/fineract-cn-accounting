@@ -68,9 +68,14 @@ public class LedgerRestController {
   )
   @ResponseBody
   ResponseEntity<Void> createLedger(@RequestBody @Valid final Ledger ledger) {
+    if (ledger.getParentLedgerIdentifier() != null) {
+      throw ServiceException.badRequest("Ledger {0} is not a root.", ledger.getIdentifier());
+    }
+
     if (this.ledgerService.findLedger(ledger.getIdentifier()).isPresent()) {
       throw ServiceException.conflict("Ledger {0} already exists.", ledger.getIdentifier());
     }
+
     this.commandGateway.process(new CreateLedgerCommand(ledger));
     return ResponseEntity.accepted().build();
   }
@@ -84,22 +89,17 @@ public class LedgerRestController {
   @ResponseBody
   ResponseEntity<LedgerPage> fetchLedgers(@RequestParam(value = "includeSubLedgers", required = false, defaultValue = "false") final boolean includeSubLedgers,
                                           @RequestParam(value = "term", required = false) final String term,
+                                          @RequestParam(value = "type", required = false) final String type,
                                           @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
                                           @RequestParam(value = "size", required = false) final Integer size,
                                           @RequestParam(value = "sortColumn", required = false) final String sortColumn,
                                           @RequestParam(value = "sortDirection", required = false) final String sortDirection) {
 
-    final Pageable pageable = PageableBuilder.create(pageIndex, size, sortColumn, sortDirection);
-
-    final LedgerPage page;
-
-    if(includeSubLedgers) {
-      page = this.ledgerService.fetchAllLedgers(term, pageable);
-    }else {
-      page = this.ledgerService.fetchRootLedgers(term, pageable);
-    }
-
-    return ResponseEntity.ok(page);
+    return ResponseEntity.ok(
+        this.ledgerService.fetchLedgers(
+            includeSubLedgers, term, type, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)
+        )
+    );
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_LEDGER)

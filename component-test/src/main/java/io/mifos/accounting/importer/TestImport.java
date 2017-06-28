@@ -149,7 +149,7 @@ public class TestImport extends AbstractAccountingTest {
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "111"));
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "111.1"));
 
-    final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "11", null, null, null, null);
+    final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "11", null, null, null, null, null);
     final List<Ledger> ledgers = ledgerPage.getLedgers();
     Assert.assertTrue(ledgers.size() >= 3); //3 from this test, but other tests may already have run.
     final Optional<Ledger> ledger110 = ledgers.stream().filter(x -> x.getIdentifier().equals("110")).findAny();
@@ -187,7 +187,7 @@ public class TestImport extends AbstractAccountingTest {
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "211"));
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, "211.1"));
 
-    final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "21", null, null, null, null);
+    final LedgerPage ledgerPage = testSubject.fetchLedgers(true, "21", null, null, null, null, null);
     final List<Ledger> ledgers = ledgerPage.getLedgers();
     Assert.assertEquals(3,ledgers.size());
 
