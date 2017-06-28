@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Set;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -157,5 +158,45 @@ public final class Account {
     OPEN,
     LOCKED,
     CLOSED
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Account account = (Account) o;
+    return type == account.type &&
+            Objects.equals(identifier, account.identifier) &&
+            Objects.equals(name, account.name) &&
+            Objects.equals(holders, account.holders) &&
+            Objects.equals(signatureAuthorities, account.signatureAuthorities) &&
+            Objects.equals(balance, account.balance) &&
+            Objects.equals(referenceAccount, account.referenceAccount) &&
+            Objects.equals(ledger, account.ledger) &&
+            state == account.state;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, identifier, name, holders, signatureAuthorities, balance, referenceAccount, ledger, state);
+  }
+
+  @Override
+  public String toString() {
+    return "Account{" +
+            "type=" + type +
+            ", identifier='" + identifier + '\'' +
+            ", name='" + name + '\'' +
+            ", holders=" + holders +
+            ", signatureAuthorities=" + signatureAuthorities +
+            ", balance=" + balance +
+            ", referenceAccount='" + referenceAccount + '\'' +
+            ", ledger='" + ledger + '\'' +
+            ", state=" + state +
+            ", createdOn='" + createdOn + '\'' +
+            ", createdBy='" + createdBy + '\'' +
+            ", lastModifiedOn='" + lastModifiedOn + '\'' +
+            ", lastModifiedBy='" + lastModifiedBy + '\'' +
+            '}';
   }
 }
