@@ -112,6 +112,7 @@ public class AccountRestController {
       @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
       @RequestParam(value = "term", required = false) final String term,
       @RequestParam(value = "type", required = false) final String type,
+      @RequestParam(value = "includeCustomerAccounts", required = false, defaultValue = "false") final boolean includeCustomerAccounts,
       @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
       @RequestParam(value = "size", required = false) final Integer size,
       @RequestParam(value = "sortColumn", required = false) final String sortColumn,
@@ -119,7 +120,7 @@ public class AccountRestController {
   ) {
     return ResponseEntity.ok(
         this.accountService.fetchAccounts(
-            includeClosed, term, type, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)
+            includeClosed, term, type, includeCustomerAccounts, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)
         )
     );
   }
@@ -222,21 +223,36 @@ public class AccountRestController {
   ResponseEntity<Void> accountCommand(@PathVariable("identifier") final String identifier,
                                       @RequestBody @Valid final AccountCommand accountCommand) {
 
-    switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
-      case CLOSE:
-        this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case LOCK:
-        this.commandGateway.process(new LockAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case UNLOCK:
-        this.commandGateway.process(new UnlockAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case REOPEN:
-        this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
-        break;
+    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
+    if (optionalAccount.isPresent()) {
+      final Account account = optionalAccount.get();
+      final Account.State state = Account.State.valueOf(account.getState());
+      switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
+        case CLOSE:
+          if (state.equals(Account.State.OPEN) || state.equals(Account.State.LOCKED)) {
+            this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case LOCK:
+          if (state.equals(Account.State.OPEN)) {
+            this.commandGateway.process(new LockAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case UNLOCK:
+          if (state.equals(Account.State.LOCKED)) {
+            this.commandGateway.process(new UnlockAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case REOPEN:
+          if (state.equals(Account.State.CLOSED)) {
+            this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+      }
+      return ResponseEntity.accepted().build();
+    } else {
+      throw ServiceException.notFound("Account {0} not found.", identifier);
     }
-    return ResponseEntity.accepted().build();
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
@@ -267,6 +283,22 @@ public class AccountRestController {
     return ResponseEntity.accepted().build();
   }
 
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
+  @RequestMapping(
+      value = "/{identifier}/actions",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.ALL_VALUE
+  )
+  public
+  @ResponseBody
+  ResponseEntity<List<AccountCommand>> fetchActions(@PathVariable(value = "identifier") final String identifier) {
+    if (!this.accountService.findAccount(identifier).isPresent()) {
+      throw ServiceException.notFound("Account {0} not found", identifier);
+    }
+    return ResponseEntity.ok(this.accountService.getActions(identifier));
+  }
+
   private LocalDateTime parseDateTime(String dateString){
     try{
       return DateConverter.fromIsoString(dateString);
@@ -288,5 +320,4 @@ public class AccountRestController {
       }
     }
   }
-
 }

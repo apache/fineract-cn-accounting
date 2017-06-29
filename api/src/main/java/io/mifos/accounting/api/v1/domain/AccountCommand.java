@@ -15,9 +15,12 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
+import javax.validation.constraints.NotNull;
+
 @SuppressWarnings({"unused"})
 public final class AccountCommand {
 
+  @NotNull
   private Action action;
   private String comment;
   private String createdOn;

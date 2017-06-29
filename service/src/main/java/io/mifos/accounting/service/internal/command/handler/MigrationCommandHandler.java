@@ -108,9 +108,26 @@ public class MigrationCommandHandler {
         )
         .build();
 
+    final CassandraJourneyRoute updateRouteVersion3 = CassandraJourneyRoute
+        .plan("3")
+        .addWaypoint(
+            SchemaBuilder
+                .alterTable("thoth_journal_entries")
+                .addColumn("created_by").type(DataType.text())
+                .getQueryString()
+        )
+        .addWaypoint(
+            SchemaBuilder
+                .alterTable("thoth_journal_entries")
+                .addColumn("created_on").type(DataType.timestamp())
+                .getQueryString()
+        )
+        .build();
+
     final CassandraJourney cassandraJourney = this.cassandraJourneyFactory.create(this.cassandraSessionProvider);
     cassandraJourney.start(initialRoute);
     cassandraJourney.start(updateRouteVersion2);
+    cassandraJourney.start(updateRouteVersion3);
 
     return versionNumber;
   }

@@ -147,6 +147,7 @@ public interface LedgerManager {
   AccountPage fetchAccounts(@RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
                             @RequestParam(value = "term", required = false) final String term,
                             @RequestParam(value = "type", required = false) final String type,
+                            @RequestParam(value = "includeCustomerAccounts", required = false, defaultValue = "false") final boolean includeCustomerAccounts,
                             @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
                             @RequestParam(value = "size", required = false) final Integer size,
                             @RequestParam(value = "sortColumn", required = false) final String sortColumn,
@@ -309,4 +310,15 @@ public interface LedgerManager {
       @ThrowsException(status = HttpStatus.NOT_FOUND, exception = TransactionTypeNotFoundException.class)
   })
   TransactionType findTransactionType(@PathVariable("code") final String code);
+
+  @RequestMapping(
+      value = "/accounts/{identifier}/actions",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.ALL_VALUE
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class)
+  })
+  List<AccountCommand> fetchActions(@PathVariable(value = "identifier") final String identifier);
 }
