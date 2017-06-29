@@ -31,7 +31,7 @@ public class AccountSpecification {
   }
 
   public static Specification<AccountEntity> createSpecification(
-      final boolean includeClosed, final String term, final String type) {
+      final boolean includeClosed, final String term, final String type, final boolean includeCustomerAccounts) {
 
     return (root, query, cb) -> {
 
@@ -58,6 +58,10 @@ public class AccountSpecification {
 
       if (type != null) {
         predicates.add(cb.equal(root.get("type"), type));
+      }
+
+      if (!includeCustomerAccounts) {
+        predicates.add(cb.isNull(root.get("holders")));
       }
 
       return cb.and(predicates.toArray(new Predicate[predicates.size()]));

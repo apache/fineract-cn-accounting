@@ -20,7 +20,9 @@ import com.datastax.driver.mapping.annotations.Column;
 import com.datastax.driver.mapping.annotations.Frozen;
 import com.datastax.driver.mapping.annotations.PartitionKey;
 import com.datastax.driver.mapping.annotations.Table;
+import io.mifos.core.mariadb.util.LocalDateTimeConverter;
 
+import javax.persistence.Convert;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -54,6 +56,10 @@ public class JournalEntryEntity {
   private String state;
   @Column(name = "message")
   private String message;
+  @Column(name = "created_on")
+  private LocalDateTime createdOn;
+  @Column(name = "created_by")
+  private String createdBy;
 
   public JournalEntryEntity() {
     super();
@@ -137,5 +143,21 @@ public class JournalEntryEntity {
 
   public void setMessage(final String message) {
     this.message = message;
+  }
+
+  public LocalDateTime getCreatedOn() {
+    return this.createdOn;
+  }
+
+  public void setCreatedOn(final LocalDateTime createdOn) {
+    this.createdOn = createdOn;
+  }
+
+  public String getCreatedBy() {
+    return this.createdBy;
+  }
+
+  public void setCreatedBy(final String createdBy) {
+    this.createdBy = createdBy;
   }
 }

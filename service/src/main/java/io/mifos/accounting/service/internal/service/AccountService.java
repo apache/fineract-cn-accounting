@@ -75,10 +75,11 @@ public class AccountService {
   }
 
   public AccountPage fetchAccounts(
-      final boolean includeClosed, final String term, final String type, final Pageable pageable) {
+      final boolean includeClosed, final String term, final String type,
+      final boolean includeCustomerAccounts, final Pageable pageable) {
 
     final Page<AccountEntity> accountEntities = this.accountRepository.findAll(
-        AccountSpecification.createSpecification(includeClosed, term, type), pageable
+        AccountSpecification.createSpecification(includeClosed, term, type, includeCustomerAccounts), pageable
     );
 
     final AccountPage accountPage = new AccountPage();
@@ -133,5 +134,31 @@ public class AccountService {
   public Boolean hasReferenceAccounts(final String identifier) {
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
     return this.accountRepository.existsByReference(accountEntity);
+  }
+
+  public List<AccountCommand> getActions(final String identifier) {
+    final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+    final ArrayList<AccountCommand> commands = new ArrayList<>();
+    final Account.State state = Account.State.valueOf(accountEntity.getState());
+    switch (state) {
+      case OPEN:
+        commands.add(this.buildCommand(AccountCommand.Action.LOCK));
+        commands.add(this.buildCommand(AccountCommand.Action.CLOSE));
+        break;
+      case LOCKED:
+        commands.add(this.buildCommand(AccountCommand.Action.UNLOCK));
+        commands.add(this.buildCommand(AccountCommand.Action.CLOSE));
+        break;
+      case CLOSED:
+        commands.add(this.buildCommand(AccountCommand.Action.REOPEN));
+        break;
+    }
+    return commands;
+  }
+
+  private AccountCommand buildCommand(final AccountCommand.Action action) {
+    final AccountCommand accountCommand = new AccountCommand();
+    accountCommand.setAction(action.name());
+    return accountCommand;
   }
 }
