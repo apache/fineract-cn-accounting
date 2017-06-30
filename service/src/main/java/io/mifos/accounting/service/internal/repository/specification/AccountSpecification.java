@@ -61,7 +61,12 @@ public class AccountSpecification {
       }
 
       if (!includeCustomerAccounts) {
-        predicates.add(cb.isNull(root.get("holders")));
+        predicates.add(
+            cb.or(
+                cb.equal(root.get("holders"), ""),
+                cb.isNull(root.get("holders"))
+            )
+        );
       }
 
       return cb.and(predicates.toArray(new Predicate[predicates.size()]));
