@@ -32,6 +32,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class TestAccount extends AbstractAccountingTest {
@@ -217,7 +218,7 @@ public class TestAccount extends AbstractAccountingTest {
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
 
     final AccountPage accountPage = this.testSubject.fetchAccounts(
-        true, "001", null, true, null, null, null, null);
+        true, "001.", null, true, null, null, null, null);
     Assert.assertEquals(Long.valueOf(2L), accountPage.getTotalElements());
   }
 
@@ -527,4 +528,29 @@ public class TestAccount extends AbstractAccountingTest {
     Assert.assertEquals(1, closedAccountCommands.size());
     Assert.assertEquals(AccountCommand.Action.REOPEN.name(), closedAccountCommands.get(0).getAction());
   }
+
+  @Test
+  public void shouldFetchAccountsWithEmptyHolder() throws Exception {
+    final Ledger ledger = LedgerGenerator.createLedger("noholder-10000", AccountType.EQUITY);
+
+    this.testSubject.createLedger(ledger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
+
+    final Account account1 =
+        AccountGenerator.createAccount(ledger.getIdentifier(), "noholder-10001", AccountType.EQUITY);
+    account1.setHolders(null);
+    this.testSubject.createAccount(account1);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account1.getIdentifier());
+
+    final Account account2 =
+        AccountGenerator.createAccount(ledger.getIdentifier(), "noholder-10002", AccountType.EQUITY);
+    account2.setHolders(new HashSet<>());
+    this.testSubject.createAccount(account2);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account2.getIdentifier());
+
+    final AccountPage accountPage =
+        this.testSubject.fetchAccounts(false, "noholder", AccountType.EQUITY.name(), false, null, null, null, null);
+    Assert.assertEquals(2L, accountPage.getTotalElements().longValue());
+  }
+
 }
