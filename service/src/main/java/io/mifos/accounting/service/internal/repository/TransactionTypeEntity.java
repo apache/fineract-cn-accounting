@@ -22,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "thoth_tx_types")
 public class TransactionTypeEntity {
@@ -34,6 +35,7 @@ public class TransactionTypeEntity {
   private String identifier;
   @Column(name = "a_name", nullable = false, length = 256)
   private String name;
+  @SuppressWarnings("DefaultAnnotationParam")
   @Column(name = "description", nullable = true, length = 2048)
   private String description;
 

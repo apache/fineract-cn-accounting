@@ -18,6 +18,7 @@ package io.mifos.accounting.api.v1.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TrialBalance {
 
   private List<TrialBalanceEntry> trialBalanceEntries;

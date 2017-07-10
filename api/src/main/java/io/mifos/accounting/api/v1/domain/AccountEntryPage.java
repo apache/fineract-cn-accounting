@@ -17,6 +17,7 @@ package io.mifos.accounting.api.v1.domain;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class AccountEntryPage {
   private List<AccountEntry> accountEntries;
   private Integer totalPages;

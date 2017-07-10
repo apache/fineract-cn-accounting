@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
+@SuppressWarnings("unused")
 public class ChartOfAccountEntry {
 
   private String code;

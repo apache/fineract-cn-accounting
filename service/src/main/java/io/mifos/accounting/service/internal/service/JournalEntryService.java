@@ -58,10 +58,6 @@ public class JournalEntryService {
   public Optional<JournalEntry> findJournalEntry(final String transactionIdentifier) {
     final Optional<JournalEntryEntity> optionalJournalEntryEntity = this.journalEntryRepository.findJournalEntry(transactionIdentifier);
 
-    if (optionalJournalEntryEntity.isPresent()) {
-      return Optional.of(JournalEntryMapper.map(optionalJournalEntryEntity.get()));
-    } else {
-      return Optional.empty();
-    }
+    return optionalJournalEntryEntity.map(JournalEntryMapper::map);
   }
 }

@@ -15,14 +15,11 @@
  */
 package io.mifos.accounting.service.rest;
 
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,18 +27,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/")
 public class MigrationRestController {
 
-  private final Logger logger;
   private final CommandGateway commandGateway;
 
   @Autowired
-  public MigrationRestController(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                                 final CommandGateway commandGateway) {
+  public MigrationRestController(final CommandGateway commandGateway) {
     super();
-    this.logger = logger;
     this.commandGateway = commandGateway;
   }
 

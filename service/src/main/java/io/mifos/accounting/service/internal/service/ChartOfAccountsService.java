@@ -56,7 +56,7 @@ public class ChartOfAccountsService {
       chartOfAccountEntry.setName(ledgerEntity.getName());
       chartOfAccountEntry.setDescription(ledgerEntity.getDescription());
       chartOfAccountEntry.setType(ledgerEntity.getType());
-      chartOfAccountEntry.setLevel(Integer.valueOf(level));
+      chartOfAccountEntry.setLevel(level);
       final int nextLevel = level + 1;
       this.traverseHierarchy(chartOfAccountEntries, nextLevel, ledgerEntity);
     });
@@ -64,7 +64,7 @@ public class ChartOfAccountsService {
     return chartOfAccountEntries;
   }
 
-  void traverseHierarchy(final List<ChartOfAccountEntry> chartOfAccountEntries, final int level, final LedgerEntity ledgerEntity) {
+  private void traverseHierarchy(final List<ChartOfAccountEntry> chartOfAccountEntries, final int level, final LedgerEntity ledgerEntity) {
     if (ledgerEntity.getShowAccountsInChart()) {
       final List<AccountEntity> accountEntities = this.accountRepository.findByLedger(ledgerEntity);
       accountEntities.sort(Comparator.comparing(AccountEntity::getIdentifier));

@@ -26,6 +26,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("unused")
 @Component
 public class TransactionTypeEventListener {
 
