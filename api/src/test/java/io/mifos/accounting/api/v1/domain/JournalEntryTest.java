@@ -49,8 +49,14 @@ public class JournalEntryTest extends ValidationTest<JournalEntry> {
             .adjustment(x -> x.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(33)))
             .valid(false));
     ret.add(new ValidationTestCase<JournalEntry>("tooLongTransactionType")
-            .adjustment(x -> x.setTransactionType(RandomStringUtils.randomAlphanumeric(33)))
-            .valid(false));
+        .adjustment(x -> x.setTransactionType(RandomStringUtils.randomAlphanumeric(33)))
+        .valid(false));
+    ret.add(new ValidationTestCase<JournalEntry>("tooLongMessage")
+        .adjustment(x -> x.setMessage(RandomStringUtils.randomAlphanumeric(2049)))
+        .valid(false));
+    ret.add(new ValidationTestCase<JournalEntry>("nullMessage")
+        .adjustment(x -> x.setMessage(null))
+        .valid(true));
 
     return ret;
   }
