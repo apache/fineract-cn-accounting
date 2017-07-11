@@ -17,10 +17,20 @@ package io.mifos.accounting.service.rest;
 
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.helper.DateRangeHelper;
-import io.mifos.accounting.service.internal.command.*;
+import io.mifos.accounting.service.internal.command.CloseAccountCommand;
+import io.mifos.accounting.service.internal.command.CreateAccountCommand;
+import io.mifos.accounting.service.internal.command.DeleteAccountCommand;
+import io.mifos.accounting.service.internal.command.LockAccountCommand;
+import io.mifos.accounting.service.internal.command.ModifyAccountCommand;
+import io.mifos.accounting.service.internal.command.ReopenAccountCommand;
+import io.mifos.accounting.service.internal.command.UnlockAccountCommand;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.LedgerService;
 import io.mifos.accounting.service.rest.paging.PageableBuilder;
@@ -33,9 +43,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -164,13 +182,20 @@ public class AccountRestController {
   @ResponseBody
   ResponseEntity<AccountEntryPage> fetchAccountEntries(
       @PathVariable("identifier") final String identifier,
-      @RequestParam(value = "dateRange", required = false) final String dateRange,
-      @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
-      @RequestParam(value = "size", required = false) final Integer size
+      @RequestParam(value = "dateRange", required = false) @Nullable final String dateRange,
+      @RequestParam(value = "message", required = false) @Nullable final String message,
+      @RequestParam(value = "pageIndex", required = false) @Nullable final Integer pageIndex,
+      @RequestParam(value = "size", required = false) @Nullable final Integer size,
+      @RequestParam(value = "sortColumn", required = false) @Nullable final String sortColumn,
+      @RequestParam(value = "sortDirection", required = false) @Nullable final String sortDirection
   ) {
     final DateRange range = DateRangeHelper.parse(dateRange);
 
-    return ResponseEntity.ok(this.accountService.fetchAccountEntries(identifier, range, PageableBuilder.create(pageIndex, size, "transactionDate", null)));
+    return ResponseEntity.ok(this.accountService.fetchAccountEntries(
+        identifier,
+        range,
+        message,
+        PageableBuilder.create(pageIndex, size, sortColumn == null ? "transactionDate" : sortColumn, sortDirection)));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)

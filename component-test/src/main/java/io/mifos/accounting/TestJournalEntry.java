@@ -21,6 +21,7 @@ import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
 import io.mifos.core.lang.DateConverter;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -129,14 +130,40 @@ public class TestJournalEntry extends AbstractAccountingTest {
 
     Assert.assertEquals(2, journalEntries.size());
 
+    checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  private void checkAccountEntries(
+      final Account debtorAccount,
+      final Account creditorAccount,
+      final JournalEntry journalEntryOne,
+      final JournalEntry journalEntryTwo,
+      final String dateRange) {
     final AccountEntryPage creditorAccountEntries = this.testSubject.fetchAccountEntries(
         creditorAccount.getIdentifier(),
         dateRange,
         null,
         null,
         null,
-        null);
+        null,
+        "ASC");
     Assert.assertEquals(Long.valueOf(2L), creditorAccountEntries.getTotalElements());
+    Assert.assertEquals("Sort order check for ascending.",
+        journalEntryOne.getMessage(),
+        creditorAccountEntries.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage creditorAccountEntriesWithMessage1 = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        journalEntryOne.getMessage(),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(1L), creditorAccountEntriesWithMessage1.getTotalElements());
+    Assert.assertEquals("Correct entry returned.",
+        journalEntryOne.getMessage(),
+        creditorAccountEntriesWithMessage1.getAccountEntries().get(0).getMessage());
 
     final AccountEntryPage debtorAccountEntries = this.testSubject.fetchAccountEntries(
         debtorAccount.getIdentifier(),
@@ -144,7 +171,34 @@ public class TestJournalEntry extends AbstractAccountingTest {
         null,
         null,
         null,
-        null);
+        null,
+        "DESC");
     Assert.assertEquals(Long.valueOf(2L), debtorAccountEntries.getTotalElements());
+    Assert.assertEquals("Sort order check for descending.",
+        journalEntryTwo.getMessage(),
+        debtorAccountEntries.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage debtorAccountEntriesWithMessage2 = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        journalEntryTwo.getMessage(),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(1L), debtorAccountEntriesWithMessage2.getTotalElements());
+    Assert.assertEquals("Correct entry returned.",
+        journalEntryTwo.getMessage(),
+        debtorAccountEntriesWithMessage2.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage debtorAccountEntriesWithRandomMessage = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        RandomStringUtils.randomAlphanumeric(20),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(0L), debtorAccountEntriesWithRandomMessage.getTotalElements());
   }
 }

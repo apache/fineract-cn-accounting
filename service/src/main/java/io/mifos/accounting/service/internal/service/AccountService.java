@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,13 +83,20 @@ public class AccountService {
 
   public AccountEntryPage fetchAccountEntries(final String identifier,
                                               final DateRange range,
+                                              final @Nullable String message,
                                               final Pageable pageable){
 
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
 
-    final Page<AccountEntryEntity> accountEntryEntities
-        = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
-            accountEntity, range.getStartDateTime(), range.getEndDateTime(), pageable);
+    final Page<AccountEntryEntity> accountEntryEntities;
+    if (message == null) {
+      accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
+          accountEntity, range.getStartDateTime(), range.getEndDateTime(), pageable);
+    }
+    else {
+      accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetweenAndMessageEquals(
+          accountEntity, range.getStartDateTime(), range.getEndDateTime(), message, pageable);
+    }
 
     final AccountEntryPage accountEntryPage = new AccountEntryPage();
     accountEntryPage.setTotalPages(accountEntryEntities.getTotalPages());
