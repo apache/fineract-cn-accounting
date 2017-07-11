@@ -17,20 +17,10 @@ package io.mifos.accounting.service.rest;
 
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountCommand;
-import io.mifos.accounting.api.v1.domain.AccountEntryPage;
-import io.mifos.accounting.api.v1.domain.AccountPage;
-import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.helper.DateRangeHelper;
-import io.mifos.accounting.service.internal.command.CloseAccountCommand;
-import io.mifos.accounting.service.internal.command.CreateAccountCommand;
-import io.mifos.accounting.service.internal.command.DeleteAccountCommand;
-import io.mifos.accounting.service.internal.command.LockAccountCommand;
-import io.mifos.accounting.service.internal.command.ModifyAccountCommand;
-import io.mifos.accounting.service.internal.command.ReopenAccountCommand;
-import io.mifos.accounting.service.internal.command.UnlockAccountCommand;
+import io.mifos.accounting.service.internal.command.*;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.LedgerService;
 import io.mifos.accounting.service.rest.paging.PageableBuilder;
@@ -43,17 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,6 +95,7 @@ public class AccountRestController {
       @RequestParam(value = "includeClosed", required = false, defaultValue = "false") final boolean includeClosed,
       @RequestParam(value = "term", required = false) final String term,
       @RequestParam(value = "type", required = false) final String type,
+      @RequestParam(value = "includeCustomerAccounts", required = false, defaultValue = "false") final boolean includeCustomerAccounts,
       @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
       @RequestParam(value = "size", required = false) final Integer size,
       @RequestParam(value = "sortColumn", required = false) final String sortColumn,
@@ -119,7 +103,7 @@ public class AccountRestController {
   ) {
     return ResponseEntity.ok(
         this.accountService.fetchAccounts(
-            includeClosed, term, type, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)
+            includeClosed, term, type, includeCustomerAccounts, PageableBuilder.create(pageIndex, size, sortColumn, sortDirection)
         )
     );
   }
@@ -226,21 +210,36 @@ public class AccountRestController {
   ResponseEntity<Void> accountCommand(@PathVariable("identifier") final String identifier,
                                       @RequestBody @Valid final AccountCommand accountCommand) {
 
-    switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
-      case CLOSE:
-        this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case LOCK:
-        this.commandGateway.process(new LockAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case UNLOCK:
-        this.commandGateway.process(new UnlockAccountCommand(identifier, accountCommand.getComment()));
-        break;
-      case REOPEN:
-        this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
-        break;
+    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
+    if (optionalAccount.isPresent()) {
+      final Account account = optionalAccount.get();
+      final Account.State state = Account.State.valueOf(account.getState());
+      switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
+        case CLOSE:
+          if (state.equals(Account.State.OPEN) || state.equals(Account.State.LOCKED)) {
+            this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case LOCK:
+          if (state.equals(Account.State.OPEN)) {
+            this.commandGateway.process(new LockAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case UNLOCK:
+          if (state.equals(Account.State.LOCKED)) {
+            this.commandGateway.process(new UnlockAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+        case REOPEN:
+          if (state.equals(Account.State.CLOSED)) {
+            this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
+          }
+          break;
+      }
+      return ResponseEntity.accepted().build();
+    } else {
+      throw ServiceException.notFound("Account {0} not found.", identifier);
     }
-    return ResponseEntity.accepted().build();
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
@@ -271,6 +270,22 @@ public class AccountRestController {
     return ResponseEntity.accepted().build();
   }
 
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
+  @RequestMapping(
+      value = "/{identifier}/actions",
+      method = RequestMethod.GET,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.ALL_VALUE
+  )
+  public
+  @ResponseBody
+  ResponseEntity<List<AccountCommand>> fetchActions(@PathVariable(value = "identifier") final String identifier) {
+    if (!this.accountService.findAccount(identifier).isPresent()) {
+      throw ServiceException.notFound("Account {0} not found", identifier);
+    }
+    return ResponseEntity.ok(this.accountService.getActions(identifier));
+  }
+
   private void validateLedger(final @RequestBody @Valid Account account) {
     final Optional<Ledger> optionalLedger = this.ledgerService.findLedger(account.getLedger());
     if (!optionalLedger.isPresent()) {
@@ -283,5 +298,4 @@ public class AccountRestController {
       }
     }
   }
-
 }

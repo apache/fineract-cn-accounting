@@ -32,6 +32,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.List;
+
 public class TestAccount extends AbstractAccountingTest {
   @Test
   public void shouldCreateAccount() throws Exception {
@@ -172,7 +175,7 @@ public class TestAccount extends AbstractAccountingTest {
   @Test
   public void shouldFetchAccounts() throws Exception {
     final AccountPage currentAccountPage =
-        this.testSubject.fetchAccounts(true, null, null, null, null, null, null);
+        this.testSubject.fetchAccounts(true, null, null, true, null, null, null, null);
 
     final Ledger ledger = LedgerGenerator.createRandomLedger();
 
@@ -187,7 +190,7 @@ public class TestAccount extends AbstractAccountingTest {
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
 
     final AccountPage accountPage =
-        this.testSubject.fetchAccounts(true, null, null, null, null, null, null);
+        this.testSubject.fetchAccounts(true, null, null, true, null, null, null, null);
     Assert.assertEquals(currentAccountPage.getTotalElements() + 1L, accountPage.getTotalElements().longValue());
   }
 
@@ -215,7 +218,7 @@ public class TestAccount extends AbstractAccountingTest {
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
 
     final AccountPage accountPage = this.testSubject.fetchAccounts(
-        true, "001", null, null, null, null, null);
+        true, "001.", null, true, null, null, null, null);
     Assert.assertEquals(Long.valueOf(2L), accountPage.getTotalElements());
   }
 
@@ -223,7 +226,7 @@ public class TestAccount extends AbstractAccountingTest {
   public void shouldNotFetchAccountUnknownTerm() throws Exception {
     final AccountPage accountPage =
         this.testSubject.fetchAccounts(
-            true, RandomStringUtils.randomAlphanumeric(8), null, null, null, null, null);
+            true, RandomStringUtils.randomAlphanumeric(8), null, true, null, null, null, null);
     Assert.assertTrue(accountPage.getTotalElements() == 0);
   }
 
@@ -251,7 +254,7 @@ public class TestAccount extends AbstractAccountingTest {
     Assert.assertTrue(this.eventRecorder.wait(EventConstants.CLOSE_ACCOUNT, referenceAccount.getIdentifier()));
 
     final AccountPage accountPage = this.testSubject.fetchAccounts(
-        false, null, null, null, null, null, null);
+        false, null, null, true, null, null, null, null);
     Assert.assertEquals(Long.valueOf(1), accountPage.getTotalElements());
   }
 
@@ -477,4 +480,77 @@ public class TestAccount extends AbstractAccountingTest {
       // do nothing, expected
     }
   }
+
+  @Test
+  public void shouldReturnOnlyAvailableCommands() throws Exception {
+    final Ledger randomLedger = LedgerGenerator.createRandomLedger();
+    this.testSubject.createLedger(randomLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, randomLedger.getIdentifier());
+
+    final Account randomAccount = AccountGenerator.createRandomAccount(randomLedger.getIdentifier());
+    this.testSubject.createAccount(randomAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, randomAccount.getIdentifier());
+
+    final List<AccountCommand> openAccountCommands = super.testSubject.fetchActions(randomAccount.getIdentifier());
+    Assert.assertEquals(2, openAccountCommands.size());
+    Assert.assertEquals(AccountCommand.Action.LOCK.name(), openAccountCommands.get(0).getAction());
+    Assert.assertEquals(AccountCommand.Action.CLOSE.name(), openAccountCommands.get(1).getAction());
+
+    final AccountCommand lockAccountCommand = new AccountCommand();
+    lockAccountCommand.setAction(AccountCommand.Action.LOCK.name());
+    lockAccountCommand.setComment("lock this!");
+    this.testSubject.accountCommand(randomAccount.getIdentifier(), lockAccountCommand);
+    this.eventRecorder.wait(EventConstants.LOCK_ACCOUNT, randomAccount.getIdentifier());
+
+    final List<AccountCommand> lockedAccountCommands = super.testSubject.fetchActions(randomAccount.getIdentifier());
+    Assert.assertEquals(2, lockedAccountCommands.size());
+    Assert.assertEquals(AccountCommand.Action.UNLOCK.name(), lockedAccountCommands.get(0).getAction());
+    Assert.assertEquals(AccountCommand.Action.CLOSE.name(), lockedAccountCommands.get(1).getAction());
+
+    final AccountCommand unlockAccountCommand = new AccountCommand();
+    unlockAccountCommand.setAction(AccountCommand.Action.UNLOCK.name());
+    unlockAccountCommand.setComment("unlock this!");
+    this.testSubject.accountCommand(randomAccount.getIdentifier(), unlockAccountCommand);
+    this.eventRecorder.wait(EventConstants.UNLOCK_ACCOUNT, randomAccount.getIdentifier());
+
+    final List<AccountCommand> unlockedAccountCommands = super.testSubject.fetchActions(randomAccount.getIdentifier());
+    Assert.assertEquals(2, unlockedAccountCommands.size());
+    Assert.assertEquals(AccountCommand.Action.LOCK.name(), unlockedAccountCommands.get(0).getAction());
+    Assert.assertEquals(AccountCommand.Action.CLOSE.name(), unlockedAccountCommands.get(1).getAction());
+
+    final AccountCommand closeAccountCommand = new AccountCommand();
+    closeAccountCommand.setAction(AccountCommand.Action.CLOSE.name());
+    closeAccountCommand.setComment("unlock this!");
+    this.testSubject.accountCommand(randomAccount.getIdentifier(), closeAccountCommand);
+    this.eventRecorder.wait(EventConstants.CLOSE_ACCOUNT, randomAccount.getIdentifier());
+
+    final List<AccountCommand> closedAccountCommands = super.testSubject.fetchActions(randomAccount.getIdentifier());
+    Assert.assertEquals(1, closedAccountCommands.size());
+    Assert.assertEquals(AccountCommand.Action.REOPEN.name(), closedAccountCommands.get(0).getAction());
+  }
+
+  @Test
+  public void shouldFetchAccountsWithEmptyHolder() throws Exception {
+    final Ledger ledger = LedgerGenerator.createLedger("noholder-10000", AccountType.EQUITY);
+
+    this.testSubject.createLedger(ledger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
+
+    final Account account1 =
+        AccountGenerator.createAccount(ledger.getIdentifier(), "noholder-10001", AccountType.EQUITY);
+    account1.setHolders(null);
+    this.testSubject.createAccount(account1);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account1.getIdentifier());
+
+    final Account account2 =
+        AccountGenerator.createAccount(ledger.getIdentifier(), "noholder-10002", AccountType.EQUITY);
+    account2.setHolders(new HashSet<>());
+    this.testSubject.createAccount(account2);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account2.getIdentifier());
+
+    final AccountPage accountPage =
+        this.testSubject.fetchAccounts(false, "noholder", AccountType.EQUITY.name(), false, null, null, null, null);
+    Assert.assertEquals(2L, accountPage.getTotalElements().longValue());
+  }
+
 }
