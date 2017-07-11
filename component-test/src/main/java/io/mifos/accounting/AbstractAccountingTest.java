@@ -52,22 +52,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         classes = {AbstractAccountingTest.TestConfiguration.class})
-public class AbstractAccountingTest {
-  private static final String APP_NAME = "accounting-v1";
+public class AbstractAccountingTest extends SuiteTestEnvironment{
   protected static final String TEST_USER = "setna";
   public static final String TEST_LOGGER = "test-logger";
 
-  private final static TestEnvironment testEnvironment = new TestEnvironment(APP_NAME);
-  private final static CassandraInitializer cassandraInitializer = new CassandraInitializer();
-  private final static MariaDBInitializer mariaDBInitializer = new MariaDBInitializer();
-  private final static TenantDataStoreContextTestRule tenantDataStoreContext = TenantDataStoreContextTestRule.forRandomTenantName(cassandraInitializer, mariaDBInitializer);
-
   @ClassRule
-  public static TestRule orderClassRules = RuleChain
-          .outerRule(testEnvironment)
-          .around(cassandraInitializer)
-          .around(mariaDBInitializer)
-          .around(tenantDataStoreContext);
+  public final static TenantDataStoreContextTestRule tenantDataStoreContext = TenantDataStoreContextTestRule.forRandomTenantName(cassandraInitializer, mariaDBInitializer);
 
   @Rule
   public final TenantApplicationSecurityEnvironmentTestRule tenantApplicationSecurityEnvironment

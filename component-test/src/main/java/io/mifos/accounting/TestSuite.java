@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mifos.accounting.service.internal.repository;
+package io.mifos.accounting;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-@Repository
-public interface LedgerRepository extends JpaRepository<LedgerEntity, Long>, JpaSpecificationExecutor<LedgerEntity> {
-
-  List<LedgerEntity> findByParentLedgerIsNull();
-
-  List<LedgerEntity> findByParentLedgerOrderByIdentifier(final LedgerEntity parentLedger);
-
-  LedgerEntity findByIdentifier(final String identifier);
+/**
+ * @author Myrle Krantz
+ */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    TestAccount.class,
+    TestChartOfAccounts.class,
+    TestJournalEntry.class,
+    TestLedger.class,
+    TestTransactionType.class,
+    TestTrialBalance.class,
+})
+public class TestSuite extends SuiteTestEnvironment {
 }

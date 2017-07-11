@@ -19,7 +19,6 @@ import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
 import io.mifos.accounting.service.internal.mapper.LedgerMapper;
 import io.mifos.accounting.service.internal.repository.AccountEntity;
@@ -27,9 +26,7 @@ import io.mifos.accounting.service.internal.repository.AccountRepository;
 import io.mifos.accounting.service.internal.repository.LedgerEntity;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import io.mifos.accounting.service.internal.repository.specification.LedgerSpecification;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,16 +38,13 @@ import java.util.Optional;
 @Service
 public class LedgerService {
 
-  private final Logger logger;
   private final LedgerRepository ledgerRepository;
   private final AccountRepository accountRepository;
 
   @Autowired
-  public LedgerService(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                       final LedgerRepository ledgerRepository,
+  public LedgerService(final LedgerRepository ledgerRepository,
                        final AccountRepository accountRepository) {
     super();
-    this.logger = logger;
     this.ledgerRepository = ledgerRepository;
     this.accountRepository = accountRepository;
   }

@@ -16,17 +16,17 @@
 package io.mifos.accounting;
 
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountType;
-import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
+import io.mifos.core.lang.DateConverter;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -120,8 +120,85 @@ public class TestJournalEntry extends AbstractAccountingTest {
     this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
     this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
 
-    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(MessageFormat.format("{0}..{1}", "1982-06-24", "1982-06-26"));
+    final LocalDate beginDate = LocalDate.of(1982, 6, 24);
+    final LocalDate endDate = LocalDate.of(1982, 6, 26);
+    final String dateRange = MessageFormat.format("{0}..{1}",
+        DateConverter.toIsoString(beginDate),
+        DateConverter.toIsoString(endDate));
+
+    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange);
 
     Assert.assertEquals(2, journalEntries.size());
+
+    checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  private void checkAccountEntries(
+      final Account debtorAccount,
+      final Account creditorAccount,
+      final JournalEntry journalEntryOne,
+      final JournalEntry journalEntryTwo,
+      final String dateRange) {
+    final AccountEntryPage creditorAccountEntries = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        null,
+        null,
+        null,
+        null,
+        "ASC");
+    Assert.assertEquals(Long.valueOf(2L), creditorAccountEntries.getTotalElements());
+    Assert.assertEquals("Sort order check for ascending.",
+        journalEntryOne.getMessage(),
+        creditorAccountEntries.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage creditorAccountEntriesWithMessage1 = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        journalEntryOne.getMessage(),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(1L), creditorAccountEntriesWithMessage1.getTotalElements());
+    Assert.assertEquals("Correct entry returned.",
+        journalEntryOne.getMessage(),
+        creditorAccountEntriesWithMessage1.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage debtorAccountEntries = this.testSubject.fetchAccountEntries(
+        debtorAccount.getIdentifier(),
+        dateRange,
+        null,
+        null,
+        null,
+        null,
+        "DESC");
+    Assert.assertEquals(Long.valueOf(2L), debtorAccountEntries.getTotalElements());
+    Assert.assertEquals("Sort order check for descending.",
+        journalEntryTwo.getMessage(),
+        debtorAccountEntries.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage debtorAccountEntriesWithMessage2 = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        journalEntryTwo.getMessage(),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(1L), debtorAccountEntriesWithMessage2.getTotalElements());
+    Assert.assertEquals("Correct entry returned.",
+        journalEntryTwo.getMessage(),
+        debtorAccountEntriesWithMessage2.getAccountEntries().get(0).getMessage());
+
+    final AccountEntryPage debtorAccountEntriesWithRandomMessage = this.testSubject.fetchAccountEntries(
+        creditorAccount.getIdentifier(),
+        dateRange,
+        RandomStringUtils.randomAlphanumeric(20),
+        null,
+        null,
+        null,
+        null);
+    Assert.assertEquals(Long.valueOf(0L), debtorAccountEntriesWithRandomMessage.getTotalElements());
   }
 }

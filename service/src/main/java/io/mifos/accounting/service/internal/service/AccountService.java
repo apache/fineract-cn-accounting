@@ -15,30 +15,19 @@
  */
 package io.mifos.accounting.service.internal.service;
 
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountCommand;
-import io.mifos.accounting.api.v1.domain.AccountEntry;
-import io.mifos.accounting.api.v1.domain.AccountEntryPage;
-import io.mifos.accounting.api.v1.domain.AccountPage;
-import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
 import io.mifos.accounting.service.internal.mapper.AccountEntryMapper;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
-import io.mifos.accounting.service.internal.repository.AccountEntity;
-import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
-import io.mifos.accounting.service.internal.repository.AccountEntryRepository;
-import io.mifos.accounting.service.internal.repository.AccountRepository;
-import io.mifos.accounting.service.internal.repository.CommandEntity;
-import io.mifos.accounting.service.internal.repository.CommandRepository;
+import io.mifos.accounting.service.internal.repository.*;
 import io.mifos.accounting.service.internal.repository.specification.AccountSpecification;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,18 +37,15 @@ import java.util.stream.Collectors;
 @Service
 public class AccountService {
 
-  private final Logger logger;
   private final AccountRepository accountRepository;
   private final AccountEntryRepository accountEntryRepository;
   private final CommandRepository commandRepository;
 
   @Autowired
-  public AccountService(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                        final AccountRepository accountRepository,
+  public AccountService(final AccountRepository accountRepository,
                         final AccountEntryRepository accountEntryRepository,
                         final CommandRepository commandRepository) {
     super();
-    this.logger = logger;
     this.accountRepository = accountRepository;
     this.accountEntryRepository = accountEntryRepository;
     this.commandRepository = commandRepository;
@@ -96,12 +82,22 @@ public class AccountService {
 
   }
 
-  public AccountEntryPage fetchAccountEntries(final String identifier, final LocalDateTime dateFrom,
-                                              final LocalDateTime dateTo, final Pageable pageable){
+  public AccountEntryPage fetchAccountEntries(final String identifier,
+                                              final DateRange range,
+                                              final @Nullable String message,
+                                              final Pageable pageable){
 
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
 
-    final Page<AccountEntryEntity> accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(accountEntity, dateFrom, dateTo, pageable);
+    final Page<AccountEntryEntity> accountEntryEntities;
+    if (message == null) {
+      accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
+          accountEntity, range.getStartDateTime(), range.getEndDateTime(), pageable);
+    }
+    else {
+      accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetweenAndMessageEquals(
+          accountEntity, range.getStartDateTime(), range.getEndDateTime(), message, pageable);
+    }
 
     final AccountEntryPage accountEntryPage = new AccountEntryPage();
     accountEntryPage.setTotalPages(accountEntryEntities.getTotalPages());

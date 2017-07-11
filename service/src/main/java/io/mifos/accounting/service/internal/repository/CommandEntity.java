@@ -29,6 +29,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "thoth_commands")
 public class CommandEntity {

@@ -18,7 +18,8 @@ package io.mifos.accounting.service.rest;
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.service.helper.DateRange;
+import io.mifos.accounting.service.helper.DateRangeHelper;
 import io.mifos.accounting.service.internal.command.CreateJournalEntryCommand;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.JournalEntryService;
@@ -26,18 +27,10 @@ import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -48,18 +41,15 @@ import java.util.Optional;
 @RequestMapping("/journal")
 public class JournalRestController {
 
-  private final Logger logger;
   private final CommandGateway commandGateway;
   private final JournalEntryService journalEntryService;
   private final AccountService accountService;
 
   @Autowired
-  public JournalRestController(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                               final CommandGateway commandGateway,
+  public JournalRestController(final CommandGateway commandGateway,
                                final JournalEntryService journalEntryService,
                                final AccountService accountService) {
     super();
-    this.logger = logger;
     this.commandGateway = commandGateway;
     this.journalEntryService = journalEntryService;
     this.accountService = accountService;
@@ -120,7 +110,9 @@ public class JournalRestController {
   ResponseEntity<List<JournalEntry>> fetchJournalEntries(
       @RequestParam(value = "dateRange", required = false) final String dateRange
   ) {
-    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(dateRange));
+    final DateRange range = DateRangeHelper.parse(dateRange);
+
+    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(range));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_JOURNAL)

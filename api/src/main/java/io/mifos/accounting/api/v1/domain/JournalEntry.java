@@ -16,6 +16,7 @@
 package io.mifos.accounting.api.v1.domain;
 
 import io.mifos.core.lang.validation.constraints.ValidIdentifier;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
@@ -42,6 +43,7 @@ public final class JournalEntry {
   @Valid
   private Set<Creditor> creditors;
   private State state;
+  @Length(max=2048)
   private String message;
 
   public JournalEntry() {

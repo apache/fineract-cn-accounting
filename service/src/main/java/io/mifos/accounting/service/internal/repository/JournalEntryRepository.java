@@ -20,6 +20,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Result;
+import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.core.cassandra.core.CassandraSessionProvider;
 import io.mifos.core.cassandra.core.TenantAwareCassandraMapperProvider;
 import io.mifos.core.cassandra.core.TenantAwareEntityTemplate;
@@ -27,11 +28,9 @@ import io.mifos.core.lang.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused"})
 @Repository
@@ -60,17 +59,13 @@ public class JournalEntryRepository {
     this.tenantAwareEntityTemplate.save(journalEntryLookup);
   }
 
-  public List<JournalEntryEntity> fetchJournalEntries(final String dateBucketFrom, final String dateBucketTo) {
+  public List<JournalEntryEntity> fetchJournalEntries(final DateRange range) {
     final Session tenantSession = this.cassandraSessionProvider.getTenantSession();
 
-    LocalDate start = LocalDate.parse(dateBucketFrom);
-    final LocalDate end = LocalDate.parse(dateBucketTo);
-    final List<String> datesInBetweenRange = new ArrayList<>(Math.toIntExact(ChronoUnit.DAYS.between(start, end)));
-
-    while (!start.isAfter(end)) {
-      datesInBetweenRange.add(DateConverter.toIsoString(start));
-      start = start.plusDays(1);
-    }
+    final List<String> datesInBetweenRange
+        = range.stream()
+        .map(DateConverter::toIsoString)
+        .collect(Collectors.toList());
 
     final ResultSet resultSet = tenantSession.execute(QueryBuilder
             .select()

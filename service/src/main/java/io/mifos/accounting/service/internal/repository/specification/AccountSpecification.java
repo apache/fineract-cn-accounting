@@ -19,10 +19,8 @@ import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.service.internal.repository.AccountEntity;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AccountSpecification {
 

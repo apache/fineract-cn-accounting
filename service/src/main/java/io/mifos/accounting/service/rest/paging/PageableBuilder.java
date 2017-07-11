@@ -19,9 +19,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import javax.annotation.Nullable;
+
 public final class PageableBuilder {
 
-  public static Pageable create(final Integer pageIndex, final Integer size, final String sortColumn, final String sortDirection) {
+  public static Pageable create(
+      @Nullable final Integer pageIndex,
+      @Nullable final Integer size,
+      @Nullable final String sortColumn,
+      @Nullable final String sortDirection) {
     final Integer pageIndexToUse = pageIndex != null ? pageIndex : 0;
     final Integer sizeToUse = size != null ? size : 20;
     final String sortColumnToUse = sortColumn != null ? sortColumn : "identifier";

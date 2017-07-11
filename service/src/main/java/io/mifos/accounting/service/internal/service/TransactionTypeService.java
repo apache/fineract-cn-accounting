@@ -17,13 +17,10 @@ package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.TransactionType;
 import io.mifos.accounting.api.v1.domain.TransactionTypePage;
-import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.mapper.TransactionTypeMapper;
 import io.mifos.accounting.service.internal.repository.TransactionTypeEntity;
 import io.mifos.accounting.service.internal.repository.TransactionTypeRepository;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,14 +32,11 @@ import java.util.Optional;
 @Service
 public class TransactionTypeService {
 
-  private final Logger logger;
   private final TransactionTypeRepository transactionTypeRepository;
 
   @Autowired
-  public TransactionTypeService(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
-                                final TransactionTypeRepository transactionTypeRepository) {
+  public TransactionTypeService(final TransactionTypeRepository transactionTypeRepository) {
     super();
-    this.logger = logger;
     this.transactionTypeRepository = transactionTypeRepository;
   }
 

@@ -32,7 +32,15 @@ public interface AccountEntryRepository extends JpaRepository<AccountEntryEntity
   @Convert(converter = LocalDateTimeConverter.class)
   Page<AccountEntryEntity> findByAccountAndTransactionDateBetween(final AccountEntity accountEntity,
                                                                   final LocalDateTime dateFrom,
-                                                                  final LocalDateTime dateTo, final Pageable pageable);
+                                                                  final LocalDateTime dateTo,
+                                                                  final Pageable pageable);
+
+  @Convert(converter = LocalDateTimeConverter.class)
+  Page<AccountEntryEntity> findByAccountAndTransactionDateBetweenAndMessageEquals(final AccountEntity accountEntity,
+                                                                                  final LocalDateTime dateFrom,
+                                                                                  final LocalDateTime dateTo,
+                                                                                  final String message,
+                                                                                  final Pageable pageable);
 
 
   @Query("SELECT CASE WHEN count(a) > 0 THEN true ELSE false END FROM AccountEntryEntity a where a.account = :accountEntity")
