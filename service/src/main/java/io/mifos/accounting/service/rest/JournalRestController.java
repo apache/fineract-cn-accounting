@@ -18,6 +18,8 @@ package io.mifos.accounting.service.rest;
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.service.helper.DateRange;
+import io.mifos.accounting.service.helper.DateRangeHelper;
 import io.mifos.accounting.service.internal.command.CreateJournalEntryCommand;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.JournalEntryService;
@@ -108,7 +110,9 @@ public class JournalRestController {
   ResponseEntity<List<JournalEntry>> fetchJournalEntries(
       @RequestParam(value = "dateRange", required = false) final String dateRange
   ) {
-    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(dateRange));
+    final DateRange range = DateRangeHelper.parse(dateRange);
+
+    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(range));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_JOURNAL)

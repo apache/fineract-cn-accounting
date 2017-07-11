@@ -16,6 +16,7 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
 import io.mifos.accounting.service.internal.mapper.AccountEntryMapper;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
@@ -26,7 +27,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -80,12 +80,15 @@ public class AccountService {
 
   }
 
-  public AccountEntryPage fetchAccountEntries(final String identifier, final LocalDateTime dateFrom,
-                                              final LocalDateTime dateTo, final Pageable pageable){
+  public AccountEntryPage fetchAccountEntries(final String identifier,
+                                              final DateRange range,
+                                              final Pageable pageable){
 
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
 
-    final Page<AccountEntryEntity> accountEntryEntities = this.accountEntryRepository.findByAccountAndTransactionDateBetween(accountEntity, dateFrom, dateTo, pageable);
+    final Page<AccountEntryEntity> accountEntryEntities
+        = this.accountEntryRepository.findByAccountAndTransactionDateBetween(
+            accountEntity, range.getStartDateTime(), range.getEndDateTime(), pageable);
 
     final AccountEntryPage accountEntryPage = new AccountEntryPage();
     accountEntryPage.setTotalPages(accountEntryEntities.getTotalPages());

@@ -15,24 +15,33 @@
  */
 package io.mifos.accounting.service.helper;
 
+import io.mifos.core.lang.DateConverter;
+import io.mifos.core.lang.ServiceException;
+
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public final class DateRangeHelper {
 
-  public static String[] split(final String dateRange){
-    final String[] dates;
+  public static DateRange parse(final String dateRange){
     if (dateRange == null) {
-      final String today = LocalDate.now(Clock.systemUTC()).format(DateTimeFormatter.BASIC_ISO_DATE);
-      dates = new String[2];
-      dates[0] = today;
-      dates[1] = today;
+      final LocalDate today = LocalDate.now(Clock.systemUTC());
+      return new DateRange(today, today);
     } else {
-      dates = dateRange.split("\\.\\.");
+      final String[] dates = dateRange.split("\\.\\.");
+      return new DateRange(parseDateTime(dates[0]), parseDateTime(dates[1]));
     }
 
-    return dates;
+  }
+
+  private static LocalDate parseDateTime(final String dateString){
+    try{
+      return DateConverter.dateFromIsoString(dateString);
+    }catch(final DateTimeParseException e){
+      throw ServiceException.badRequest("Date {0} must use ISO format",
+          dateString);
+    }
   }
 
 }

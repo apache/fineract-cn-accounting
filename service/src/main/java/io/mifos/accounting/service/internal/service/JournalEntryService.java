@@ -16,7 +16,7 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.helper.DateRangeHelper;
+import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.internal.mapper.JournalEntryMapper;
 import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
@@ -39,11 +39,9 @@ public class JournalEntryService {
     this.journalEntryRepository = journalEntryRepository;
   }
 
-  public List<JournalEntry> fetchJournalEntries(final String dateRange) {
-    final String[] dates = DateRangeHelper.split(dateRange);
-
+  public List<JournalEntry> fetchJournalEntries(final DateRange range) {
     final List<JournalEntryEntity> journalEntryEntities =
-        this.journalEntryRepository.fetchJournalEntries(dates[0], dates[1]);
+        this.journalEntryRepository.fetchJournalEntries(range);
 
     if (journalEntryEntities != null) {
       return journalEntryEntities
