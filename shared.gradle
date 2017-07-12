@@ -54,6 +54,7 @@ dependencies {
 
 jar {
     from sourceSets.main.allSource
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 license {
