@@ -16,12 +16,12 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.*;
-import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
 import io.mifos.accounting.service.internal.mapper.AccountEntryMapper;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
 import io.mifos.accounting.service.internal.repository.*;
 import io.mifos.accounting.service.internal.repository.specification.AccountSpecification;
+import io.mifos.core.lang.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -20,11 +20,11 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Result;
-import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.core.cassandra.core.CassandraSessionProvider;
 import io.mifos.core.cassandra.core.TenantAwareCassandraMapperProvider;
 import io.mifos.core.cassandra.core.TenantAwareEntityTemplate;
 import io.mifos.core.lang.DateConverter;
+import io.mifos.core.lang.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
