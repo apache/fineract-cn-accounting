@@ -18,8 +18,6 @@ package io.mifos.accounting.service.rest;
 import io.mifos.accounting.api.v1.PermittableGroupIds;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
 import io.mifos.accounting.api.v1.domain.*;
-import io.mifos.accounting.service.helper.DateRange;
-import io.mifos.accounting.service.helper.DateRangeHelper;
 import io.mifos.accounting.service.internal.command.*;
 import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.accounting.service.internal.service.LedgerService;
@@ -28,6 +26,7 @@ import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.command.gateway.CommandGateway;
+import io.mifos.core.lang.DateRange;
 import io.mifos.core.lang.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -173,7 +172,7 @@ public class AccountRestController {
       @RequestParam(value = "sortColumn", required = false) @Nullable final String sortColumn,
       @RequestParam(value = "sortDirection", required = false) @Nullable final String sortDirection
   ) {
-    final DateRange range = DateRangeHelper.parse(dateRange);
+    final DateRange range = DateRange.fromIsoString(dateRange);
 
     return ResponseEntity.ok(this.accountService.fetchAccountEntries(
         identifier,

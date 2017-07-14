@@ -16,10 +16,10 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.helper.DateRange;
 import io.mifos.accounting.service.internal.mapper.JournalEntryMapper;
 import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
+import io.mifos.core.lang.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
