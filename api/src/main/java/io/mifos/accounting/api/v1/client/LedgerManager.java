@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 @FeignClient(value = "accounting-v1", path = "/accounting/v1", configuration = CustomFeignClientsConfiguration.class)
@@ -187,6 +188,31 @@ public interface LedgerManager {
                                        @RequestParam(value = "size", required = false) final Integer size,
                                        @RequestParam(value = "sortColumn", required = false) final String sortColumn,
                                        @RequestParam(value = "sortDirection", required = false) final String sortDirection);
+
+  // This helper function is implemented here rather than in the client because it is easier to test
+  // and mock if it's part of the accounting interface, rather than part of the client calling it.
+  default Stream<AccountEntry> fetchAccountEntriesStream(
+      final String accountIdentifier,
+      final String dateRange,
+      final String message) {
+    final AccountEntryPage firstPage = this.fetchAccountEntries(
+        accountIdentifier,
+        dateRange,
+        message,
+        0,
+        10,
+        null,
+        null);
+
+    final Integer pageCount = firstPage.getTotalPages();
+
+    // Sort column is always date and order always ascending so that the order and adjacency of account
+    // entries is always stable. This has the advantage that the set of account entries included in the
+    // stream is set the moment the first call to fetchAccountEntries (above) is made.
+    return Stream.iterate(0, (i) -> i+1).limit(pageCount)
+        .map(i -> this.fetchAccountEntries(accountIdentifier, dateRange, message, i, 10, "transactionDate", "ASC"))
+        .flatMap(pageI -> pageI.getAccountEntries().stream());
+  }
 
   @RequestMapping(
           value = "/accounts/{identifier}/commands",

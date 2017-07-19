@@ -19,21 +19,22 @@ import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.client.AccountAlreadyExistsException;
 import io.mifos.accounting.api.v1.client.AccountNotFoundException;
 import io.mifos.accounting.api.v1.client.AccountReferenceException;
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountCommand;
-import io.mifos.accounting.api.v1.domain.AccountPage;
-import io.mifos.accounting.api.v1.domain.AccountType;
-import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
+import io.mifos.core.lang.DateRange;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestAccount extends AbstractAccountingTest {
   @Test
@@ -293,6 +294,63 @@ public class TestAccount extends AbstractAccountingTest {
     Assert.assertNotNull(fetchedAccount.getLastModifiedBy());
     Assert.assertNotNull(fetchedAccount.getLastModifiedOn());
     Assert.assertEquals(Account.State.OPEN.name(), fetchedAccount.getState());
+  }
+
+  @Test
+  public void shouldListAccountEntries() throws InterruptedException {
+    final Ledger ledger = LedgerGenerator.createRandomLedger();
+
+    this.testSubject.createLedger(ledger);
+
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(ledger.getIdentifier());
+    this.testSubject.createAccount(debtorAccount);
+
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(ledger.getIdentifier());
+    this.testSubject.createAccount(creditorAccount);
+
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final int journaEntryCount = 59;
+    final List<JournalEntry> randomJournalEntries = Stream.generate(() -> JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00", creditorAccount, "50.00"))
+        .limit(journaEntryCount)
+        .collect(Collectors.toList());
+
+    randomJournalEntries.stream()
+        .map(randomJournalEntry -> {
+            this.testSubject.createJournalEntry(randomJournalEntry);
+            return randomJournalEntry.getTransactionIdentifier();
+        })
+        .forEach(transactionIdentifier -> {
+          try {
+            this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, transactionIdentifier);
+            this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, transactionIdentifier);
+          }
+          catch (final InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        });
+
+    final Set<String> journalEntryMessages
+        = randomJournalEntries.stream().map(JournalEntry::getMessage).collect(Collectors.toSet());
+
+    final LocalDate today = LocalDate.now(ZoneId.of("UTC"));
+    final Set<String> accountEntryMessages = this.testSubject.fetchAccountEntriesStream(creditorAccount.getIdentifier(),
+        new DateRange(today, today).toString(), null)
+        .map(AccountEntry::getMessage)
+        .collect(Collectors.toSet());
+
+    Assert.assertEquals(journalEntryMessages, accountEntryMessages);
+    Assert.assertEquals(journaEntryCount, accountEntryMessages.size());
+
+    final String oneMessage = accountEntryMessages.iterator().next();
+    final List<AccountEntry> oneAccountEntry = this.testSubject.fetchAccountEntriesStream(creditorAccount.getIdentifier(),
+        new DateRange(today, today).toString(), oneMessage).collect(Collectors.toList());
+    Assert.assertEquals(1, oneAccountEntry.size());
+    Assert.assertEquals(oneMessage, oneAccountEntry.get(0).getMessage());
   }
 
   @Test
