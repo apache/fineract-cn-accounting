@@ -28,11 +28,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -314,7 +312,7 @@ public class TestAccount extends AbstractAccountingTest {
 
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
 
-    final int journaEntryCount = 59;
+    final int journaEntryCount = 58;
     final List<JournalEntry> randomJournalEntries = Stream.generate(() -> JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00", creditorAccount, "50.00"))
         .limit(journaEntryCount)
         .collect(Collectors.toList());
@@ -334,23 +332,47 @@ public class TestAccount extends AbstractAccountingTest {
           }
         });
 
+    Thread.sleep(300L); // Short pause to make sure it really is last.
+    final JournalEntry lastRandomJournalEntry = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00", creditorAccount, "50.00");
+    this.testSubject.createJournalEntry(lastRandomJournalEntry);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, lastRandomJournalEntry.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, lastRandomJournalEntry.getTransactionIdentifier());
+
     final Set<String> journalEntryMessages
         = randomJournalEntries.stream().map(JournalEntry::getMessage).collect(Collectors.toSet());
+    journalEntryMessages.add(lastRandomJournalEntry.getMessage());
 
-    final LocalDate today = LocalDate.now(ZoneId.of("UTC"));
-    final Set<String> accountEntryMessages = this.testSubject.fetchAccountEntriesStream(creditorAccount.getIdentifier(),
-        new DateRange(today, today).toString(), null)
+    final LocalDate today = LocalDate.now(Clock.systemUTC());
+    final String todayDateRange = new DateRange(today, today).toString();
+    final List<AccountEntry> accountEntriesForward = this.testSubject.fetchAccountEntriesStream(creditorAccount.getIdentifier(),
+        todayDateRange, null, "ASC")
+        .collect(Collectors.toList());
+    final Set<String> accountEntryMessages = accountEntriesForward.stream()
         .map(AccountEntry::getMessage)
         .collect(Collectors.toSet());
 
     Assert.assertEquals(journalEntryMessages, accountEntryMessages);
-    Assert.assertEquals(journaEntryCount, accountEntryMessages.size());
+    Assert.assertEquals(journaEntryCount + 1, accountEntryMessages.size());
 
     final String oneMessage = accountEntryMessages.iterator().next();
     final List<AccountEntry> oneAccountEntry = this.testSubject.fetchAccountEntriesStream(creditorAccount.getIdentifier(),
-        new DateRange(today, today).toString(), oneMessage).collect(Collectors.toList());
+        todayDateRange, oneMessage, "ASC").collect(Collectors.toList());
     Assert.assertEquals(1, oneAccountEntry.size());
     Assert.assertEquals(oneMessage, oneAccountEntry.get(0).getMessage());
+
+    final List<AccountEntry> accountEntriesBackward = this.testSubject
+        .fetchAccountEntriesStream(
+            creditorAccount.getIdentifier(),
+            todayDateRange,
+            null, "DESC")
+        .collect(Collectors.toList());
+
+    final Optional<AccountEntry> lastAccountEntry = accountEntriesBackward.stream().findFirst();
+    Assert.assertTrue(lastAccountEntry.isPresent());
+    Assert.assertEquals(lastRandomJournalEntry.getMessage(), lastAccountEntry.get().getMessage());
+
+    Collections.reverse(accountEntriesBackward);
+    Assert.assertEquals(accountEntriesBackward, accountEntriesForward);
   }
 
   @Test
