@@ -15,6 +15,8 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
+import java.util.Objects;
+
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class AccountEntry {
 
@@ -67,5 +69,22 @@ public final class AccountEntry {
   public enum Type {
     DEBIT,
     CREDIT
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AccountEntry that = (AccountEntry) o;
+    return type == that.type &&
+        Objects.equals(transactionDate, that.transactionDate) &&
+        Objects.equals(message, that.message) &&
+        Objects.equals(amount, that.amount) &&
+        Objects.equals(balance, that.balance);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, transactionDate, message, amount, balance);
   }
 }
