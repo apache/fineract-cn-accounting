@@ -26,8 +26,11 @@ import java.util.Set;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class JournalEntry {
-
-  @ValidIdentifier
+  //This maxLength is the maximum message length plus a buffer.  portfolio places
+  // the message here, plus the service name, and a random suffix.  This makes
+  // it possible to match the transaction id on activemq messages used in integration
+  // tests.
+  @ValidIdentifier(maxLength = 2200)
   private String transactionIdentifier;
   @NotNull
   private String transactionDate;
