@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.util;
 
+import com.google.common.collect.Sets;
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.Creditor;
 import io.mifos.accounting.api.v1.domain.Debtor;
@@ -42,14 +43,22 @@ public class JournalEntryGenerator {
     journalEntry.setTransactionDate(ZonedDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
     journalEntry.setTransactionType(RandomStringUtils.randomAlphabetic(4));
     journalEntry.setClerk("clark");
-    final Debtor debtor = new Debtor();
-    debtor.setAccountNumber(debtorAccount.getIdentifier());
-    debtor.setAmount(debtorAmount);
-    journalEntry.setDebtors(new HashSet<>(Collections.singletonList(debtor)));
-    final Creditor creditor = new Creditor();
-    creditor.setAccountNumber(creditorAccount.getIdentifier());
-    creditor.setAmount(creditorAmount);
-    journalEntry.setCreditors(new HashSet<>(Collections.singletonList(creditor)));
+    if (debtorAccount != null) {
+      final Debtor debtor = new Debtor();
+      debtor.setAccountNumber(debtorAccount.getIdentifier());
+      debtor.setAmount(debtorAmount);
+      journalEntry.setDebtors(new HashSet<>(Collections.singletonList(debtor)));
+    } else {
+      journalEntry.setDebtors(Sets.newHashSet());
+    }
+    if (creditorAccount != null) {
+      final Creditor creditor = new Creditor();
+      creditor.setAccountNumber(creditorAccount.getIdentifier());
+      creditor.setAmount(creditorAmount);
+      journalEntry.setCreditors(new HashSet<>(Collections.singletonList(creditor)));
+    } else {
+      journalEntry.setCreditors(Sets.newHashSet());
+    }
     journalEntry.setNote(RandomStringUtils.randomAlphanumeric(512));
     journalEntry.setMessage(RandomStringUtils.randomAlphanumeric(512));
     return journalEntry;

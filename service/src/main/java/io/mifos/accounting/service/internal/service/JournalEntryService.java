@@ -16,14 +16,23 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.mapper.JournalEntryMapper;
+import io.mifos.accounting.service.internal.repository.DebtorType;
 import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
+import io.mifos.accounting.service.internal.repository.TransactionTypeEntity;
+import io.mifos.accounting.service.internal.repository.TransactionTypeRepository;
+import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.lang.DateRange;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,22 +40,59 @@ import java.util.stream.Collectors;
 @Service
 public class JournalEntryService {
 
+  private Logger logger;
   private final JournalEntryRepository journalEntryRepository;
+  private final TransactionTypeRepository transactionTypeRepository;
 
   @Autowired
-  public JournalEntryService(final JournalEntryRepository journalEntryRepository) {
+  public JournalEntryService(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
+                             final JournalEntryRepository journalEntryRepository,
+                             final TransactionTypeRepository transactionTypeRepository) {
     super();
+    this.logger = logger;
     this.journalEntryRepository = journalEntryRepository;
+    this.transactionTypeRepository = transactionTypeRepository;
   }
 
-  public List<JournalEntry> fetchJournalEntries(final DateRange range) {
+  public List<JournalEntry> fetchJournalEntries(final DateRange range, final String accountNumber, final BigDecimal amount) {
     final List<JournalEntryEntity> journalEntryEntities =
         this.journalEntryRepository.fetchJournalEntries(range);
 
     if (journalEntryEntities != null) {
-      return journalEntryEntities
+
+      final List<JournalEntryEntity> filteredList =
+          journalEntryEntities
+              .stream()
+              .filter(journalEntryEntity ->
+                  accountNumber == null
+                      || journalEntryEntity.getDebtors().stream()
+                          .anyMatch(debtorType -> debtorType.getAccountNumber().equals(accountNumber))
+                      || journalEntryEntity.getCreditors().stream()
+                          .anyMatch(creditorType -> creditorType.getAccountNumber().equals(accountNumber))
+              )
+              .filter(journalEntryEntity ->
+                  amount == null
+                      || amount.compareTo(
+                          BigDecimal.valueOf(
+                              journalEntryEntity.getDebtors().stream().mapToDouble(DebtorType::getAmount).sum()
+                          )
+                  ) == 0
+              )
+              .collect(Collectors.toList());
+
+      final List<TransactionTypeEntity> transactionTypes = this.transactionTypeRepository.findAll();
+      final HashMap<String, String> mappedTransactionTypes = new HashMap<>(transactionTypes.size());
+      transactionTypes.forEach(transactionTypeEntity ->
+          mappedTransactionTypes.put(transactionTypeEntity.getIdentifier(), transactionTypeEntity.getName())
+      );
+
+      return filteredList
           .stream()
-          .map(JournalEntryMapper::map)
+          .map(journalEntryEntity -> {
+            final JournalEntry journalEntry = JournalEntryMapper.map(journalEntryEntity);
+            journalEntry.setTransactionType(mappedTransactionTypes.get(journalEntry.getTransactionType()));
+            return journalEntry;
+          })
           .collect(Collectors.toList());
     } else {
       return Collections.emptyList();

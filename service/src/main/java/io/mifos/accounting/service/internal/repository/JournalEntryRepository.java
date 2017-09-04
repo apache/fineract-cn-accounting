@@ -17,6 +17,8 @@ package io.mifos.accounting.service.internal.repository;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Result;
@@ -67,13 +69,15 @@ public class JournalEntryRepository {
         .map(DateConverter::toIsoString)
         .collect(Collectors.toList());
 
-    final ResultSet resultSet = tenantSession.execute(QueryBuilder
-            .select()
-            .all()
+    final Statement stmt = new SimpleStatement(
+        QueryBuilder
+            .select().all()
             .from("thoth_journal_entries")
-            .where(QueryBuilder.in("date_bucket", datesInBetweenRange))
-            .getQueryString(), datesInBetweenRange.toArray()
+            .where(QueryBuilder.in("date_bucket", datesInBetweenRange)).getQueryString(),
+        datesInBetweenRange.toArray()
     );
+
+    final ResultSet resultSet = tenantSession.execute(stmt);
 
     final Mapper<JournalEntryEntity> mapper = this.tenantAwareCassandraMapperProvider.getMapper(JournalEntryEntity.class);
     final Result<JournalEntryEntity> journalEntryEntities = mapper.map(resultSet);

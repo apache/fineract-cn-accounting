@@ -29,9 +29,16 @@ import io.mifos.core.lang.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +69,13 @@ public class JournalRestController {
   )
   @ResponseBody
   ResponseEntity<Void> createJournalEntry(@RequestBody @Valid final JournalEntry journalEntry) {
+    if (journalEntry.getDebtors().size() == 0) {
+      throw ServiceException.badRequest("Debtors must be given.");
+    }
+    if (journalEntry.getCreditors().size() == 0) {
+      throw ServiceException.badRequest("Creditors must be given.");
+    }
+
     final Double debtorAmountSum = journalEntry.getDebtors()
         .stream()
         .peek(debtor -> {
@@ -107,11 +121,13 @@ public class JournalRestController {
   )
   @ResponseBody
   ResponseEntity<List<JournalEntry>> fetchJournalEntries(
-      @RequestParam(value = "dateRange", required = false) final String dateRange
+      @RequestParam(value = "dateRange", required = false) final String dateRange,
+      @RequestParam(value = "account", required = false) final String accountNumber,
+      @RequestParam(value = "amount", required = false) final BigDecimal amount
   ) {
     final DateRange range = DateRange.fromIsoString(dateRange);
 
-    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(range));
+    return ResponseEntity.ok(this.journalEntryService.fetchJournalEntries(range, accountNumber, amount));
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_JOURNAL)
