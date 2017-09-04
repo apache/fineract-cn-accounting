@@ -15,11 +15,20 @@
  */
 package io.mifos.accounting.service.internal.service;
 
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntry;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.service.internal.mapper.AccountCommandMapper;
 import io.mifos.accounting.service.internal.mapper.AccountEntryMapper;
 import io.mifos.accounting.service.internal.mapper.AccountMapper;
-import io.mifos.accounting.service.internal.repository.*;
+import io.mifos.accounting.service.internal.repository.AccountEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
+import io.mifos.accounting.service.internal.repository.AccountEntryRepository;
+import io.mifos.accounting.service.internal.repository.AccountRepository;
+import io.mifos.accounting.service.internal.repository.CommandEntity;
+import io.mifos.accounting.service.internal.repository.CommandRepository;
 import io.mifos.accounting.service.internal.repository.specification.AccountSpecification;
 import io.mifos.core.lang.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;

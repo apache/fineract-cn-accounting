@@ -16,7 +16,12 @@
 package io.mifos.accounting;
 
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.client.JournalEntryValidationException;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountType;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
@@ -25,6 +30,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -33,6 +39,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TestJournalEntry extends AbstractAccountingTest {
+
   @Test
   public void shouldCreateJournalEntry() throws Exception {
     final Ledger assetLedger = LedgerGenerator.createRandomLedger();
@@ -126,11 +133,212 @@ public class TestJournalEntry extends AbstractAccountingTest {
         DateConverter.toIsoString(beginDate),
         DateConverter.toIsoString(endDate));
 
-    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange);
+    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange, null, null);
+
+    Assert.assertTrue(journalEntries.size() >= 2);
+
+    checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  @Test
+  public void shouldFetchJournalEntriesWithDateRangeAndAccount() throws Exception{
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
+    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(debtorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(liabilityLedger.getIdentifier());
+    creditorAccount.setType(AccountType.LIABILITY.name());
+    creditorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(creditorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final JournalEntry journalEntryOne = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime start = OffsetDateTime.of(1982, 6, 24, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryOne.setTransactionDate(start.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryOne);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+
+    final JournalEntry journalEntryTwo = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime end = OffsetDateTime.of(1982, 6, 26, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryTwo.setTransactionDate(end.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryTwo);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+
+    final LocalDate beginDate = LocalDate.of(1982, 6, 24);
+    final LocalDate endDate = LocalDate.of(1982, 6, 26);
+    final String dateRange = MessageFormat.format("{0}..{1}",
+        DateConverter.toIsoString(beginDate),
+        DateConverter.toIsoString(endDate));
+
+    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange, debtorAccount.getIdentifier(), null);
 
     Assert.assertEquals(2, journalEntries.size());
 
     checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  @Test
+  public void shouldFetchJournalEntriesWithDateRangeAndAmount() throws Exception{
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
+    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(debtorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(liabilityLedger.getIdentifier());
+    creditorAccount.setType(AccountType.LIABILITY.name());
+    creditorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(creditorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final JournalEntry journalEntryOne = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime start = OffsetDateTime.of(1982, 6, 24, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryOne.setTransactionDate(start.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryOne);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+
+    final JournalEntry journalEntryTwo = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime end = OffsetDateTime.of(1982, 6, 26, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryTwo.setTransactionDate(end.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryTwo);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+
+    final LocalDate beginDate = LocalDate.of(1982, 6, 24);
+    final LocalDate endDate = LocalDate.of(1982, 6, 26);
+    final String dateRange = MessageFormat.format("{0}..{1}",
+        DateConverter.toIsoString(beginDate),
+        DateConverter.toIsoString(endDate));
+
+    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange, null, BigDecimal.valueOf(50.00D));
+
+    Assert.assertEquals(2, journalEntries.size());
+
+    checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  @Test
+  public void shouldFetchJournalEntriesWithDateRangeAndAccountAndAmount() throws Exception{
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
+    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(debtorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(liabilityLedger.getIdentifier());
+    creditorAccount.setType(AccountType.LIABILITY.name());
+    creditorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(creditorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final JournalEntry journalEntryOne = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime start = OffsetDateTime.of(1982, 6, 24, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryOne.setTransactionDate(start.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryOne);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryOne.getTransactionIdentifier());
+
+    final JournalEntry journalEntryTwo = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        creditorAccount, "50.00");
+    final OffsetDateTime end = OffsetDateTime.of(1982, 6, 26, 1, 0, 0, 0, ZoneOffset.UTC);
+    journalEntryTwo.setTransactionDate(end.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+
+    this.testSubject.createJournalEntry(journalEntryTwo);
+    this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, journalEntryTwo.getTransactionIdentifier());
+
+    final LocalDate beginDate = LocalDate.of(1982, 6, 24);
+    final LocalDate endDate = LocalDate.of(1982, 6, 26);
+    final String dateRange = MessageFormat.format("{0}..{1}",
+        DateConverter.toIsoString(beginDate),
+        DateConverter.toIsoString(endDate));
+
+    final List<JournalEntry> journalEntries = this.testSubject.fetchJournalEntries(dateRange, creditorAccount.getIdentifier(), BigDecimal.valueOf(50.00D));
+
+    Assert.assertEquals(2, journalEntries.size());
+
+    checkAccountEntries(debtorAccount, creditorAccount, journalEntryOne, journalEntryTwo, dateRange);
+  }
+
+  @Test(expected = JournalEntryValidationException.class)
+  public void shouldNotCreateJournalEntryMissingDebtors() throws Exception {
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Account creditorAccount = AccountGenerator.createRandomAccount(liabilityLedger.getIdentifier());
+    creditorAccount.setType(AccountType.LIABILITY.name());
+    creditorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(creditorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
+
+    final JournalEntry journalEntry = JournalEntryGenerator.createRandomJournalEntry(null, null,
+        creditorAccount, "50.00");
+    this.testSubject.createJournalEntry(journalEntry);
+  }
+
+  @Test(expected = JournalEntryValidationException.class)
+  public void shouldNotCreateJournalEntryMissingCreditors() throws Exception {
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
+    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setBalance(100.00D);
+    this.testSubject.createAccount(debtorAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
+
+    final JournalEntry journalEntry = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
+        null, null);
+    this.testSubject.createJournalEntry(journalEntry);
   }
 
   private void checkAccountEntries(

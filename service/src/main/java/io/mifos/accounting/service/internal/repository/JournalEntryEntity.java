@@ -20,9 +20,7 @@ import com.datastax.driver.mapping.annotations.Column;
 import com.datastax.driver.mapping.annotations.Frozen;
 import com.datastax.driver.mapping.annotations.PartitionKey;
 import com.datastax.driver.mapping.annotations.Table;
-import io.mifos.core.mariadb.util.LocalDateTimeConverter;
 
-import javax.persistence.Convert;
 import java.time.LocalDateTime;
 import java.util.Set;
 
