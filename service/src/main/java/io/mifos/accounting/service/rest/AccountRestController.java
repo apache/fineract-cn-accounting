@@ -234,6 +234,9 @@ public class AccountRestController {
           if (state.equals(Account.State.OPEN) || state.equals(Account.State.LOCKED)) {
             this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
           }
+          if (account.getBalance() != 0.00D) {
+            throw ServiceException.conflict("Account {0} has remaining balance.", identifier);
+          }
           break;
         case LOCK:
           if (state.equals(Account.State.OPEN)) {
@@ -250,6 +253,8 @@ public class AccountRestController {
             this.commandGateway.process(new ReopenAccountCommand(identifier, accountCommand.getComment()));
           }
           break;
+        default:
+          throw ServiceException.badRequest("Invalid state change.");
       }
       return ResponseEntity.accepted().build();
     } else {

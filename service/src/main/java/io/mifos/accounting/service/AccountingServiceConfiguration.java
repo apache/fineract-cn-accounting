@@ -22,10 +22,12 @@ import io.mifos.core.command.config.EnableCommandProcessing;
 import io.mifos.core.lang.config.EnableServiceException;
 import io.mifos.core.lang.config.EnableTenantContext;
 import io.mifos.core.mariadb.config.EnableMariaDB;
+import io.mifos.customer.api.v1.client.CustomerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +48,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
     "io.mifos.accounting.service.rest",
     "io.mifos.accounting.service.internal"
 })
+@EnableFeignClients(
+    clients = {
+        CustomerManager.class
+    }
+)
 public class AccountingServiceConfiguration extends WebMvcConfigurerAdapter {
 
   public AccountingServiceConfiguration() {

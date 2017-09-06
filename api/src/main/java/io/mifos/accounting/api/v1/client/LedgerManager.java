@@ -24,6 +24,9 @@ import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.api.v1.domain.PayrollCollectionHistory;
+import io.mifos.accounting.api.v1.domain.PayrollCollectionSheet;
+import io.mifos.accounting.api.v1.domain.PayrollPaymentPage;
 import io.mifos.accounting.api.v1.domain.TransactionType;
 import io.mifos.accounting.api.v1.domain.TransactionTypePage;
 import io.mifos.accounting.api.v1.domain.TrialBalance;
@@ -359,10 +362,41 @@ public interface LedgerManager {
       value = "/accounts/{identifier}/actions",
       method = RequestMethod.GET,
       produces = MediaType.APPLICATION_JSON_VALUE,
-      consumes = MediaType.ALL_VALUE
+      consumes = MediaType.APPLICATION_JSON_VALUE
   )
   @ThrowsExceptions({
       @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class)
   })
   List<AccountCommand> fetchActions(@PathVariable(value = "identifier") final String identifier);
+
+  @RequestMapping(
+      value = "/payroll",
+      method = RequestMethod.POST,
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = PayrollPaymentValidationException.class)
+  })
+  void postPayrollPayments(@RequestBody final PayrollCollectionSheet payrollCollectionSheet);
+
+  @RequestMapping(
+      value = "/payroll",
+      method = RequestMethod.GET,
+      produces = MediaType.ALL_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  List<PayrollCollectionHistory> getPayrollCollectionHistory();
+
+  @RequestMapping(
+      value = "/payroll/{identifier}/payments",
+      method = RequestMethod.GET,
+      produces = MediaType.ALL_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  PayrollPaymentPage getPayrollPaymentHistory(@PathVariable("identifier") final String identifier,
+                                              @RequestParam(value = "pageIndex", required = false) final Integer pageIndex,
+                                              @RequestParam(value = "size", required = false) final Integer size,
+                                              @RequestParam(value = "sortColumn", required = false) final String sortColumn,
+                                              @RequestParam(value = "sortDirection", required = false) final String sortDirection);
 }
