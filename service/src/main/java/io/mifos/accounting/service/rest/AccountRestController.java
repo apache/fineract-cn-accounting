@@ -231,11 +231,11 @@ public class AccountRestController {
       final Account.State state = Account.State.valueOf(account.getState());
       switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
         case CLOSE:
-          if (state.equals(Account.State.OPEN) || state.equals(Account.State.LOCKED)) {
-            this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
-          }
           if (account.getBalance() != 0.00D) {
             throw ServiceException.conflict("Account {0} has remaining balance.", identifier);
+          }
+          if (state.equals(Account.State.OPEN) || state.equals(Account.State.LOCKED)) {
+            this.commandGateway.process(new CloseAccountCommand(identifier, accountCommand.getComment()));
           }
           break;
         case LOCK:
