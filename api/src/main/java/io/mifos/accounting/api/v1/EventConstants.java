@@ -64,7 +64,4 @@ public interface EventConstants {
   String SELECTOR_POST_TX_TYPE = SELECTOR_NAME + " = '" + POST_TX_TYPE + "'";
   String PUT_TX_TYPE = "put-tx-type";
   String SELECTOR_PUT_TX_TYPE = SELECTOR_NAME + " = '" + PUT_TX_TYPE + "'";
-
-  String POST_PAYROLL_PAYMENT = "post-payroll-payment";
-  String SELECTOR_POST_PAYROLL_PAYMENT = SELECTOR_NAME + " = '" + POST_PAYROLL_PAYMENT + "'";
 }

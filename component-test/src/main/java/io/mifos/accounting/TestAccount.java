@@ -506,12 +506,12 @@ public class TestAccount extends AbstractAccountingTest {
   @Test
   public void shouldNotDeleteAccountEntriesExists() throws Exception {
     final Ledger assetLedger = LedgerGenerator.createRandomLedger();
-    assetLedger.setType(AccountType.ASSET.name());
+    assetLedger.setType(AccountType.LIABILITY.name());
     this.testSubject.createLedger(assetLedger);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
 
     final Account debtorAccount = AccountGenerator.createRandomAccount(assetLedger.getIdentifier());
-    debtorAccount.setType(AccountType.ASSET.name());
+    debtorAccount.setType(AccountType.LIABILITY.name());
     debtorAccount.setBalance(100.00D);
     this.testSubject.createAccount(debtorAccount);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
@@ -527,8 +527,8 @@ public class TestAccount extends AbstractAccountingTest {
     this.testSubject.createAccount(creditorAccount);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, creditorAccount.getIdentifier());
 
-    final JournalEntry journalEntry = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "50.00",
-        creditorAccount, "50.00");
+    final JournalEntry journalEntry = JournalEntryGenerator.createRandomJournalEntry(debtorAccount, "100.00",
+        creditorAccount, "100.00");
     this.testSubject.createJournalEntry(journalEntry);
     this.eventRecorder.wait(EventConstants.POST_JOURNAL_ENTRY, journalEntry.getTransactionIdentifier());
 
