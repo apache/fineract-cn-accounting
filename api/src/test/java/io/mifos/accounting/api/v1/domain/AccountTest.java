@@ -41,6 +41,12 @@ public class AccountTest extends ValidationTest<Account> {
     ret.add(new ValidationTestCase<Account>("nameTooLong")
         .adjustment(x -> x.setName(RandomStringUtils.randomAlphanumeric(257)))
         .valid(false));
+    ret.add(new ValidationTestCase<Account>("validState")
+        .adjustment(x -> x.setState("OPEN"))
+        .valid(true));
+    ret.add(new ValidationTestCase<Account>("validNullState")
+        .adjustment(x -> x.setState(null))
+        .valid(true));
 
     return ret;
   }
