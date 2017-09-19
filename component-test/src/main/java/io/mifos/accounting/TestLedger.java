@@ -20,6 +20,7 @@ import io.mifos.accounting.api.v1.client.LedgerAlreadyExistsException;
 import io.mifos.accounting.api.v1.client.LedgerNotFoundException;
 import io.mifos.accounting.api.v1.client.LedgerReferenceExistsException;
 import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
 import io.mifos.accounting.util.AccountGenerator;
@@ -29,6 +30,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestLedger extends AbstractAccountingTest {
   @Test
@@ -327,5 +331,30 @@ public class TestLedger extends AbstractAccountingTest {
     }
 
     Assert.assertFalse(failed);
+  }
+
+  @Test
+  public void shouldStreamAllAccountsBelongingToLedger() throws InterruptedException {
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    assetLedger.setType(AccountType.ASSET.name());
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
+
+    final List<Account> createdAssetAccounts = Stream.generate(() -> AccountGenerator.createRandomAccount(assetLedger.getIdentifier())).limit(1)
+        .peek(account -> {
+          account.setType(AccountType.ASSET.name());
+          this.testSubject.createAccount(account);
+        })
+        .collect(Collectors.toList());
+
+    for (final Account account : createdAssetAccounts) {
+      this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account.getIdentifier());
+    }
+
+    final List<Account> foundAccounts = testSubject.streamAccountsOfLedger(assetLedger.getIdentifier(), "ASC")
+        .peek(account -> account.setState(null))
+        .collect(Collectors.toList());
+
+    Assert.assertEquals(createdAssetAccounts, foundAccounts);
   }
 }

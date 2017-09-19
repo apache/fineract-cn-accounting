@@ -118,7 +118,10 @@ public final class Account {
   }
 
   public void setState(final String state) {
-    this.state = State.valueOf(state);
+    if (state == null)
+      this.state = null;
+    else
+      this.state = State.valueOf(state);
   }
 
   public String getCreatedOn() {

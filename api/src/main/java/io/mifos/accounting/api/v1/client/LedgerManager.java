@@ -15,29 +15,14 @@
  */
 package io.mifos.accounting.api.v1.client;
 
-import io.mifos.accounting.api.v1.domain.Account;
-import io.mifos.accounting.api.v1.domain.AccountCommand;
-import io.mifos.accounting.api.v1.domain.AccountEntry;
-import io.mifos.accounting.api.v1.domain.AccountEntryPage;
-import io.mifos.accounting.api.v1.domain.AccountPage;
-import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
-import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.api.v1.domain.Ledger;
-import io.mifos.accounting.api.v1.domain.LedgerPage;
-import io.mifos.accounting.api.v1.domain.TransactionType;
-import io.mifos.accounting.api.v1.domain.TransactionTypePage;
-import io.mifos.accounting.api.v1.domain.TrialBalance;
+import io.mifos.accounting.api.v1.domain.*;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.api.annotation.ThrowsExceptions;
 import io.mifos.core.api.util.CustomFeignClientsConfiguration;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -208,6 +193,36 @@ public interface LedgerManager {
 
   // These helper functions are implemented here rather than in the client because it is easier to test
   // and mock if it's part of the accounting interface, rather than part of the client calling it.
+    default Stream<Account> streamAccountsOfLedger(
+      final String ledgerIdentifer,
+      final String sortDirection) {
+    final AccountPage firstPage = this.fetchAccountsOfLedger(
+        ledgerIdentifer,
+        0,
+        10,
+        null,
+        null);
+    final Integer pageCount = firstPage.getTotalPages();
+    switch (sortDirection) {
+      case "ASC":
+        // Sort column is always date and order always ascending so that the order and adjacency of account
+        // entries is always stable. This has the advantage that the set of account entries included in the
+        // stream is set the moment the first call to fetchAccountEntries (above) is made.
+        return Stream.iterate(0, (i) -> i + 1).limit(pageCount)
+            .map(i -> this.fetchAccountsOfLedger(ledgerIdentifer, i, 10, "lastModifiedOn", "ASC"))
+            .flatMap(pageI -> pageI.getAccounts().stream());
+      case "DESC":
+        return Stream.iterate(pageCount - 1, (i) -> i - 1).limit(pageCount)
+            .map(i -> this.fetchAccountsOfLedger(ledgerIdentifer, i, 10, "lastModifiedOn", "DESC"))
+            .flatMap(pageI -> {
+              Collections.reverse(pageI.getAccounts());
+              return pageI.getAccounts().stream();
+            });
+      default:
+        throw new IllegalArgumentException();
+    }
+  }
+
   default Stream<AccountEntry> fetchAccountEntriesStream(
       final String accountIdentifier,
       final String dateRange,

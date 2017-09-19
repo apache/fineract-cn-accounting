@@ -46,7 +46,7 @@ public class JournalEntryTest extends ValidationTest<JournalEntry> {
             .adjustment(x -> x.getDebtors().add(new Debtor("marvin", "-120.00")))
             .valid(false));
     ret.add(new ValidationTestCase<JournalEntry>("tooLongTransactionIdentifier")
-            .adjustment(x -> x.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(33)))
+            .adjustment(x -> x.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(2201)))
             .valid(false));
     ret.add(new ValidationTestCase<JournalEntry>("tooLongTransactionType")
         .adjustment(x -> x.setTransactionType(RandomStringUtils.randomAlphanumeric(33)))
