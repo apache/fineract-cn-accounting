@@ -282,7 +282,10 @@ public interface LedgerManager {
       produces = {MediaType.APPLICATION_JSON_VALUE},
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
-  @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = JournalEntryValidationException.class)
+  @ThrowsExceptions({
+      @ThrowsException(status = HttpStatus.BAD_REQUEST, exception = JournalEntryValidationException.class),
+      @ThrowsException(status = HttpStatus.CONFLICT, exception = JournalEntryAlreadyExistsException.class)
+  })
   void createJournalEntry(@RequestBody final JournalEntry journalEntry);
 
   @RequestMapping(

@@ -69,6 +69,10 @@ public class JournalRestController {
   )
   @ResponseBody
   ResponseEntity<Void> createJournalEntry(@RequestBody @Valid final JournalEntry journalEntry) {
+    if (this.journalEntryService.findJournalEntry(journalEntry.getTransactionIdentifier()).isPresent()) {
+      throw ServiceException.conflict("Journal entry {0} already exists.", journalEntry.getTransactionIdentifier());
+    }
+
     if (journalEntry.getDebtors().size() == 0) {
       throw ServiceException.badRequest("Debtors must be given.");
     }
