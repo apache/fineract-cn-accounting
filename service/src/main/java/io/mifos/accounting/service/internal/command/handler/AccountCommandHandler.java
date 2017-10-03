@@ -126,6 +126,7 @@ public class AccountCommandHandler {
 
     accountEntity.setBalance(account.getBalance());
     accountEntity.setState(Account.State.OPEN.name());
+    accountEntity.setAlternativeAccountNumber(account.getAlternativeAccountNumber());
     accountEntity.setCreatedBy(UserContextHolder.checkedGetUser());
     accountEntity.setCreatedOn(LocalDateTime.now(Clock.systemUTC()));
 

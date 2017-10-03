@@ -51,6 +51,7 @@ public class AccountMapper {
       account.setReferenceAccount(accountEntity.getReferenceAccount().getIdentifier());
     }
     account.setBalance(accountEntity.getBalance());
+    account.setAlternativeAccountNumber(accountEntity.getAlternativeAccountNumber());
     account.setCreatedBy(accountEntity.getCreatedBy());
     account.setCreatedOn(DateConverter.toIsoString(accountEntity.getCreatedOn()));
     if (accountEntity.getLastModifiedBy() != null) {

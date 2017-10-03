@@ -643,4 +643,24 @@ public class TestAccount extends AbstractAccountingTest {
     Assert.assertEquals(2L, accountPage.getTotalElements().longValue());
   }
 
+  @Test
+  public void shouldFindAccountWithAlternativeAccountNumber() throws Exception {
+    final Ledger ledger = LedgerGenerator.createLedger("alt-account-10000", AccountType.EQUITY);
+
+    this.testSubject.createLedger(ledger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledger.getIdentifier());
+
+    final Account altAccount =
+        AccountGenerator.createAccount(ledger.getIdentifier(), "alt-account-10001", AccountType.EQUITY);
+    altAccount.setAlternativeAccountNumber("08154711");
+    this.testSubject.createAccount(altAccount);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, altAccount.getIdentifier());
+
+    final AccountPage accountPage = this.testSubject.fetchAccounts(true, "08154711", null, true,
+        0, 10, null, null);
+    Assert.assertEquals(Long.valueOf(1L), accountPage.getTotalElements());
+    final Account account = accountPage.getAccounts().get(0);
+    Assert.assertEquals("alt-account-10001", account.getIdentifier());
+    Assert.assertEquals("08154711", account.getAlternativeAccountNumber());
+  }
 }
