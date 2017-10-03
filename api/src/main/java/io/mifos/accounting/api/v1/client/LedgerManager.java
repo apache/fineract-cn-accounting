@@ -15,14 +15,29 @@
  */
 package io.mifos.accounting.api.v1.client;
 
-import io.mifos.accounting.api.v1.domain.*;
+import io.mifos.accounting.api.v1.domain.Account;
+import io.mifos.accounting.api.v1.domain.AccountCommand;
+import io.mifos.accounting.api.v1.domain.AccountEntry;
+import io.mifos.accounting.api.v1.domain.AccountEntryPage;
+import io.mifos.accounting.api.v1.domain.AccountPage;
+import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
+import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.api.v1.domain.Ledger;
+import io.mifos.accounting.api.v1.domain.LedgerPage;
+import io.mifos.accounting.api.v1.domain.TransactionType;
+import io.mifos.accounting.api.v1.domain.TransactionTypePage;
+import io.mifos.accounting.api.v1.domain.TrialBalance;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.api.annotation.ThrowsExceptions;
 import io.mifos.core.api.util.CustomFeignClientsConfiguration;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;

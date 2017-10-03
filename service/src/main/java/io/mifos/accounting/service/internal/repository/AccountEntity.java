@@ -58,6 +58,8 @@ public class AccountEntity {
   private LedgerEntity ledger;
   @Column(name = "a_state")
   private String state;
+  @Column(name = "alternative_account_number", length = 256, nullable = true)
+  private String alternativeAccountNumber;
   @Column(name = "created_on")
   @Convert(converter = LocalDateTimeConverter.class)
   private LocalDateTime createdOn;
@@ -151,6 +153,14 @@ public class AccountEntity {
 
   public void setState(final String state) {
     this.state = state;
+  }
+
+  public String getAlternativeAccountNumber() {
+    return this.alternativeAccountNumber;
+  }
+
+  public void setAlternativeAccountNumber(final String alternativeAccountNumber) {
+    this.alternativeAccountNumber = alternativeAccountNumber;
   }
 
   public LocalDateTime getCreatedOn() {

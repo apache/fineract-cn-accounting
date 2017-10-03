@@ -49,7 +49,8 @@ public class AccountSpecification {
         predicates.add(
             cb.or(
                 cb.like(root.get("identifier"), likeExpression),
-                cb.like(root.get("name"), likeExpression)
+                cb.like(root.get("name"), likeExpression),
+                cb.like(root.get("alternativeAccountNumber"), likeExpression)
             )
         );
       }

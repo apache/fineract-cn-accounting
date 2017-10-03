@@ -40,6 +40,7 @@ public final class Account {
   @ValidIdentifier
   private String ledger;
   private State state;
+  private String alternativeAccountNumber;
   private String createdOn;
   private String createdBy;
   private String lastModifiedOn;
@@ -122,6 +123,14 @@ public final class Account {
       this.state = null;
     else
       this.state = State.valueOf(state);
+  }
+
+  public String getAlternativeAccountNumber() {
+    return this.alternativeAccountNumber;
+  }
+
+  public void setAlternativeAccountNumber(final String alternativeAccountNumber) {
+    this.alternativeAccountNumber = alternativeAccountNumber;
   }
 
   public String getCreatedOn() {
