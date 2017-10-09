@@ -21,6 +21,7 @@ import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.api.v1.domain.AccountEntryPage;
 import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
+import io.mifos.accounting.api.v1.domain.IncomeStatement;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
@@ -398,4 +399,12 @@ public interface LedgerManager {
       @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class)
   })
   List<AccountCommand> fetchActions(@PathVariable(value = "identifier") final String identifier);
+
+  @RequestMapping(
+      value = "/incomestatement",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  IncomeStatement getIncomeStatement();
 }
