@@ -170,12 +170,11 @@ public class MigrationCommandHandler {
 
   private void migrateLedgerTotals() {
     this.logger.info("Start ledger total migration ...");
-    try (final Stream<AccountEntity> accountEntityStream = this.accountRepository.findByBalanceIsNot(0.00D)) {
-      accountEntityStream.forEach(accountEntity ->
-          this.commandGateway.process(
-              new AddAmountToLedgerTotalCommand(accountEntity.getLedger().getIdentifier(), BigDecimal.valueOf(accountEntity.getBalance()))
-          )
-      );
-    }
+
+    this.accountRepository.findByBalanceIsNot(0.00D).forEach(accountEntity ->
+        this.commandGateway.process(
+            new AddAmountToLedgerTotalCommand(accountEntity.getLedger().getIdentifier(), BigDecimal.valueOf(accountEntity.getBalance()))
+        )
+    );
   }
 }

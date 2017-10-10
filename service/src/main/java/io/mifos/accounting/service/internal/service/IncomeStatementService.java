@@ -64,7 +64,8 @@ public class IncomeStatementService {
       this.ledgerRepository.findByParentLedgerOrderByIdentifier(ledgerEntity).forEach(subLedgerEntity -> {
         final IncomeStatementEntry incomeStatementEntry = new IncomeStatementEntry();
         incomeStatementEntry.setDescription(subLedgerEntity.getName());
-        incomeStatementEntry.setValue(subLedgerEntity.getTotalValue());
+        final BigDecimal totalValue = subLedgerEntity.getTotalValue() != null ? subLedgerEntity.getTotalValue() : BigDecimal.ZERO;
+        incomeStatementEntry.setValue(totalValue);
         incomeStatementSection.add(incomeStatementEntry);
       });
     });
