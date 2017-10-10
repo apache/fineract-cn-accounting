@@ -40,7 +40,7 @@ public class IncomeStatementController {
     this.incomeStatementService = incomeStatementService;
   }
 
-  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_LEDGER)
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_INCOME_STMT)
   @RequestMapping(
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE},
