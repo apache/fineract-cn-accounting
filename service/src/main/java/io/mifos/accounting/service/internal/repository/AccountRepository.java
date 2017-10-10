@@ -24,6 +24,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long>, JpaSpecificationExecutor<AccountEntity> {
@@ -36,4 +37,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>, J
 
   @Query("SELECT CASE WHEN count(a) > 0 THEN true ELSE false END FROM AccountEntity a where a.referenceAccount = :accountEntity")
   Boolean existsByReference(@Param("accountEntity") final AccountEntity accountEntity);
+
+  Stream<AccountEntity> findByBalanceIsNot(final Double value);
 }

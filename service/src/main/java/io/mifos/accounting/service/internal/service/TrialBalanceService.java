@@ -19,15 +19,13 @@ import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.TrialBalance;
 import io.mifos.accounting.api.v1.domain.TrialBalanceEntry;
 import io.mifos.accounting.service.internal.mapper.LedgerMapper;
-import io.mifos.accounting.service.internal.repository.AccountEntity;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
-import io.mifos.accounting.service.internal.repository.LedgerEntity;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.List;
 
 @Service
 public class TrialBalanceService {
@@ -45,39 +43,34 @@ public class TrialBalanceService {
 
   public TrialBalance getTrialBalance(final boolean includeEmptyEntries) {
     final TrialBalance trialBalance = new TrialBalance();
-    final List<LedgerEntity> ledgers = this.ledgerRepository.findAll();
-    if (ledgers != null) ledgers.forEach(ledgerEntity -> {
-      final List<AccountEntity> accountEntities = this.accountRepository.findByLedger(ledgerEntity);
-      if (accountEntities != null) {
-        final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
-        trialBalanceEntry.setLedger(LedgerMapper.map(ledgerEntity));
-        switch (AccountType.valueOf(ledgerEntity.getType())) {
-          case ASSET:
-          case EXPENSE:
-            trialBalanceEntry.setType(TrialBalanceEntry.Type.DEBIT.name());
-            break;
-          case LIABILITY:
-          case EQUITY:
-          case REVENUE:
-            trialBalanceEntry.setType(TrialBalanceEntry.Type.CREDIT.name());
-            break;
-        }
-        trialBalanceEntry.setAmount(0.00D);
-        accountEntities.forEach(accountEntity ->
-                trialBalanceEntry.setAmount(trialBalanceEntry.getAmount() + accountEntity.getBalance()));
-        if (!includeEmptyEntries && trialBalanceEntry.getAmount() == 0.00D) {
-          //noinspection UnnecessaryReturnStatement
-          return;
-        } else {
-          trialBalance.getTrialBalanceEntries().add(trialBalanceEntry);
-        }
+    this.ledgerRepository.findAll().forEach(ledgerEntity -> {
+      final BigDecimal totalValue = ledgerEntity.getTotalValue() != null ? ledgerEntity.getTotalValue() : BigDecimal.ZERO;
+      if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) != 0) {
+        return;
       }
+      final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
+      trialBalanceEntry.setLedger(LedgerMapper.map(ledgerEntity));
+      switch (AccountType.valueOf(ledgerEntity.getType())) {
+        case ASSET:
+        case EXPENSE:
+          trialBalanceEntry.setType(TrialBalanceEntry.Type.DEBIT.name());
+          break;
+        case LIABILITY:
+        case EQUITY:
+        case REVENUE:
+          trialBalanceEntry.setType(TrialBalanceEntry.Type.CREDIT.name());
+          break;
+      }
+      trialBalanceEntry.setAmount(totalValue.doubleValue());
+      trialBalance.getTrialBalanceEntries().add(trialBalanceEntry);
     });
 
     trialBalance.setDebitTotal(
         trialBalance.getTrialBalanceEntries()
             .stream()
-            .filter(trialBalanceEntry -> trialBalanceEntry.getType().equals(TrialBalanceEntry.Type.DEBIT.name()))
+            .filter(trialBalanceEntry ->
+                trialBalanceEntry.getType().equals(TrialBalanceEntry.Type.DEBIT.name())
+                && trialBalanceEntry.getLedger().getParentLedgerIdentifier() == null)
             .mapToDouble(TrialBalanceEntry::getAmount)
             .sum()
     );
@@ -85,7 +78,9 @@ public class TrialBalanceService {
     trialBalance.setCreditTotal(
         trialBalance.getTrialBalanceEntries()
             .stream()
-            .filter(trialBalanceEntry -> trialBalanceEntry.getType().equals(TrialBalanceEntry.Type.CREDIT.name()))
+            .filter(trialBalanceEntry ->
+                trialBalanceEntry.getType().equals(TrialBalanceEntry.Type.CREDIT.name())
+                    && trialBalanceEntry.getLedger().getParentLedgerIdentifier() == null)
             .mapToDouble(TrialBalanceEntry::getAmount)
             .sum()
     );

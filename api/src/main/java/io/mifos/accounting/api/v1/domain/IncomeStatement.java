@@ -19,6 +19,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class IncomeStatement {
@@ -26,7 +27,7 @@ public class IncomeStatement {
   @NotEmpty
   private String date;
   @NotEmpty
-  private List<IncomeStatementSection> incomeStatementSections;
+  private List<IncomeStatementSection> incomeStatementSections = new ArrayList<>();
   @NotNull
   private BigDecimal grossProfit;
   @NotNull
@@ -48,10 +49,6 @@ public class IncomeStatement {
 
   public List<IncomeStatementSection> getIncomeStatementSections() {
     return this.incomeStatementSections;
-  }
-
-  public void setIncomeStatementSections(final List<IncomeStatementSection> incomeStatementSections) {
-    this.incomeStatementSections = incomeStatementSections;
   }
 
   public BigDecimal getGrossProfit() {
@@ -76,5 +73,9 @@ public class IncomeStatement {
 
   public void setNetIncome(final BigDecimal netIncome) {
     this.netIncome = netIncome;
+  }
+
+  public void add(final IncomeStatementSection incomeStatementSection) {
+    this.incomeStatementSections.add(incomeStatementSection);
   }
 }

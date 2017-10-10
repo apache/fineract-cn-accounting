@@ -21,6 +21,7 @@ import io.mifos.accounting.api.v1.domain.AccountCommand;
 import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
+import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
 import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.CloseAccountCommand;
 import io.mifos.accounting.service.internal.command.CreateAccountCommand;
@@ -51,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -326,16 +328,21 @@ public class AccountCommandHandler {
             final String accountNumber = debtor.getAccountNumber();
             final AccountEntity accountEntity = this.accountRepository.findByIdentifier(accountNumber);
             final AccountType accountType = AccountType.valueOf(accountEntity.getType());
+            final BigDecimal amount;
             switch (accountType) {
               case ASSET:
               case EXPENSE:
                 accountEntity.setBalance(accountEntity.getBalance() + debtor.getAmount());
+                amount = BigDecimal.valueOf(debtor.getAmount());
                 break;
               case LIABILITY:
               case EQUITY:
               case REVENUE:
                 accountEntity.setBalance(accountEntity.getBalance() - debtor.getAmount());
+                amount = BigDecimal.valueOf(debtor.getAmount()).negate();
                 break;
+              default:
+                amount = BigDecimal.ZERO;
             }
             final AccountEntity savedAccountEntity = this.accountRepository.save(accountEntity);
             final AccountEntryEntity accountEntryEntity = new AccountEntryEntity();
@@ -346,6 +353,9 @@ public class AccountCommandHandler {
             accountEntryEntity.setMessage(journalEntryEntity.getMessage());
             accountEntryEntity.setTransactionDate(journalEntryEntity.getTransactionDate());
             this.accountEntryRepository.save(accountEntryEntity);
+            this.commandGateway.process(
+                new AddAmountToLedgerTotalCommand(savedAccountEntity.getLedger().getIdentifier(), amount)
+            );
           });
       // process all creditors
       journalEntryEntity.getCreditors()
@@ -353,16 +363,21 @@ public class AccountCommandHandler {
             final String accountNumber = creditor.getAccountNumber();
             final AccountEntity accountEntity = this.accountRepository.findByIdentifier(accountNumber);
             final AccountType accountType = AccountType.valueOf(accountEntity.getType());
+            final BigDecimal amount;
             switch (accountType) {
               case ASSET:
               case EXPENSE:
                 accountEntity.setBalance(accountEntity.getBalance() - creditor.getAmount());
+                amount = BigDecimal.valueOf(creditor.getAmount()).negate();
                 break;
               case LIABILITY:
               case EQUITY:
               case REVENUE:
                 accountEntity.setBalance(accountEntity.getBalance() + creditor.getAmount());
+                amount = BigDecimal.valueOf(creditor.getAmount());
                 break;
+              default:
+                amount = BigDecimal.ZERO;
             }
             final AccountEntity savedAccountEntity = this.accountRepository.save(accountEntity);
             final AccountEntryEntity accountEntryEntity = new AccountEntryEntity();
@@ -373,6 +388,9 @@ public class AccountCommandHandler {
             accountEntryEntity.setMessage(journalEntryEntity.getMessage());
             accountEntryEntity.setTransactionDate(journalEntryEntity.getTransactionDate());
             this.accountEntryRepository.save(accountEntryEntity);
+            this.commandGateway.process(
+                new AddAmountToLedgerTotalCommand(savedAccountEntity.getLedger().getIdentifier(), amount)
+            );
           });
       this.commandGateway.process(new ReleaseJournalEntryCommand(transactionIdentifier));
       return transactionIdentifier;

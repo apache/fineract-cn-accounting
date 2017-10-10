@@ -38,6 +38,14 @@ public class JournalEntryGenerator {
                                                       final String debtorAmount,
                                                       final Account creditorAccount,
                                                       final String creditorAmount) {
+    return JournalEntryGenerator
+        .createRandomJournalEntry(debtorAccount.getIdentifier(), debtorAmount, creditorAccount.getIdentifier(), creditorAmount);
+  }
+
+  public static JournalEntry createRandomJournalEntry(final String debtorAccount,
+                                                      final String debtorAmount,
+                                                      final String creditorAccount,
+                                                      final String creditorAmount) {
     final JournalEntry journalEntry = new JournalEntry();
     journalEntry.setTransactionIdentifier(RandomStringUtils.randomAlphanumeric(8));
     journalEntry.setTransactionDate(ZonedDateTime.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
@@ -45,7 +53,7 @@ public class JournalEntryGenerator {
     journalEntry.setClerk("clark");
     if (debtorAccount != null) {
       final Debtor debtor = new Debtor();
-      debtor.setAccountNumber(debtorAccount.getIdentifier());
+      debtor.setAccountNumber(debtorAccount);
       debtor.setAmount(debtorAmount);
       journalEntry.setDebtors(new HashSet<>(Collections.singletonList(debtor)));
     } else {
@@ -53,7 +61,7 @@ public class JournalEntryGenerator {
     }
     if (creditorAccount != null) {
       final Creditor creditor = new Creditor();
-      creditor.setAccountNumber(creditorAccount.getIdentifier());
+      creditor.setAccountNumber(creditorAccount);
       creditor.setAmount(creditorAmount);
       journalEntry.setCreditors(new HashSet<>(Collections.singletonList(creditor)));
     } else {

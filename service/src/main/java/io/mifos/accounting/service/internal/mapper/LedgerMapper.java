@@ -19,6 +19,8 @@ import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.service.internal.repository.LedgerEntity;
 import io.mifos.core.lang.DateConverter;
 
+import java.math.BigDecimal;
+
 public class LedgerMapper {
 
   private LedgerMapper() {
@@ -41,6 +43,8 @@ public class LedgerMapper {
       ledger.setLastModifiedOn(DateConverter.toIsoString(ledgerEntity.getLastModifiedOn()));
     }
     ledger.setShowAccountsInChart(ledgerEntity.getShowAccountsInChart());
+    final BigDecimal totalValue = ledgerEntity.getTotalValue() != null ? ledgerEntity.getTotalValue() : BigDecimal.ZERO;
+    ledger.setTotalValue(totalValue);
     return ledger;
   }
 }

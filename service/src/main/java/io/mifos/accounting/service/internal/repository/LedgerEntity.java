@@ -27,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @SuppressWarnings({"unused"})
@@ -49,6 +50,8 @@ public class LedgerEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_ledger_id")
   private LedgerEntity parentLedger;
+  @Column(name = "total_value")
+  private BigDecimal totalValue;
   @Column(name = "created_on")
   @Convert(converter = LocalDateTimeConverter.class)
   private LocalDateTime createdOn;
@@ -112,6 +115,14 @@ public class LedgerEntity {
 
   public void setParentLedger(final LedgerEntity parentLedger) {
     this.parentLedger = parentLedger;
+  }
+
+  public BigDecimal getTotalValue() {
+    return this.totalValue;
+  }
+
+  public void setTotalValue(final BigDecimal totalValue) {
+    this.totalValue = totalValue;
   }
 
   public LocalDateTime getCreatedOn() {
