@@ -26,7 +26,7 @@
     <logger name="com" level="OFF"/>
     <logger name="ch" level="OFF"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

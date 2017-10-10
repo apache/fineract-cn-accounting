@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 @SuppressWarnings({"unused"})
@@ -35,6 +36,7 @@ public final class Ledger {
   private String parentLedgerIdentifier;
   @Valid
   private List<Ledger> subLedgers;
+  private BigDecimal totalValue;
   private String createdOn;
   private String createdBy;
   private String lastModifiedOn;
@@ -92,6 +94,14 @@ public final class Ledger {
 
   public void setSubLedgers(final List<Ledger> subLedgers) {
     this.subLedgers = subLedgers;
+  }
+
+  public BigDecimal getTotalValue() {
+    return this.totalValue;
+  }
+
+  public void setTotalValue(final BigDecimal totalValue) {
+    this.totalValue = totalValue;
   }
 
   public String getCreatedOn() {

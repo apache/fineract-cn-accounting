@@ -18,7 +18,12 @@ package io.mifos.accounting.service.internal.command.handler;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.schemabuilder.SchemaBuilder;
 import io.mifos.accounting.api.v1.EventConstants;
+import io.mifos.accounting.service.ServiceConstants;
+import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
+import io.mifos.accounting.service.internal.repository.AccountEntity;
+import io.mifos.accounting.service.internal.repository.AccountRepository;
+import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.core.cassandra.core.CassandraJourney;
 import io.mifos.core.cassandra.core.CassandraJourneyFactory;
 import io.mifos.core.cassandra.core.CassandraJourneyRoute;
@@ -27,10 +32,20 @@ import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
 import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
+import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.mariadb.domain.FlywayFactoryBean;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationInfo;
+import org.flywaydb.core.api.MigrationInfoService;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 @SuppressWarnings({
     "unused"
@@ -38,28 +53,45 @@ import javax.sql.DataSource;
 @Aggregate
 public class MigrationCommandHandler {
 
+  private final Logger logger;
   private final DataSource dataSource;
   private final FlywayFactoryBean flywayFactoryBean;
   private final CassandraSessionProvider cassandraSessionProvider;
   private final CassandraJourneyFactory cassandraJourneyFactory;
+  private final CommandGateway commandGateway;
+  private final AccountRepository accountRepository;
 
   @SuppressWarnings("SpringJavaAutowiringInspection")
   @Autowired
-  public MigrationCommandHandler(final DataSource dataSource,
+  public MigrationCommandHandler(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
+                                 final DataSource dataSource,
                                  final FlywayFactoryBean flywayFactoryBean,
                                  final CassandraSessionProvider cassandraSessionProvider,
-                                 final CassandraJourneyFactory cassandraJourneyFactory) {
+                                 final CassandraJourneyFactory cassandraJourneyFactory,
+                                 final CommandGateway commandGateway,
+                                 final AccountRepository accountRepository) {
     super();
+    this.logger = logger;
     this.dataSource = dataSource;
     this.flywayFactoryBean = flywayFactoryBean;
     this.cassandraSessionProvider = cassandraSessionProvider;
     this.cassandraJourneyFactory = cassandraJourneyFactory;
+    this.commandGateway = commandGateway;
+    this.accountRepository = accountRepository;
   }
 
   @CommandHandler(logStart = CommandLogLevel.DEBUG, logFinish = CommandLogLevel.DEBUG)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.INITIALIZE)
   public String initialize(final InitializeServiceCommand initializeServiceCommand) {
-    this.flywayFactoryBean.create(this.dataSource).migrate();
+    final Flyway flyway = this.flywayFactoryBean.create(this.dataSource);
+
+    final MigrationInfoService migrationInfoService = flyway.info();
+    final List<MigrationInfo> migrationInfoList = Arrays.asList(migrationInfoService.applied());
+    final boolean shouldMigrateLedgerTotals = migrationInfoList
+        .stream()
+        .noneMatch(migrationInfo -> migrationInfo.getVersion().getVersion().equals("9"));
+
+    flyway.migrate();
 
     final String versionNumber = "1";
 
@@ -129,6 +161,21 @@ public class MigrationCommandHandler {
     cassandraJourney.start(updateRouteVersion2);
     cassandraJourney.start(updateRouteVersion3);
 
+    if (shouldMigrateLedgerTotals) {
+      this.migrateLedgerTotals();
+    }
+
     return versionNumber;
+  }
+
+  private void migrateLedgerTotals() {
+    this.logger.info("Start ledger total migration ...");
+    try (final Stream<AccountEntity> accountEntityStream = this.accountRepository.findByBalanceIsNot(0.00D)) {
+      accountEntityStream.forEach(accountEntity ->
+          this.commandGateway.process(
+              new AddAmountToLedgerTotalCommand(accountEntity.getLedger().getIdentifier(), BigDecimal.valueOf(accountEntity.getBalance()))
+          )
+      );
+    }
   }
 }
