@@ -45,7 +45,7 @@ public class TrialBalanceService {
     final TrialBalance trialBalance = new TrialBalance();
     this.ledgerRepository.findAll().forEach(ledgerEntity -> {
       final BigDecimal totalValue = ledgerEntity.getTotalValue() != null ? ledgerEntity.getTotalValue() : BigDecimal.ZERO;
-      if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) != 0) {
+      if (!includeEmptyEntries && totalValue.compareTo(BigDecimal.ZERO) == 0) {
         return;
       }
       final TrialBalanceEntry trialBalanceEntry = new TrialBalanceEntry();
