@@ -16,8 +16,8 @@
 package io.mifos.accounting.service.rest;
 
 import io.mifos.accounting.api.v1.PermittableGroupIds;
-import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatement;
-import io.mifos.accounting.service.internal.service.IncomeStatementService;
+import io.mifos.accounting.api.v1.domain.financial.statement.FinancialCondition;
+import io.mifos.accounting.service.internal.service.FinancialConditionService;
 import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,25 +29,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/incomestatement")
-public class IncomeStatementController {
+@RequestMapping("/financialcondition")
+public class FinancialConditionController {
 
-  private final IncomeStatementService incomeStatementService;
+  private final FinancialConditionService financialConditionService;
 
   @Autowired
-  public IncomeStatementController(final IncomeStatementService incomeStatementService) {
+  public FinancialConditionController(final FinancialConditionService financialConditionService) {
     super();
-    this.incomeStatementService = incomeStatementService;
+    this.financialConditionService = financialConditionService;
   }
 
-  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_INCOME_STMT)
+  @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_FIN_CONDITION)
   @RequestMapping(
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE},
       consumes = {MediaType.ALL_VALUE}
   )
   @ResponseBody
-  public ResponseEntity<IncomeStatement> getIncomeStatement() {
-    return ResponseEntity.ok(this.incomeStatementService.getIncomeStatement());
+  public ResponseEntity<FinancialCondition> getFinancialCondition() {
+    return ResponseEntity.ok(this.financialConditionService.getFinancialCondition());
   }
 }

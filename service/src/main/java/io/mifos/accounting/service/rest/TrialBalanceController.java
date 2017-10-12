@@ -16,7 +16,7 @@
 package io.mifos.accounting.service.rest;
 
 import io.mifos.accounting.api.v1.PermittableGroupIds;
-import io.mifos.accounting.api.v1.domain.TrialBalance;
+import io.mifos.accounting.api.v1.domain.financial.statement.TrialBalance;
 import io.mifos.accounting.service.internal.service.TrialBalanceService;
 import io.mifos.anubis.annotation.AcceptedTokenType;
 import io.mifos.anubis.annotation.Permittable;

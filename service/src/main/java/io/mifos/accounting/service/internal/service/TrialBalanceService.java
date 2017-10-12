@@ -16,8 +16,8 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.AccountType;
-import io.mifos.accounting.api.v1.domain.TrialBalance;
-import io.mifos.accounting.api.v1.domain.TrialBalanceEntry;
+import io.mifos.accounting.api.v1.domain.financial.statement.TrialBalance;
+import io.mifos.accounting.api.v1.domain.financial.statement.TrialBalanceEntry;
 import io.mifos.accounting.service.internal.mapper.LedgerMapper;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
