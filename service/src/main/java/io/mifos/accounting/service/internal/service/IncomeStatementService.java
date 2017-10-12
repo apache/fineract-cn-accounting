@@ -16,9 +16,9 @@
 package io.mifos.accounting.service.internal.service;
 
 import io.mifos.accounting.api.v1.domain.AccountType;
-import io.mifos.accounting.api.v1.domain.IncomeStatement;
-import io.mifos.accounting.api.v1.domain.IncomeStatementEntry;
-import io.mifos.accounting.api.v1.domain.IncomeStatementSection;
+import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatement;
+import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatementEntry;
+import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatementSection;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
 import io.mifos.core.lang.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;

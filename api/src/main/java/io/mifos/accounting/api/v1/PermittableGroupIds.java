@@ -23,5 +23,6 @@ public interface PermittableGroupIds {
   String THOTH_JOURNAL = "accounting__v1__journal";
   String THOTH_TX_TYPES = "accounting__v1__tx_types";
   String THOTH_INCOME_STMT = "accounting__v1__income_stmt";
+  String THOTH_FIN_CONDITION = "accounting__v1__fin_condition";
 
 }

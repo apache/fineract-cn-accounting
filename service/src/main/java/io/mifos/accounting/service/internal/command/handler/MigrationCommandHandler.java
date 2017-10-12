@@ -21,9 +21,7 @@ import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
-import io.mifos.accounting.service.internal.repository.AccountEntity;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
-import io.mifos.accounting.service.internal.service.AccountService;
 import io.mifos.core.cassandra.core.CassandraJourney;
 import io.mifos.core.cassandra.core.CassandraJourneyFactory;
 import io.mifos.core.cassandra.core.CassandraJourneyRoute;
@@ -45,7 +43,6 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @SuppressWarnings({
     "unused"

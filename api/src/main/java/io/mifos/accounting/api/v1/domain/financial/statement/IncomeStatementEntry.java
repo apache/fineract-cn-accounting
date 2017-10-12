@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.mifos.accounting.api.v1.domain;
+package io.mifos.accounting.api.v1.domain.financial.statement;
 
 import org.hibernate.validator.constraints.NotEmpty;
 

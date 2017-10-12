@@ -20,7 +20,7 @@ import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
-import io.mifos.accounting.api.v1.domain.TrialBalance;
+import io.mifos.accounting.api.v1.domain.financial.statement.TrialBalance;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;

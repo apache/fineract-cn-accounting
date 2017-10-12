@@ -21,13 +21,14 @@ import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.api.v1.domain.AccountEntryPage;
 import io.mifos.accounting.api.v1.domain.AccountPage;
 import io.mifos.accounting.api.v1.domain.ChartOfAccountEntry;
-import io.mifos.accounting.api.v1.domain.IncomeStatement;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.api.v1.domain.LedgerPage;
 import io.mifos.accounting.api.v1.domain.TransactionType;
 import io.mifos.accounting.api.v1.domain.TransactionTypePage;
-import io.mifos.accounting.api.v1.domain.TrialBalance;
+import io.mifos.accounting.api.v1.domain.financial.statement.FinancialCondition;
+import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatement;
+import io.mifos.accounting.api.v1.domain.financial.statement.TrialBalance;
 import io.mifos.core.api.annotation.ThrowsException;
 import io.mifos.core.api.annotation.ThrowsExceptions;
 import io.mifos.core.api.util.CustomFeignClientsConfiguration;
@@ -407,4 +408,12 @@ public interface LedgerManager {
       consumes = {MediaType.APPLICATION_JSON_VALUE}
   )
   IncomeStatement getIncomeStatement();
+
+  @RequestMapping(
+      value = "/financialcondition",
+      method = RequestMethod.GET,
+      produces = {MediaType.ALL_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE}
+  )
+  FinancialCondition getFinancialCondition();
 }
