@@ -18,7 +18,6 @@ package io.mifos.accounting.service.internal.command.handler;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.service.ServiceConstants;
-import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
 import io.mifos.accounting.service.internal.command.AddSubLedgerCommand;
 import io.mifos.accounting.service.internal.command.CreateLedgerCommand;
 import io.mifos.accounting.service.internal.command.DeleteLedgerCommand;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -168,27 +166,6 @@ public class LedgerCommandHandler {
 
         this.logger.debug("Sub ledger {} created.", subLedger.getIdentifier());
       }
-    }
-  }
-
-  @Transactional
-  @CommandHandler
-  @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.PUT_LEDGER)
-  public String process(final AddAmountToLedgerTotalCommand addAmountToLedgerTotalCommand) {
-    final BigDecimal amount = addAmountToLedgerTotalCommand.amount();
-    if (amount.compareTo(BigDecimal.ZERO) != 0) {
-      final LedgerEntity ledger = this.ledgerRepository.findByIdentifier(addAmountToLedgerTotalCommand.ledgerIdentifier());
-      final BigDecimal currentTotal = ledger.getTotalValue() != null ? ledger.getTotalValue() : BigDecimal.ZERO;
-      ledger.setTotalValue(currentTotal.add(amount));
-      final LedgerEntity savedLedger = this.ledgerRepository.save(ledger);
-      if (savedLedger.getParentLedger() != null) {
-        this.commandGateway.process(
-            new AddAmountToLedgerTotalCommand(savedLedger.getParentLedger().getIdentifier(), amount)
-        );
-      }
-      return savedLedger.getIdentifier();
-    } else {
-      return null;
     }
   }
 }

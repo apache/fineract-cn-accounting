@@ -27,49 +27,70 @@ import io.mifos.accounting.util.LedgerGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 public class TestTrialBalance extends AbstractAccountingTest {
   @Test
   public void shouldGenerateTrialBalance() throws Exception {
-    final Ledger ledgerOne = LedgerGenerator.createRandomLedger();
-    this.testSubject.createLedger(ledgerOne);
-    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledgerOne.getIdentifier());
+    final Ledger assetLedger = LedgerGenerator.createRandomLedger();
+    this.testSubject.createLedger(assetLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedger.getIdentifier());
 
-    final Ledger subLedgerOne = LedgerGenerator.createRandomLedger();
-    this.testSubject.addSubLedger(ledgerOne.getIdentifier(), subLedgerOne);
-    this.eventRecorder.wait(EventConstants.POST_LEDGER, subLedgerOne.getIdentifier());
+    final Ledger assetSubLedgerOne = LedgerGenerator.createRandomLedger();
+    this.testSubject.addSubLedger(assetLedger.getIdentifier(), assetSubLedgerOne);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetSubLedgerOne.getIdentifier());
 
-    final Ledger ledgerTwo = LedgerGenerator.createRandomLedger();
-    ledgerTwo.setType(AccountType.LIABILITY.name());
-    this.testSubject.createLedger(ledgerTwo);
-    this.eventRecorder.wait(EventConstants.POST_LEDGER, ledgerTwo.getIdentifier());
+    final Ledger assetSubLedgerTwo = LedgerGenerator.createRandomLedger();
+    this.testSubject.addSubLedger(assetLedger.getIdentifier(), assetSubLedgerTwo);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, assetSubLedgerTwo.getIdentifier());
 
-    final Account account4ledgerOne = AccountGenerator.createRandomAccount(ledgerOne.getIdentifier());
+    final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
+    liabilityLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.createLedger(liabilityLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
+
+    final Ledger liabilitySubLedger = LedgerGenerator.createRandomLedger();
+    liabilitySubLedger.setType(AccountType.LIABILITY.name());
+    this.testSubject.addSubLedger(liabilityLedger.getIdentifier(), liabilitySubLedger);
+    this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilitySubLedger.getIdentifier());
+
+    final Account account4ledgerOne = AccountGenerator.createRandomAccount(assetSubLedgerOne.getIdentifier());
     this.testSubject.createAccount(account4ledgerOne);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account4ledgerOne.getIdentifier());
 
-    final Account account4subLedgerOne = AccountGenerator.createRandomAccount(subLedgerOne.getIdentifier());
+    final Account secondAccount4ledgerOne = AccountGenerator.createRandomAccount(assetSubLedgerOne.getIdentifier());
+    this.testSubject.createAccount(secondAccount4ledgerOne);
+    this.eventRecorder.wait(EventConstants.POST_ACCOUNT, secondAccount4ledgerOne.getIdentifier());
+
+    final Account account4subLedgerOne = AccountGenerator.createRandomAccount(assetSubLedgerTwo.getIdentifier());
     this.testSubject.createAccount(account4subLedgerOne);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account4subLedgerOne.getIdentifier());
 
-    final Account account4ledgerTwo = AccountGenerator.createRandomAccount(ledgerTwo.getIdentifier());
+    final Account account4ledgerTwo = AccountGenerator.createRandomAccount(liabilitySubLedger.getIdentifier());
     account4ledgerTwo.setType(AccountType.LIABILITY.name());
     this.testSubject.createAccount(account4ledgerTwo);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, account4ledgerTwo.getIdentifier());
 
     final JournalEntry firstBooking =
-        JournalEntryGenerator.createRandomJournalEntry(account4ledgerOne, "50.00", account4ledgerTwo, "50.00");
+        JournalEntryGenerator.createRandomJournalEntry(secondAccount4ledgerOne, "50.00", account4ledgerTwo, "50.00");
     this.testSubject.createJournalEntry(firstBooking);
     this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, firstBooking.getTransactionIdentifier());
 
     final JournalEntry secondBooking =
-        JournalEntryGenerator.createRandomJournalEntry(account4subLedgerOne, "50.00", account4ledgerTwo, "50.00");
+        JournalEntryGenerator.createRandomJournalEntry(secondAccount4ledgerOne, "50.00", account4ledgerOne, "50.00");
     this.testSubject.createJournalEntry(secondBooking);
     this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, secondBooking.getTransactionIdentifier());
+
+    final JournalEntry thirdBooking =
+        JournalEntryGenerator.createRandomJournalEntry(account4subLedgerOne, "50.00", account4ledgerTwo, "50.00");
+    this.testSubject.createJournalEntry(thirdBooking);
+    this.eventRecorder.wait(EventConstants.RELEASE_JOURNAL_ENTRY, thirdBooking.getTransactionIdentifier());
 
     final TrialBalance trialBalance = this.testSubject.getTrialBalance(true);
     Assert.assertNotNull(trialBalance);
     Assert.assertEquals(3, trialBalance.getTrialBalanceEntries().size());
-    Assert.assertEquals(100.00D, trialBalance.getDebitTotal(), 0.00D);
-    Assert.assertEquals(100.00D, trialBalance.getCreditTotal(), 0.00D);
+    final BigDecimal expectedValue = BigDecimal.valueOf(100.00D);
+    Assert.assertTrue(trialBalance.getDebitTotal().compareTo(expectedValue) == 0);
+    Assert.assertTrue(trialBalance.getCreditTotal().compareTo(expectedValue) == 0);
   }
 }
