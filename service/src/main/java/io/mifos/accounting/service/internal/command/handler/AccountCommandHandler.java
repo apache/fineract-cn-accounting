@@ -21,7 +21,7 @@ import io.mifos.accounting.api.v1.domain.AccountCommand;
 import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.api.v1.domain.AccountType;
 import io.mifos.accounting.api.v1.domain.JournalEntry;
-import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
+import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.BookJournalEntryCommand;
 import io.mifos.accounting.service.internal.command.CloseAccountCommand;
 import io.mifos.accounting.service.internal.command.CreateAccountCommand;
@@ -48,7 +48,9 @@ import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
 import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.lang.ServiceException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,7 @@ import java.util.stream.Collectors;
 @Aggregate
 public class AccountCommandHandler {
 
+  private final Logger logger;
   private final CommandGateway commandGateway;
   private final AccountRepository accountRepository;
   private final AccountEntryRepository accountEntryRepository;
@@ -71,7 +74,7 @@ public class AccountCommandHandler {
   private final CommandRepository commandRepository;
 
   @Autowired
-  public AccountCommandHandler(//@Qualifier(ThothServiceConstants.LOGGER_NAME) final Logger logger,
+  public AccountCommandHandler(@Qualifier(ServiceConstants.LOGGER_NAME) final Logger logger,
                                final CommandGateway commandGateway,
                                final AccountRepository accountRepository,
                                final AccountEntryRepository accountEntryRepository,
@@ -79,6 +82,7 @@ public class AccountCommandHandler {
                                final JournalEntryRepository journalEntryRepository,
                                final CommandRepository commandRepository) {
     super();
+    this.logger = logger;
     this.commandGateway = commandGateway;
     this.accountRepository = accountRepository;
     this.accountEntryRepository = accountEntryRepository;
@@ -353,9 +357,7 @@ public class AccountCommandHandler {
             accountEntryEntity.setMessage(journalEntryEntity.getMessage());
             accountEntryEntity.setTransactionDate(journalEntryEntity.getTransactionDate());
             this.accountEntryRepository.save(accountEntryEntity);
-            this.commandGateway.process(
-                new AddAmountToLedgerTotalCommand(savedAccountEntity.getLedger().getIdentifier(), amount)
-            );
+            this.adjustLedgerTotals(savedAccountEntity.getLedger().getIdentifier(), amount);
           });
       // process all creditors
       journalEntryEntity.getCreditors()
@@ -388,9 +390,7 @@ public class AccountCommandHandler {
             accountEntryEntity.setMessage(journalEntryEntity.getMessage());
             accountEntryEntity.setTransactionDate(journalEntryEntity.getTransactionDate());
             this.accountEntryRepository.save(accountEntryEntity);
-            this.commandGateway.process(
-                new AddAmountToLedgerTotalCommand(savedAccountEntity.getLedger().getIdentifier(), amount)
-            );
+            this.adjustLedgerTotals(savedAccountEntity.getLedger().getIdentifier(), amount);
           });
       this.commandGateway.process(new ReleaseJournalEntryCommand(transactionIdentifier));
       return transactionIdentifier;
@@ -411,5 +411,16 @@ public class AccountCommandHandler {
 
     this.accountRepository.delete(accountEntity);
     return accountIdentifier;
+  }
+
+  @Transactional
+  public void adjustLedgerTotals(final String ledgerIdentifier, final BigDecimal amount) {
+    final LedgerEntity ledger = this.ledgerRepository.findByIdentifier(ledgerIdentifier);
+    final BigDecimal currentTotal = ledger.getTotalValue() != null ? ledger.getTotalValue() : BigDecimal.ZERO;
+    ledger.setTotalValue(currentTotal.add(amount));
+    final LedgerEntity savedLedger = this.ledgerRepository.save(ledger);
+    if (savedLedger.getParentLedger() != null) {
+      this.adjustLedgerTotals(savedLedger.getParentLedger().getIdentifier(), amount);
+    }
   }
 }

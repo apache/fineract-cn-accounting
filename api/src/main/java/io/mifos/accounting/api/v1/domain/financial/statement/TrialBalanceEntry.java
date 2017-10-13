@@ -17,12 +17,14 @@ package io.mifos.accounting.api.v1.domain.financial.statement;
 
 import io.mifos.accounting.api.v1.domain.Ledger;
 
+import java.math.BigDecimal;
+
 @SuppressWarnings("WeakerAccess")
 public class TrialBalanceEntry {
 
   private Ledger ledger;
   private Type type;
-  private Double amount;
+  private BigDecimal amount;
 
   public TrialBalanceEntry() {
     super();
@@ -44,11 +46,11 @@ public class TrialBalanceEntry {
     this.type = Type.valueOf(type);
   }
 
-  public Double getAmount() {
+  public BigDecimal getAmount() {
     return this.amount;
   }
 
-  public void setAmount(final Double amount) {
+  public void setAmount(final BigDecimal amount) {
     this.amount = amount;
   }
 

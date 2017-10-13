@@ -15,6 +15,7 @@
  */
 package io.mifos.accounting.api.v1.domain.financial.statement;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,8 @@ import java.util.List;
 public class TrialBalance {
 
   private List<TrialBalanceEntry> trialBalanceEntries;
-  private Double debitTotal;
-  private Double creditTotal;
+  private BigDecimal debitTotal;
+  private BigDecimal creditTotal;
 
   public TrialBalance() {
     super();
@@ -40,19 +41,19 @@ public class TrialBalance {
     this.trialBalanceEntries = trialBalanceEntries;
   }
 
-  public Double getDebitTotal() {
+  public BigDecimal getDebitTotal() {
     return this.debitTotal;
   }
 
-  public void setDebitTotal(final Double debitTotal) {
+  public void setDebitTotal(final BigDecimal debitTotal) {
     this.debitTotal = debitTotal;
   }
 
-  public Double getCreditTotal() {
+  public BigDecimal getCreditTotal() {
     return this.creditTotal;
   }
 
-  public void setCreditTotal(final Double creditTotal) {
+  public void setCreditTotal(final BigDecimal creditTotal) {
     this.creditTotal = creditTotal;
   }
 }

@@ -19,7 +19,6 @@ import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.schemabuilder.SchemaBuilder;
 import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.service.ServiceConstants;
-import io.mifos.accounting.service.internal.command.AddAmountToLedgerTotalCommand;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
 import io.mifos.core.cassandra.core.CassandraJourney;
@@ -30,7 +29,6 @@ import io.mifos.core.command.annotation.Aggregate;
 import io.mifos.core.command.annotation.CommandHandler;
 import io.mifos.core.command.annotation.CommandLogLevel;
 import io.mifos.core.command.annotation.EventEmitter;
-import io.mifos.core.command.gateway.CommandGateway;
 import io.mifos.core.mariadb.domain.FlywayFactoryBean;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
@@ -38,6 +36,7 @@ import org.flywaydb.core.api.MigrationInfoService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -55,8 +54,8 @@ public class MigrationCommandHandler {
   private final FlywayFactoryBean flywayFactoryBean;
   private final CassandraSessionProvider cassandraSessionProvider;
   private final CassandraJourneyFactory cassandraJourneyFactory;
-  private final CommandGateway commandGateway;
   private final AccountRepository accountRepository;
+  private final AccountCommandHandler accountCommandHandler;
 
   @SuppressWarnings("SpringJavaAutowiringInspection")
   @Autowired
@@ -65,18 +64,19 @@ public class MigrationCommandHandler {
                                  final FlywayFactoryBean flywayFactoryBean,
                                  final CassandraSessionProvider cassandraSessionProvider,
                                  final CassandraJourneyFactory cassandraJourneyFactory,
-                                 final CommandGateway commandGateway,
-                                 final AccountRepository accountRepository) {
+                                 final AccountRepository accountRepository,
+                                 final AccountCommandHandler accountCommandHandler) {
     super();
     this.logger = logger;
     this.dataSource = dataSource;
     this.flywayFactoryBean = flywayFactoryBean;
     this.cassandraSessionProvider = cassandraSessionProvider;
     this.cassandraJourneyFactory = cassandraJourneyFactory;
-    this.commandGateway = commandGateway;
     this.accountRepository = accountRepository;
+    this.accountCommandHandler = accountCommandHandler;
   }
 
+  @Transactional
   @CommandHandler(logStart = CommandLogLevel.DEBUG, logFinish = CommandLogLevel.DEBUG)
   @EventEmitter(selectorName = EventConstants.SELECTOR_NAME, selectorValue = EventConstants.INITIALIZE)
   public String initialize(final InitializeServiceCommand initializeServiceCommand) {
@@ -165,13 +165,12 @@ public class MigrationCommandHandler {
     return versionNumber;
   }
 
-  private void migrateLedgerTotals() {
+  public void migrateLedgerTotals() {
     this.logger.info("Start ledger total migration ...");
 
     this.accountRepository.findByBalanceIsNot(0.00D).forEach(accountEntity ->
-        this.commandGateway.process(
-            new AddAmountToLedgerTotalCommand(accountEntity.getLedger().getIdentifier(), BigDecimal.valueOf(accountEntity.getBalance()))
-        )
+      this.accountCommandHandler.adjustLedgerTotals(accountEntity.getLedger().getIdentifier(),
+          BigDecimal.valueOf(accountEntity.getBalance()))
     );
   }
 }
