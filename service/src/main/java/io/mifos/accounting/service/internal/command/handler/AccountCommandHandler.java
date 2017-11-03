@@ -136,7 +136,7 @@ public class AccountCommandHandler {
     accountEntity.setCreatedBy(UserContextHolder.checkedGetUser());
     accountEntity.setCreatedOn(LocalDateTime.now(Clock.systemUTC()));
 
-    this.accountRepository.save(accountEntity);
+    final AccountEntity savedAccountEntity = this.accountRepository.save(accountEntity);
 
     if (referenceAccount != null) {
       referenceAccount.setLastModifiedBy(UserContextHolder.checkedGetUser());
@@ -145,6 +145,11 @@ public class AccountCommandHandler {
     }
 
     this.ledgerRepository.save(ledger);
+
+    if (savedAccountEntity.getBalance() != null && savedAccountEntity.getBalance() != 0.00D) {
+      this.adjustLedgerTotals(
+          savedAccountEntity.getLedger().getIdentifier(), BigDecimal.valueOf(savedAccountEntity.getBalance()));
+    }
 
     return account.getIdentifier();
   }
