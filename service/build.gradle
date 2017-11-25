@@ -34,7 +34,7 @@ dependencies {
             [group: 'io.mifos.customer', name: 'api', version: versions.frameworkcustomer],
             [group: 'io.mifos.anubis', name: 'library', version: versions.frameworkanubis],
             [group: 'com.google.code.gson', name: 'gson'],
-            [group: 'io.mifos.core', name: 'lang', version: versions.frameworkanubis],
+            [group: 'io.mifos.core', name: 'lang', version: versions.frameworklang],
             [group: 'io.mifos.core', name: 'async', version: versions.frameworkasync],
             [group: 'io.mifos.core', name: 'cassandra', version: versions.frameworkcassandra],
             [group: 'io.mifos.core', name: 'mariadb', version: versions.frameworkmariadb],
