@@ -30,15 +30,15 @@ dependencies {
             [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'],
             [group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka'],
             [group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'],
-            [group: 'io.mifos.accounting', name: 'api', version: project.version],
-            [group: 'io.mifos.customer', name: 'api', version: versions.frameworkcustomer],
-            [group: 'io.mifos.anubis', name: 'library', version: versions.frameworkanubis],
+            [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
+            [group: 'org.apache.fineract.cn.customer', name: 'api', version: versions.frameworkcustomer],
+            [group: 'org.apache.fineract.cn.anubis', name: 'library', version: versions.frameworkanubis],
             [group: 'com.google.code.gson', name: 'gson'],
-            [group: 'io.mifos.core', name: 'lang', version: versions.frameworklang],
-            [group: 'io.mifos.core', name: 'async', version: versions.frameworkasync],
-            [group: 'io.mifos.core', name: 'cassandra', version: versions.frameworkcassandra],
-            [group: 'io.mifos.core', name: 'mariadb', version: versions.frameworkmariadb],
-            [group: 'io.mifos.core', name: 'command', version: versions.frameworkcommand],
+            [group: 'org.apache.fineract.cn', name: 'lang', version: versions.frameworklang],
+            [group: 'org.apache.fineract.cn', name: 'async', version: versions.frameworkasync],
+            [group: 'org.apache.fineract.cn', name: 'cassandra', version: versions.frameworkcassandra],
+            [group: 'org.apache.fineract.cn', name: 'mariadb', version: versions.frameworkmariadb],
+            [group: 'org.apache.fineract.cn', name: 'command', version: versions.frameworkcommand],
             [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
     )
 }
