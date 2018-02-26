@@ -20,13 +20,13 @@ apply from: '../shared.gradle'
 
 dependencies {
     compile(
-            [group: 'io.mifos.accounting', name: 'api', version: project.version],
-            [group: 'io.mifos.accounting', name: 'service', version: project.version],
-            [group: 'io.mifos.accounting', name: 'importer', version: project.version],
-            [group: 'io.mifos.anubis', name: 'test', version: versions.frameworkanubis],
-            [group: 'io.mifos.core', name: 'api', version: versions.frameworkapi],
-            [group: 'io.mifos.core', name: 'test', version: versions.frameworktest],
-            [group: 'io.mifos.core', name: 'lang', version: versions.frameworklang],
+            [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
+            [group: 'org.apache.fineract.cn.accounting', name: 'service', version: project.version],
+            [group: 'org.apache.fineract.cn.accounting', name: 'importer', version: project.version],
+            [group: 'org.apache.fineract.cn.anubis', name: 'test', version: versions.frameworkanubis],
+            [group: 'org.apache.fineract.cn', name: 'api', version: versions.frameworkapi],
+            [group: 'org.apache.fineract.cn', name: 'test', version: versions.frameworktest],
+            [group: 'org.apache.fineract.cn', name: 'lang', version: versions.frameworklang],
             [group: 'org.springframework.boot', name: 'spring-boot-starter-test']
     )
 }

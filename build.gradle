@@ -1,4 +1,4 @@
-group 'io.mifos'
+group 'org.apache.fineract.cn'
 
 task publishApiToMavenLocal {
     dependsOn gradle.includedBuild('api').task(':publishToMavenLocal')

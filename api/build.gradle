@@ -17,12 +17,12 @@ apply from: '../shared.gradle'
 dependencies {
     compile(
             [group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign'],
-            [group: 'io.mifos.core', name: 'api', version: versions.frameworkapi],
+            [group: 'org.apache.fineract.cn', name: 'api', version: versions.frameworkapi],
             [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
     )
 
     testCompile(
-            [group: 'io.mifos.core', name: 'test', version: versions.frameworktest],
+            [group: 'org.apache.fineract.cn', name: 'test', version: versions.frameworktest],
     )
 }
 

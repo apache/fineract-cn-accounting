@@ -20,7 +20,7 @@ apply from: '../shared.gradle'
 
 dependencies {
     compile(
-            [group: 'io.mifos.accounting', name: 'api', version: project.version],
+            [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
             [group: 'org.apache.commons', name: 'commons-csv', version: versions.apachecsvreader]
     )
 }

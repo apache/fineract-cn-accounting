@@ -1,4 +1,4 @@
-group 'io.mifos.accounting'
+group 'org.apache.fineract.cn.accounting'
 version '0.1.0-BUILD-SNAPSHOT'
 
 ext.versions = [
