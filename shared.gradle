@@ -68,5 +68,5 @@ license {
         yaml = 'SCRIPT_STYLE'
     }
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    ext.name = 'The Mifos Initiative'
+    ext.name = 'The Apache Software Foundation'
 }
