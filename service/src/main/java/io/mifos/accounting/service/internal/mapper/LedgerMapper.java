@@ -20,9 +20,8 @@ package io.mifos.accounting.service.internal.mapper;
 
 import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.service.internal.repository.LedgerEntity;
-import io.mifos.core.lang.DateConverter;
-
 import java.math.BigDecimal;
+import org.apache.fineract.cn.lang.DateConverter;
 
 public class LedgerMapper {
 

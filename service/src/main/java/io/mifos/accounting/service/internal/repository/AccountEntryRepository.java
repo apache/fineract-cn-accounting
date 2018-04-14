@@ -18,16 +18,15 @@
  */
 package io.mifos.accounting.service.internal.repository;
 
-import io.mifos.core.mariadb.util.LocalDateTimeConverter;
+import java.time.LocalDateTime;
+import javax.persistence.Convert;
+import org.apache.fineract.cn.mariadb.util.LocalDateTimeConverter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.Convert;
-import java.time.LocalDateTime;
 
 @Repository
 public interface AccountEntryRepository extends JpaRepository<AccountEntryEntity, Long> {

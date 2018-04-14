@@ -18,14 +18,14 @@
  */
 package io.mifos.accounting.service;
 
-import io.mifos.anubis.config.EnableAnubis;
-import io.mifos.core.async.config.EnableAsync;
-import io.mifos.core.cassandra.config.EnableCassandra;
-import io.mifos.core.command.config.EnableCommandProcessing;
-import io.mifos.core.lang.config.EnableServiceException;
-import io.mifos.core.lang.config.EnableTenantContext;
-import io.mifos.core.mariadb.config.EnableMariaDB;
-import io.mifos.customer.api.v1.client.CustomerManager;
+import org.apache.fineract.cn.anubis.config.EnableAnubis;
+import org.apache.fineract.cn.async.config.EnableAsync;
+import org.apache.fineract.cn.cassandra.config.EnableCassandra;
+import org.apache.fineract.cn.command.config.EnableCommandProcessing;
+import org.apache.fineract.cn.customer.api.v1.client.CustomerManager;
+import org.apache.fineract.cn.lang.config.EnableServiceException;
+import org.apache.fineract.cn.lang.config.EnableTenantContext;
+import org.apache.fineract.cn.mariadb.config.EnableMariaDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

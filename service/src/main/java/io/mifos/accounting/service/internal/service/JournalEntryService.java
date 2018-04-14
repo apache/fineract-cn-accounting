@@ -26,12 +26,6 @@ import io.mifos.accounting.service.internal.repository.JournalEntryEntity;
 import io.mifos.accounting.service.internal.repository.JournalEntryRepository;
 import io.mifos.accounting.service.internal.repository.TransactionTypeEntity;
 import io.mifos.accounting.service.internal.repository.TransactionTypeRepository;
-import io.mifos.core.lang.DateRange;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +33,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.fineract.cn.lang.DateRange;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JournalEntryService {

@@ -18,8 +18,7 @@
  */
 package io.mifos.accounting.service.internal.repository;
 
-import io.mifos.core.mariadb.util.LocalDateTimeConverter;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -30,7 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import org.apache.fineract.cn.mariadb.util.LocalDateTimeConverter;
 
 @SuppressWarnings({"unused"})
 @Entity

@@ -29,11 +29,6 @@ import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
-import io.mifos.core.lang.DateConverter;
-import org.apache.commons.lang.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -41,6 +36,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.fineract.cn.lang.DateConverter;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestJournalEntry extends AbstractAccountingTest {
 

@@ -18,17 +18,16 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import io.mifos.core.lang.DateConverter;
-import io.mifos.core.test.domain.ValidationTest;
-import io.mifos.core.test.domain.ValidationTestCase;
-import org.apache.commons.lang.RandomStringUtils;
-import org.junit.runners.Parameterized;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.fineract.cn.lang.DateConverter;
+import org.apache.fineract.cn.test.domain.ValidationTest;
+import org.apache.fineract.cn.test.domain.ValidationTestCase;
+import org.junit.runners.Parameterized;
 
 /**
  * @author Myrle Krantz

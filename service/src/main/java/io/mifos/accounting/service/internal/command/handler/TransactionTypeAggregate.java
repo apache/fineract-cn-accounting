@@ -25,14 +25,13 @@ import io.mifos.accounting.service.internal.command.CreateTransactionTypeCommand
 import io.mifos.accounting.service.internal.mapper.TransactionTypeMapper;
 import io.mifos.accounting.service.internal.repository.TransactionTypeEntity;
 import io.mifos.accounting.service.internal.repository.TransactionTypeRepository;
-import io.mifos.core.command.annotation.Aggregate;
-import io.mifos.core.command.annotation.CommandHandler;
-import io.mifos.core.command.annotation.CommandLogLevel;
-import io.mifos.core.command.annotation.EventEmitter;
+import java.util.Optional;
+import org.apache.fineract.cn.command.annotation.Aggregate;
+import org.apache.fineract.cn.command.annotation.CommandHandler;
+import org.apache.fineract.cn.command.annotation.CommandLogLevel;
+import org.apache.fineract.cn.command.annotation.EventEmitter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @SuppressWarnings("unused")
 @Aggregate

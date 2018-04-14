@@ -25,17 +25,16 @@ import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Result;
-import io.mifos.core.cassandra.core.CassandraSessionProvider;
-import io.mifos.core.cassandra.core.TenantAwareCassandraMapperProvider;
-import io.mifos.core.cassandra.core.TenantAwareEntityTemplate;
-import io.mifos.core.lang.DateConverter;
-import io.mifos.core.lang.DateRange;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.fineract.cn.cassandra.core.CassandraSessionProvider;
+import org.apache.fineract.cn.cassandra.core.TenantAwareCassandraMapperProvider;
+import org.apache.fineract.cn.cassandra.core.TenantAwareEntityTemplate;
+import org.apache.fineract.cn.lang.DateConverter;
+import org.apache.fineract.cn.lang.DateRange;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 @SuppressWarnings({"unused"})
 @Repository

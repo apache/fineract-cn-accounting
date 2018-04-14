@@ -18,11 +18,10 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import io.mifos.core.lang.validation.constraints.ValidIdentifier;
-
+import java.util.Objects;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
+import org.apache.fineract.cn.lang.validation.constraints.ValidIdentifier;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Creditor {

@@ -20,7 +20,7 @@ package io.mifos.accounting.service.internal.mapper;
 
 import io.mifos.accounting.api.v1.domain.AccountEntry;
 import io.mifos.accounting.service.internal.repository.AccountEntryEntity;
-import io.mifos.core.lang.DateConverter;
+import org.apache.fineract.cn.lang.DateConverter;
 
 public class AccountEntryMapper {
 

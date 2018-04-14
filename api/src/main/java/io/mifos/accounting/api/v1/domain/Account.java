@@ -18,13 +18,12 @@
  */
 package io.mifos.accounting.api.v1.domain;
 
-import io.mifos.core.lang.validation.constraints.ValidIdentifier;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
+import javax.validation.constraints.NotNull;
+import org.apache.fineract.cn.lang.validation.constraints.ValidIdentifier;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Account {

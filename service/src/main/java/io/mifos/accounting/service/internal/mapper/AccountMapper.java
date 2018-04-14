@@ -20,11 +20,10 @@ package io.mifos.accounting.service.internal.mapper;
 
 import io.mifos.accounting.api.v1.domain.Account;
 import io.mifos.accounting.service.internal.repository.AccountEntity;
-import io.mifos.core.lang.DateConverter;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Arrays;
 import java.util.HashSet;
+import org.apache.commons.lang.StringUtils;
+import org.apache.fineract.cn.lang.DateConverter;
 
 public class AccountMapper {
 

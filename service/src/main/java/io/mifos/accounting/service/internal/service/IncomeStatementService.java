@@ -23,13 +23,12 @@ import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatement;
 import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatementEntry;
 import io.mifos.accounting.api.v1.domain.financial.statement.IncomeStatementSection;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
-import io.mifos.core.lang.DateConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import org.apache.fineract.cn.lang.DateConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class IncomeStatementService {

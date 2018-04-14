@@ -23,14 +23,13 @@ import io.mifos.accounting.api.v1.domain.financial.statement.FinancialCondition;
 import io.mifos.accounting.api.v1.domain.financial.statement.FinancialConditionEntry;
 import io.mifos.accounting.api.v1.domain.financial.statement.FinancialConditionSection;
 import io.mifos.accounting.service.internal.repository.LedgerRepository;
-import io.mifos.core.lang.DateConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import org.apache.fineract.cn.lang.DateConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FinancialConditionService {

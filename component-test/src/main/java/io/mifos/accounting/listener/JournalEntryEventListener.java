@@ -20,8 +20,8 @@ package io.mifos.accounting.listener;
 
 import io.mifos.accounting.AbstractAccountingTest;
 import io.mifos.accounting.api.v1.EventConstants;
-import io.mifos.core.lang.config.TenantHeaderFilter;
-import io.mifos.core.test.listener.EventRecorder;
+import org.apache.fineract.cn.lang.config.TenantHeaderFilter;
+import org.apache.fineract.cn.test.listener.EventRecorder;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -24,15 +24,19 @@ import io.mifos.accounting.api.v1.EventConstants;
 import io.mifos.accounting.service.ServiceConstants;
 import io.mifos.accounting.service.internal.command.InitializeServiceCommand;
 import io.mifos.accounting.service.internal.repository.AccountRepository;
-import io.mifos.core.cassandra.core.CassandraJourney;
-import io.mifos.core.cassandra.core.CassandraJourneyFactory;
-import io.mifos.core.cassandra.core.CassandraJourneyRoute;
-import io.mifos.core.cassandra.core.CassandraSessionProvider;
-import io.mifos.core.command.annotation.Aggregate;
-import io.mifos.core.command.annotation.CommandHandler;
-import io.mifos.core.command.annotation.CommandLogLevel;
-import io.mifos.core.command.annotation.EventEmitter;
-import io.mifos.core.mariadb.domain.FlywayFactoryBean;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import javax.sql.DataSource;
+import org.apache.fineract.cn.cassandra.core.CassandraJourney;
+import org.apache.fineract.cn.cassandra.core.CassandraJourneyFactory;
+import org.apache.fineract.cn.cassandra.core.CassandraJourneyRoute;
+import org.apache.fineract.cn.cassandra.core.CassandraSessionProvider;
+import org.apache.fineract.cn.command.annotation.Aggregate;
+import org.apache.fineract.cn.command.annotation.CommandHandler;
+import org.apache.fineract.cn.command.annotation.CommandLogLevel;
+import org.apache.fineract.cn.command.annotation.EventEmitter;
+import org.apache.fineract.cn.mariadb.domain.FlywayFactoryBean;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationInfoService;
@@ -40,11 +44,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
 
 @SuppressWarnings({
     "unused"

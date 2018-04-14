@@ -32,11 +32,6 @@ import io.mifos.accounting.api.v1.domain.Ledger;
 import io.mifos.accounting.util.AccountGenerator;
 import io.mifos.accounting.util.JournalEntryGenerator;
 import io.mifos.accounting.util.LedgerGenerator;
-import io.mifos.core.lang.DateRange;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -46,6 +41,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.fineract.cn.lang.DateRange;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class TestAccount extends AbstractAccountingTest {
   @Test
