@@ -42,7 +42,11 @@ public class JournalEntryGenerator {
                                                       final Account creditorAccount,
                                                       final String creditorAmount) {
     return JournalEntryGenerator
-        .createRandomJournalEntry(debtorAccount.getIdentifier(), debtorAmount, creditorAccount.getIdentifier(), creditorAmount);
+        .createRandomJournalEntry(
+            debtorAccount != null ? debtorAccount.getIdentifier() : "randomDebtor",
+            debtorAmount,
+            creditorAccount != null ? creditorAccount.getIdentifier() : "randomCreditor",
+            creditorAmount);
   }
 
   public static JournalEntry createRandomJournalEntry(final String debtorAccount,
