@@ -29,6 +29,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     TestAccount.class,
     TestChartOfAccounts.class,
+    TestFinancialCondition.class,
+    TestIncomeStatement.class,
     TestJournalEntry.class,
     TestLedger.class,
     TestTransactionType.class,
