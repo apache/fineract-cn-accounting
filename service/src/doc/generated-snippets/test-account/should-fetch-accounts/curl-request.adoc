@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/accounts' -i -H 'Accept: */*'
+----

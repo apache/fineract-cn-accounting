@@ -1,0 +1,10 @@
+[source,http,options="nowrap"]
+----
+PUT /accounting/v1/accounts/LhKdYu0aYTAQmBLsNMww2ieYH8Y5rX1p/commands HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Host: localhost:8080
+Content-Length: 32
+
+LhKdYu0aYTAQmBLsNMww2ieYH8Y5rX1p
+----

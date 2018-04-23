@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+GET /accounting/v1/ledgers/GPOImtnt/accounts HTTP/1.1
+Accept: */*
+Content-Type: application/json
+Host: localhost:8080
+
+----

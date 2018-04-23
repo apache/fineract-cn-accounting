@@ -1,0 +1,7 @@
+[source,http,options="nowrap"]
+----
+GET /accounting/v1/accounts/1sbEdwDe/entries HTTP/1.1
+Accept: */*
+Host: localhost:8080
+
+----

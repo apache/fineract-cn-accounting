@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/ledgers' -i -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '6NomITyb'
+----
