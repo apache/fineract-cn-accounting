@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ echo 'GKImphLY' | http POST 'http://localhost:8080/accounting/v1/journal' 'Content-Type:application/json' 'Accept:application/json'
+----

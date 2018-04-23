@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+DELETE /accounting/v1/accounts/UGf89ghtU7EaeEeepgvADsZARq0s0zEt HTTP/1.1
+Accept: */*
+Content-Type: application/json
+Host: localhost:8080
+
+----

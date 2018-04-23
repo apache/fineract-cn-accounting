@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ echo 'PDNPdqCIDqvmPRD71llpzKtVGvWh8RFo' | http PUT 'http://localhost:8080/accounting/v1/accounts/PDNPdqCIDqvmPRD71llpzKtVGvWh8RFo' 'Accept:application/json' 'Content-Type:application/json'
+----

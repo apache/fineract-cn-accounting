@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ echo 'bMpk' | http GET 'http://localhost:8080/accounting/v1/transactiontypes/bMpk' 'Accept:*/*' 'Content-Type:application/json'
+----

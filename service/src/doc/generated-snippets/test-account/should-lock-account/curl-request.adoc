@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/accounts/7iaCoXCmLrFGLRlgGH1dldeAPVOQVeHL/commands' -i -X PUT -H 'Accept: application/json' -H 'Content-Type: application/json' -d '7iaCoXCmLrFGLRlgGH1dldeAPVOQVeHL'
+----

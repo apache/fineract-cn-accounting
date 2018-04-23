@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ http PUT 'http://localhost:8080/accounting/v1/transactiontypes/changeable' 'Accept:application/json' 'Content-Type:application/json'
+----

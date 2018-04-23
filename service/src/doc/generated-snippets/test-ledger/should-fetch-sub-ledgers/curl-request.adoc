@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/ledgers/qq4iM1m2/' -i -H 'Accept: */*' -H 'Content-Type: application/json' -d '[org.apache.fineract.cn.accounting.api.v1.domain.Ledger@6d8d78a]'
+----

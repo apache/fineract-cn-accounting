@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+PUT /accounting/v1/transactiontypes/changeable HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Host: localhost:8080
+
+----

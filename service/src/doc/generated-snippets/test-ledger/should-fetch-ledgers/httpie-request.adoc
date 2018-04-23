@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ http GET 'http://localhost:8080/accounting/v1/ledgers/' 'Accept:*/*' 'Content-Type:application/json'
+----

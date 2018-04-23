@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ echo '[org.apache.fineract.cn.accounting.api.v1.domain.Ledger@6d8d78a]' | http GET 'http://localhost:8080/accounting/v1/ledgers/qq4iM1m2/' 'Accept:*/*' 'Content-Type:application/json'
+----

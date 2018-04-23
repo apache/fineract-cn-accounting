@@ -1,0 +1,7 @@
+[source,http,options="nowrap"]
+----
+GET /accounting/v1/accounts/alt-account-10001 HTTP/1.1
+Accept: application/json
+Host: localhost:8080
+
+----

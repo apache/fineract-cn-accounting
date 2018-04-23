@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/transactiontypes/changeable' -i -X PUT -H 'Accept: application/json' -H 'Content-Type: application/json'
+----

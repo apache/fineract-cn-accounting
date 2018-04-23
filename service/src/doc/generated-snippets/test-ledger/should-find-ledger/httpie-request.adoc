@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ echo 'JMhJyw1e' | http GET 'http://localhost:8080/accounting/v1/ledgers/JMhJyw1e' 'Accept:*/*' 'Content-Type:application/json'
+----

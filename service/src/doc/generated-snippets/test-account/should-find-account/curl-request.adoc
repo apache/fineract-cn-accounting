@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/accounting/v1/accounts/Fhy4B9BTrW6TguvV70Z2CUlekfrqLcXp' -i -H 'Accept: application/json'
+----
