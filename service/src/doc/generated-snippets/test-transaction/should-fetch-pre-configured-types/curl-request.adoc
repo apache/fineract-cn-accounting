@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/accounting/v1/transactiontypes/' -i -H 'Accept: */*' -H 'Content-Type: application/json'
-----

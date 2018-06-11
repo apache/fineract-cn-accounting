@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/accounting/v1/accounts/UGf89ghtU7EaeEeepgvADsZARq0s0zEt' -i -X DELETE -H 'Accept: */*' -H 'Content-Type: application/json'
-----

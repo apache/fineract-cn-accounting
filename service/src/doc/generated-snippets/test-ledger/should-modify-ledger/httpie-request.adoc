@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ http PUT 'http://localhost:8080/accounting/v1/ledgers/8kc9Qdr2' 'Accept:application/json' 'Content-Type:application/json'
-----

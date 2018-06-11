@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ echo 'spfPmPXlY1pR0kS9SCGyiyD3OhX8rDQW' | http POST 'http://localhost:8080/accounting/v1/accounts' 'Content-Type:application/json' 'Accept:application/json'
-----
