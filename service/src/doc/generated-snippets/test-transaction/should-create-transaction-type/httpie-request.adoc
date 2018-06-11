@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ echo 'olmC' | http POST 'http://localhost:8080/accounting/v1/transactiontypes' 'Content-Type:application/json' 'Accept:application/json'
-----

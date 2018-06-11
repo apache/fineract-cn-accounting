@@ -1,7 +1,0 @@
-[source,http,options="nowrap"]
-----
-GET /accounting/v1/accounts/UhcXRbZmTu5YTElN9nUQ6sVLnBjo80cf/commands HTTP/1.1
-Accept: */*
-Host: localhost:8080
-
-----

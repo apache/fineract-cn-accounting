@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ echo '6NomITyb' | http POST 'http://localhost:8080/accounting/v1/ledgers' 'Content-Type:application/json' 'Accept:application/json'
-----

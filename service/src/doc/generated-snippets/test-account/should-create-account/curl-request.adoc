@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/accounting/v1/accounts' -i -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d 'spfPmPXlY1pR0kS9SCGyiyD3OhX8rDQW'
-----

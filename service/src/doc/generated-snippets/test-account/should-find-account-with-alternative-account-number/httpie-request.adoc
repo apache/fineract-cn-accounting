@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ http GET 'http://localhost:8080/accounting/v1/accounts/alt-account-10001' 'Accept:application/json'
-----

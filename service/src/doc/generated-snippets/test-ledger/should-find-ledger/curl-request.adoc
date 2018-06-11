@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/accounting/v1/ledgers/JMhJyw1e' -i -H 'Accept: */*' -H 'Content-Type: application/json' -d 'JMhJyw1e'
-----
