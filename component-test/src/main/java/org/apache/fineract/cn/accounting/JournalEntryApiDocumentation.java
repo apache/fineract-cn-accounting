@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.fineract.cn.accounting;
 
 import com.google.gson.Gson;
@@ -74,7 +92,7 @@ public class JournalEntryApiDocumentation extends AbstractAccountingTest {
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, debtorAccount.getIdentifier());
 
     final Ledger liabilityLedger = LedgerGenerator.createRandomLedger();
-    liabilityLedger.setIdentifier("8100");
+    liabilityLedger.setIdentifier("8120");
     liabilityLedger.setType(AccountType.LIABILITY.name());
     this.testSubject.createLedger(liabilityLedger);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedger.getIdentifier());
@@ -126,26 +144,26 @@ public class JournalEntryApiDocumentation extends AbstractAccountingTest {
   public void documentFetchJournalEntries ( ) throws Exception {
 
     final Ledger assetLedgerOne = LedgerGenerator.createRandomLedger();
-    assetLedgerOne.setIdentifier("7100");
+    assetLedgerOne.setIdentifier("7120");
     assetLedgerOne.setType(AccountType.ASSET.name());
     this.testSubject.createLedger(assetLedgerOne);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, assetLedgerOne.getIdentifier());
 
     final Account accountToDebitOne = AccountGenerator.createRandomAccount(assetLedgerOne.getIdentifier());
-    accountToDebitOne.setIdentifier("7110");
+    accountToDebitOne.setIdentifier("7140");
     accountToDebitOne.setType(AccountType.ASSET.name());
     accountToDebitOne.setBalance(1000.0);
     this.testSubject.createAccount(accountToDebitOne);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, accountToDebitOne.getIdentifier());
 
     final Ledger liabilityLedgerOne = LedgerGenerator.createRandomLedger();
-    liabilityLedgerOne.setIdentifier("8100");
+    liabilityLedgerOne.setIdentifier("8150");
     liabilityLedgerOne.setType(AccountType.LIABILITY.name());
     this.testSubject.createLedger(liabilityLedgerOne);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, liabilityLedgerOne.getIdentifier());
 
     final Account accountToCreditOne = AccountGenerator.createRandomAccount(liabilityLedgerOne.getIdentifier());
-    accountToCreditOne.setIdentifier("8110");
+    accountToCreditOne.setIdentifier("8160");
     accountToCreditOne.setType(AccountType.LIABILITY.name());
     this.testSubject.createAccount(accountToCreditOne);
     this.eventRecorder.wait(EventConstants.POST_ACCOUNT, accountToCreditOne.getIdentifier());
