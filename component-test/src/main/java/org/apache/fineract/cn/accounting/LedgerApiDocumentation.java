@@ -264,14 +264,14 @@ public class LedgerApiDocumentation extends AbstractAccountingTest {
   public void documentAddSubLedger ( ) throws Exception {
 
     final Ledger parentLedger = LedgerGenerator.createRandomLedger();
-    parentLedger.setIdentifier("6200");
+    parentLedger.setIdentifier("6220");
     parentLedger.setName("Name of" + parentLedger.getIdentifier());
     parentLedger.setDescription("Description of " + parentLedger.getIdentifier());
     this.testSubject.createLedger(parentLedger);
     this.eventRecorder.wait(EventConstants.POST_LEDGER, parentLedger.getIdentifier());
 
     final Ledger subLedger = LedgerGenerator.createRandomLedger();
-    subLedger.setIdentifier("6201");
+    subLedger.setIdentifier("6221");
     subLedger.setName("SubLedger One of " + parentLedger.getIdentifier());
     subLedger.setDescription("First Sub Ledger of " + parentLedger.getIdentifier());
 
