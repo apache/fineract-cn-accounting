@@ -62,13 +62,9 @@ public class AccountService {
     this.commandRepository = commandRepository;
   }
 
-  public Optional<Account> findAccount(final String identifier) {
-    final AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
-    if (accountEntity == null) {
-      return Optional.empty();
-    } else {
-      return Optional.of(AccountMapper.map(accountEntity));
-    }
+  public Account findAccount(final String identifier) {
+    AccountEntity accountEntity = this.accountRepository.findByIdentifier(identifier);
+    return accountEntity == null ? null : AccountMapper.map(accountEntity);
   }
 
   public AccountPage fetchAccounts(

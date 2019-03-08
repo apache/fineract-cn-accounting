@@ -85,11 +85,11 @@ public class JournalRestController {
     final Double debtorAmountSum = journalEntry.getDebtors()
         .stream()
         .peek(debtor -> {
-          final Optional<Account> accountOptional = this.accountService.findAccount(debtor.getAccountNumber());
-          if (!accountOptional.isPresent()) {
+          final Account account = this.accountService.findAccount(debtor.getAccountNumber());
+          if (account == null) {
             throw ServiceException.badRequest("Unknown debtor account{0}.", debtor.getAccountNumber());
           }
-          if (!accountOptional.get().getState().equals(Account.State.OPEN.name())) {
+          if (!account.getState().equals(Account.State.OPEN.name())) {
             throw ServiceException.conflict("Debtor account{0} must be in state open.", debtor.getAccountNumber());
           }
         })
@@ -99,11 +99,11 @@ public class JournalRestController {
     final Double creditorAmountSum = journalEntry.getCreditors()
         .stream()
         .peek(creditor -> {
-          final Optional<Account> accountOptional = this.accountService.findAccount(creditor.getAccountNumber());
-          if (!accountOptional.isPresent()) {
+          final Account account = this.accountService.findAccount(creditor.getAccountNumber());
+          if (account == null) {
             throw ServiceException.badRequest("Unknown creditor account{0}.", creditor.getAccountNumber());
           }
-          if (!accountOptional.get().getState().equals(Account.State.OPEN.name())) {
+          if (!account.getState().equals(Account.State.OPEN.name())) {
             throw ServiceException.conflict("Creditor account{0} must be in state open.", creditor.getAccountNumber());
           }
         })

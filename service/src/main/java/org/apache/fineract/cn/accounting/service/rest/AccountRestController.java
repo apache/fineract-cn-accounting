@@ -84,12 +84,11 @@ public class AccountRestController {
   )
   @ResponseBody
   ResponseEntity<Void> createAccount(@RequestBody @Valid final Account account) {
-    if (this.accountService.findAccount(account.getIdentifier()).isPresent()) {
+    if (this.accountService.findAccount(account.getIdentifier()) != null) {
       throw ServiceException.conflict("Account {0} already exists.", account.getIdentifier());
     }
 
-    if (account.getReferenceAccount() != null
-        && !this.accountService.findAccount(account.getReferenceAccount()).isPresent()) {
+    if (account.getReferenceAccount() != null && this.accountService.findAccount(account.getReferenceAccount()) == null) {
       throw ServiceException.badRequest("Reference account {0} not available.",
           account.getReferenceAccount());
     }
@@ -134,12 +133,11 @@ public class AccountRestController {
   )
   @ResponseBody
   ResponseEntity<Account> findAccount(@PathVariable("identifier") final String identifier) {
-    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
-    if (optionalAccount.isPresent()) {
-      return ResponseEntity.ok(optionalAccount.get());
-    } else {
+    final Account account = this.accountService.findAccount(identifier);
+    if (account == null) {
       throw ServiceException.notFound("Account {0} not found.", identifier);
     }
+    return ResponseEntity.ok(account);
   }
 
   @Permittable(value = AcceptedTokenType.TENANT, groupId = PermittableGroupIds.THOTH_ACCOUNT)
@@ -157,12 +155,11 @@ public class AccountRestController {
           identifier, account.getIdentifier());
     }
 
-    if (!this.accountService.findAccount(identifier).isPresent()) {
+    if (this.accountService.findAccount(identifier) == null) {
       throw ServiceException.notFound("Account {0} not found.", identifier);
     }
 
-    if (account.getReferenceAccount() != null
-        && !this.accountService.findAccount(account.getReferenceAccount()).isPresent()) {
+    if (account.getReferenceAccount() != null && this.accountService.findAccount(account.getReferenceAccount()) == null) {
       throw ServiceException.badRequest("Reference account {0} not available.",
           account.getReferenceAccount());
     }
@@ -208,8 +205,7 @@ public class AccountRestController {
   )
   @ThrowsException(status = HttpStatus.NOT_FOUND, exception = AccountNotFoundException.class)
   ResponseEntity<List<AccountCommand>> fetchAccountCommands(@PathVariable("identifier") final String identifier){
-    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
-    if (optionalAccount.isPresent()) {
+    if (this.accountService.findAccount(identifier) != null) {
       return ResponseEntity.ok(this.accountService.fetchCommandsByAccount(identifier));
     } else {
       throw ServiceException.notFound("Account {0} not found.", identifier);
@@ -227,9 +223,8 @@ public class AccountRestController {
   ResponseEntity<Void> accountCommand(@PathVariable("identifier") final String identifier,
                                       @RequestBody @Valid final AccountCommand accountCommand) {
 
-    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
-    if (optionalAccount.isPresent()) {
-      final Account account = optionalAccount.get();
+    final Account account = this.accountService.findAccount(identifier);
+    if (account != null) {
       final Account.State state = Account.State.valueOf(account.getState());
       switch (AccountCommand.Action.valueOf(accountCommand.getAction())) {
         case CLOSE:
@@ -273,8 +268,9 @@ public class AccountRestController {
   )
   @ResponseBody
   ResponseEntity<Void> deleteAccount(@PathVariable("identifier") final String identifier) {
-    final Optional<Account> optionalAccount = this.accountService.findAccount(identifier);
-    final Account account = optionalAccount.orElseThrow(() -> ServiceException.notFound("Account {0} not found", identifier));
+    final Account account = this.accountService.findAccount(identifier);
+    if (account == null)
+      throw ServiceException.notFound("Account {0} not found", identifier);
     if (!account.getState().equals(Account.State.CLOSED.name())) {
       throw ServiceException.conflict("Account {0} is not closed.", identifier);
     }
@@ -302,7 +298,7 @@ public class AccountRestController {
   public
   @ResponseBody
   ResponseEntity<List<AccountCommand>> fetchActions(@PathVariable(value = "identifier") final String identifier) {
-    if (!this.accountService.findAccount(identifier).isPresent()) {
+    if (this.accountService.findAccount(identifier) == null) {
       throw ServiceException.notFound("Account {0} not found", identifier);
     }
     return ResponseEntity.ok(this.accountService.getActions(identifier));
