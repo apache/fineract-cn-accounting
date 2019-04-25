@@ -28,6 +28,7 @@ buildscript {
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
     id("org.nosphere.apache.rat") version "0.3.1"
+    id "com.jfrog.artifactory" version "4.9.5"
 }
 
 apply from: '../shared.gradle'
@@ -50,7 +51,7 @@ publishing {
             from components.java
             groupId project.group
             artifactId project.name
-            version project.version
+            version project.findProperty('externalVersion') ?: project.version
         }
     }
 }
