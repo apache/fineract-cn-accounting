@@ -18,7 +18,7 @@
 --
 
 CREATE TABLE thoth_tx_types (
-  id               BIGINT        NOT NULL AUTO_INCREMENT,
+  id               BIGSERIAL        NOT NULL,
   identifier       VARCHAR(32)   NOT NULL,
   a_name           VARCHAR(256)  NOT NULL,
   description      VARCHAR(2048) NULL,

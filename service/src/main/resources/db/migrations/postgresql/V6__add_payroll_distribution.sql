@@ -18,7 +18,7 @@
 --
 
 CREATE TABLE thoth_payroll_collections (
-  id                    BIGINT       NOT NULL AUTO_INCREMENT,
+  id                    BIGSERIAL    NOT NULL,
   identifier            VARCHAR(32)  NOT NULL,
   source_account_number VARCHAR(34)  NOT NULL,
   created_by            VARCHAR(32)  NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE thoth_payroll_collections (
 );
 
 CREATE TABLE thoth_payroll_payments (
-  id                    BIGINT        NOT NULL AUTO_INCREMENT,
+  id                    BIGSERIAL        NOT NULL,
   collection_identifier VARCHAR(32)   NOT NULL,
   customer_identifier   VARCHAR(34)   NOT NULL,
   employer              VARCHAR(256)  NOT NULL,
