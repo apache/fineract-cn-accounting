@@ -1,17 +1,7 @@
-api/
-component-test/
-gradle/
-gradlew.bat
 LICENSE
 README.md
-settings.gradle
-build.gradle
 docs/
-gradlew
 HEADER
 NOTICE.txt
-service/
 .git/
-.gradle/
 .gitignore
-shared.gradle
