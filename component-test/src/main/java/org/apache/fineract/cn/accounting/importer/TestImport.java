@@ -99,7 +99,7 @@ public class TestImport extends AbstractAccountingTest {
     ledger1100.setName("Income from Loans");
     ledger1100.setParentLedgerIdentifier("1000");
     ledger1100.setShowAccountsInChart(true);
-  
+
     testSubject.addSubLedger(ledger1100.getParentLedgerIdentifier(),ledger1100);
     Assert.assertTrue(eventRecorder.wait(EventConstants.POST_LEDGER, ledger1100.getIdentifier()));
 

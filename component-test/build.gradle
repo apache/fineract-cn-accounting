@@ -33,6 +33,7 @@ buildscript {
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
     id("org.nosphere.apache.rat") version "0.3.1"
+    id "com.jfrog.artifactory" version "4.9.5"
 }
 
 apply from: '../shared.gradle'
@@ -63,8 +64,9 @@ asciidoctor {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        componentTest(MavenPublication) {
             from components.java
+            version project.findProperty('externalVersion') ?: project.version
         }
     }
 }

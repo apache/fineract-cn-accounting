@@ -1,4 +1,4 @@
-# Apache Fineract CN Accounting
+# Apache Fineract CN Accounting [![Build Status](https://api.travis-ci.com/apache/fineract-cn-accounting.svg?branch=develop)](https://travis-ci.com/apache/fineract-cn-accounting)
 
 The accounting service tracks journal entries in accounts, and accounts in ledgers.
 
