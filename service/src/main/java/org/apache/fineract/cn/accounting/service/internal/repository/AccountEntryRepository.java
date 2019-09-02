@@ -20,7 +20,7 @@ package org.apache.fineract.cn.accounting.service.internal.repository;
 
 import java.time.LocalDateTime;
 import javax.persistence.Convert;
-import org.apache.fineract.cn.mariadb.util.LocalDateTimeConverter;
+import org.apache.fineract.cn.postgresql.util.LocalDateTimeConverter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

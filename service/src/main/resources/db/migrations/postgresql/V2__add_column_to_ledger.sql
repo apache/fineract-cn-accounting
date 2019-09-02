@@ -17,4 +17,6 @@
 -- under the License.
 --
 
-ALTER TABLE thoth_accounts MODIFY COLUMN identifier VARCHAR(34) NOT NULL;
+ALTER TABLE thoth_ledgers ADD COLUMN show_accounts_in_chart BOOLEAN NOT NULL DEFAULT TRUE;
+
+ALTER TABLE thoth_ledgers ALTER COLUMN show_accounts_in_chart DROP DEFAULT;

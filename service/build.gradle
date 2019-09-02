@@ -56,7 +56,7 @@ dependencies {
             [group: 'org.apache.fineract.cn', name: 'lang', version: versions.frameworklang],
             [group: 'org.apache.fineract.cn', name: 'async', version: versions.frameworkasync],
             [group: 'org.apache.fineract.cn', name: 'cassandra', version: versions.frameworkcassandra],
-            [group: 'org.apache.fineract.cn', name: 'mariadb', version: versions.frameworkmariadb],
+            [group: 'org.apache.fineract.cn', name: 'postgresql', version: versions.frameworkpostgresql],
             [group: 'org.apache.fineract.cn', name: 'command', version: versions.frameworkcommand],
             [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
     )

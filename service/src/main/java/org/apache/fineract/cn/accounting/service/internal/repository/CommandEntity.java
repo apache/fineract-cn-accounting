@@ -29,7 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import org.apache.fineract.cn.mariadb.util.LocalDateTimeConverter;
+import org.apache.fineract.cn.postgresql.util.LocalDateTimeConverter;
 
 @SuppressWarnings("unused")
 @Entity

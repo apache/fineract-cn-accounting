@@ -23,6 +23,11 @@ spring:
       enabled: false
     config:
       enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/playground
+    username: postgres
+    password: postgres
 
 eureka:
   client:
@@ -42,13 +47,13 @@ cassandra:
     write: LOCAL_QUORUM
     delete: LOCAL_QUORUM
 
-mariadb:
-  driverClass: org.mariadb.jdbc.Driver
+postgresql:
+  driverClass: org.postgresql.Driver
   database: seshat
   host: localhost
-  port: 3306
-  user: root
-  password: mysql
+  port: 5432
+  user: postgres
+  password: postgres
 
 bonecp:
   idleMaxAgeInMinutes: 240

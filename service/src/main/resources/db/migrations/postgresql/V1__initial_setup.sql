@@ -18,7 +18,7 @@
 --
 
 CREATE TABLE thoth_ledgers (
-  id               BIGINT        NOT NULL AUTO_INCREMENT,
+  id               BIGSERIAL,
   a_type           VARCHAR(32)   NOT NULL,
   identifier       VARCHAR(32)    NOT NULL,
   a_name           VARCHAR(256)  NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE thoth_ledgers (
 );
 
 CREATE TABLE thoth_accounts (
-  id                    BIGINT         NOT NULL AUTO_INCREMENT,
+  id                    BIGSERIAL,
   a_type                VARCHAR(32)    NOT NULL,
   identifier            VARCHAR(32)    NOT NULL,
   a_name                VARCHAR(256)   NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE thoth_accounts (
 );
 
 CREATE TABLE thoth_account_entries (
-  id               BIGINT         NOT NULL AUTO_INCREMENT,
+  id               BIGSERIAL,
   account_id       BIGINT         NULL,
   a_type           VARCHAR(32)    NOT NULL,
   transaction_date TIMESTAMP(3)   NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE thoth_account_entries (
 );
 
 CREATE TABLE thoth_commands (
-  id         BIGINT       NOT NULL AUTO_INCREMENT,
+  id         BIGSERIAL    NOT NULL,
   account_id BIGINT       NOT NULL,
   a_type     VARCHAR(32)  NOT NULL,
   a_comment  VARCHAR(32)  NULL,
