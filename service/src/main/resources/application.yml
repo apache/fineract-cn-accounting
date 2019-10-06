@@ -25,7 +25,7 @@ spring:
       enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/playground
+    url: jdbc:postgresql://localhost:5432/seshat
     username: postgres
     password: postgres
 

@@ -102,15 +102,16 @@ license {
 rat {
     // List of exclude directives, defaults to ['**/.gradle/**']
     excludes = [
+            "**/*.log",
+            "**/banner.txt",
             "**/.dockerignore/**",
             "**/.idea/**",
             "**/.gradle/**",
             "**/gradle/**",
             "**/build/**",
-            "component-test/src/main/resources/importdata/*.csv",
+            "**/*.csv",
             "gradlew",
             "gradlew.bat",
             "README.md"
     ]
-    plainOutput = true
 }
