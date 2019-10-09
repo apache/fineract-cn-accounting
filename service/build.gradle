@@ -19,28 +19,25 @@ buildscript {
     ext {
         springBootVersion = '1.4.1.RELEASE'
     }
-
     repositories {
         jcenter()
-    }
-
-    dependencies {
-        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
 
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
-    id("org.nosphere.apache.rat") version "0.3.1"
+    id("org.nosphere.apache.rat") version "0.5.2"
     id "com.jfrog.artifactory" version "4.9.5"
+    id "org.springframework.boot" version "1.4.3.RELEASE"
+    id 'maven-publish'
+    id 'java'
+    id 'idea'
 }
 
 apply from: '../shared.gradle'
 
-apply plugin: 'spring-boot'
-
-springBoot {
-    executable = true
+bootRepackage {
+    enabled = true
     classifier = 'boot'
 }
 
@@ -58,12 +55,15 @@ dependencies {
             [group: 'org.apache.fineract.cn', name: 'cassandra', version: versions.frameworkcassandra],
             [group: 'org.apache.fineract.cn', name: 'postgresql', version: versions.frameworkpostgresql],
             [group: 'org.apache.fineract.cn', name: 'command', version: versions.frameworkcommand],
-            [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator]
+            [group: 'org.hibernate', name: 'hibernate-validator', version: versions.validator],
+            [group: 'io.netty', name: 'netty-all', version: '4.1.39.Final'],
+            [group: 'io.netty', name: 'netty-transport-native-epoll', version: '4.1.39.Final']
     )
 }
 
-publishToMavenLocal.dependsOn bootRepackage
-
+tasks.withType(PublishToMavenLocal) { task ->
+    task.dependsOn 'bootRepackage'
+}
 publishing {
     publications {
         service(MavenPublication) {
@@ -74,7 +74,7 @@ publishing {
         }
         bootService(MavenPublication) {
             // "boot" jar
-            artifact ("$buildDir/libs/$project.name-$version-boot.jar")
+            artifact(file("$buildDir/libs/$project.name-$project.version-${bootRepackage.classifier}.jar"))
             groupId project.group
             artifactId ("$project.name-boot")
             version project.findProperty('externalVersion') ?: project.version

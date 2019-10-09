@@ -25,7 +25,7 @@ spring:
       enabled: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/playground
+    url: jdbc:postgresql://localhost:5432/seshat
     username: postgres
     password: postgres
 
@@ -35,7 +35,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 server:
-  port: 8081
+  port: 2025
   contextPath: /accounting/v1/*
 
 cassandra:

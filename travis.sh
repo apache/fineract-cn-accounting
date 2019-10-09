@@ -36,6 +36,12 @@ function build_pullrequest() {
   ./gradlew publishToMavenLocal rat || EXIT_STATUS=$?
 }
 
+# Builds Forked (non-apache) Repository
+function build_fork() {
+  echo -e "Building branch $TRAVIS_BRANCH of fork $TRAVIS_REPO_SLUG. Won't publish anything to Artifactory."
+  ./gradlew publishToMavenLocal rat || EXIT_STATUS=$?
+}
+
 # For other branches we need to add branch name as prefix
 function build_otherbranch() {
   echo -e "Building a snapshot out of branch [$TRAVIS_BRANCH] and publishing it with prefix '${TRAVIS_BRANCH}-SNAPSHOT'"
@@ -49,17 +55,19 @@ function build_tag() {
 
 }
 
+echo -e "TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG"
 echo -e "TRAVIS_BRANCH=$TRAVIS_BRANCH"
 echo -e "TRAVIS_TAG=$TRAVIS_TAG"
 echo -e "TRAVIS_COMMIT=${TRAVIS_COMMIT::7}"
 echo -e "TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
 
-# Build Logic
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+if [[ $TRAVIS_REPO_SLUG != apache* ]]; then
+  build_fork
+elif [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   build_pullrequest
-elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" != "$BUILD_SNAPSHOTS_BRANCH" ] && [ "$TRAVIS_TAG" == "" ]  ; then
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" != "$BUILD_SNAPSHOTS_BRANCH" ] && [ "$TRAVIS_TAG" == "" ]; then
   build_otherbranch
-elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "$BUILD_SNAPSHOTS_BRANCH" ] && [ "$TRAVIS_TAG" == "" ] ; then
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "$BUILD_SNAPSHOTS_BRANCH" ] && [ "$TRAVIS_TAG" == "" ]; then
   build_snapshot
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
   build_tag

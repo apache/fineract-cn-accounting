@@ -25,19 +25,25 @@ buildscript {
     }
 
     dependencies {
-        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.asciidoctor:asciidoctor-gradle-plugin:1.5.3")
     }
 }
 
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
-    id("org.nosphere.apache.rat") version "0.3.1"
+    id("org.nosphere.apache.rat") version "0.5.2"
     id "com.jfrog.artifactory" version "4.9.5"
+    id "org.springframework.boot" version "1.4.3.RELEASE"
+    id 'maven-publish'
+    id 'java'
 }
 
 apply from: '../shared.gradle'
 apply plugin: 'org.asciidoctor.convert'
+
+bootRepackage {
+    enabled = false
+}
 
 dependencies {
     compile(

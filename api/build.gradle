@@ -19,16 +19,15 @@ buildscript {
     repositories {
         jcenter()
     }
-
-    dependencies {
-        classpath 'io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE'
-    }
 }
 
 plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
-    id("org.nosphere.apache.rat") version "0.3.1"
+    id("org.nosphere.apache.rat") version "0.5.2"
     id "com.jfrog.artifactory" version "4.9.5"
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id 'maven-publish'
+    id 'java'
 }
 
 apply from: '../shared.gradle'
