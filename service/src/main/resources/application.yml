@@ -23,11 +23,6 @@ spring:
       enabled: false
     config:
       enabled: false
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/seshat
-    username: postgres
-    password: postgres
 
 eureka:
   client:
