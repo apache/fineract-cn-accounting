@@ -28,6 +28,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    homePageUrl: "http://${eureka.hostname}:2025/accounting/v1/"
 
 server:
   port: 2025
