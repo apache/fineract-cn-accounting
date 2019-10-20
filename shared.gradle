@@ -16,18 +16,18 @@
  */
 
 group 'org.apache.fineract.cn.accounting'
-version '0.1.0-BUILD-SNAPSHOT'
+version '0.1.x-SNAPSHOT'
 
 ext.versions = [
-        frameworkanubis    : '0.1.0-BUILD-SNAPSHOT',
-        frameworkapi       : '0.1.0-BUILD-SNAPSHOT',
-        frameworklang      : '0.1.0-BUILD-SNAPSHOT',
-        frameworkpostgresql: '0.1.0-BUILD-SNAPSHOT',
-        frameworkcassandra : '0.1.0-BUILD-SNAPSHOT',
-        frameworkcommand   : '0.1.0-BUILD-SNAPSHOT',
-        frameworktest      : '0.1.0-BUILD-SNAPSHOT',
-        frameworkasync     : '0.1.0-BUILD-SNAPSHOT',
-        frameworkcustomer  : '0.1.0-BUILD-SNAPSHOT',
+        frameworkanubis    : '0.1.x-SNAPSHOT',
+        frameworkapi       : '0.1.x-SNAPSHOT',
+        frameworklang      : '0.1.x-SNAPSHOT',
+        frameworkpostgresql: '0.1.x-SNAPSHOT',
+        frameworkcassandra : '0.1.x-SNAPSHOT',
+        frameworkcommand   : '0.1.x-SNAPSHOT',
+        frameworktest      : '0.1.x-SNAPSHOT',
+        frameworkasync     : '0.1.x-SNAPSHOT',
+        frameworkcustomer  : '0.1.x-SNAPSHOT',
         apachecsvreader    : '1.4',
         validator          : '5.3.0.Final',
 ]
