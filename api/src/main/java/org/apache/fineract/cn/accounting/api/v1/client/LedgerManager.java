@@ -40,7 +40,7 @@ import javax.validation.Valid;
 import org.apache.fineract.cn.api.annotation.ThrowsException;
 import org.apache.fineract.cn.api.annotation.ThrowsExceptions;
 import org.apache.fineract.cn.api.util.CustomFeignClientsConfiguration;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;

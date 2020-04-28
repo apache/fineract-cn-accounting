@@ -17,7 +17,7 @@
 
 buildscript {
     ext {
-        springBootVersion = '1.4.1.RELEASE'
+        springBootVersion = '2.2.6.RELEASE'
     }
     repositories {
         jcenter()
@@ -25,10 +25,11 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.hierynomus.license' version '0.13.1'
-    id("org.nosphere.apache.rat") version "0.5.2"
-    id "com.jfrog.artifactory" version "4.9.5"
-    id "org.springframework.boot" version "1.4.3.RELEASE"
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'org.nosphere.apache.rat' version '0.6.0'
+    id 'com.jfrog.artifactory' version '4.15.1'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
     id 'maven-publish'
     id 'java'
     id 'idea'
@@ -36,7 +37,7 @@ plugins {
 
 apply from: '../shared.gradle'
 
-bootRepackage {
+bootJar {
     enabled = true
     classifier = 'boot'
 }
@@ -44,7 +45,7 @@ bootRepackage {
 dependencies {
     compile(
             [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'],
-            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka'],
+            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-client'],
             [group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'],
             [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
             [group: 'org.apache.fineract.cn.customer', name: 'api', version: versions.frameworkcustomer],
@@ -61,8 +62,12 @@ dependencies {
     )
 }
 
+jar {
+    enabled = true
+}
+
 tasks.withType(PublishToMavenLocal) { task ->
-    task.dependsOn 'bootRepackage'
+    task.dependsOn 'bootJar'
 }
 publishing {
     publications {
@@ -74,7 +79,7 @@ publishing {
         }
         bootService(MavenPublication) {
             // "boot" jar
-            artifact(file("$buildDir/libs/$project.name-$project.version-${bootRepackage.classifier}.jar"))
+            artifact(file("$buildDir/libs/$project.name-$project.version-${bootJar.classifier}.jar"))
             groupId project.group
             artifactId ("$project.name-boot")
             version project.findProperty('externalVersion') ?: project.version
