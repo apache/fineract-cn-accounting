@@ -17,7 +17,7 @@
 
 buildscript {
     ext {
-        springBootVersion = '1.4.1.RELEASE'
+        springBootVersion = '2.2.6.RELEASE'
     }
 
     repositories {
@@ -26,17 +26,19 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.hierynomus.license' version '0.13.1'
-    id("org.nosphere.apache.rat") version "0.3.1"
-    id "com.jfrog.artifactory" version "4.9.5"
-    id "org.springframework.boot" version "1.4.3.RELEASE"
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'org.nosphere.apache.rat' version '0.6.0'
+    id 'com.jfrog.artifactory' version '4.15.1'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id "io.spring.dependency-management" version "1.0.9.RELEASE"
     id 'maven-publish'
     id 'java'
+    id 'idea'
 }
 
 apply from: '../shared.gradle'
 
-bootRepackage {
+bootJar {
     enabled = false
 }
 
@@ -45,6 +47,10 @@ dependencies {
             [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
             [group: 'org.apache.commons', name: 'commons-csv', version: versions.apachecsvreader]
     )
+}
+
+jar {
+    enabled = true
 }
 
 publishing {
