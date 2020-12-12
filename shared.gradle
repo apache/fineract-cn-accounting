@@ -28,8 +28,8 @@ ext.versions = [
         frameworktest      : 'spring_boot_2-SNAPSHOT',
         frameworkasync     : 'spring_boot_2-SNAPSHOT',
         frameworkcustomer  : 'spring_boot_2-SNAPSHOT',
-        apachecsvreader    : '1.4',
-        validator          : '6.1.3.Final',
+        apachecsvreader    : '1.8',
+        hibernatevalidator : '6.1.6.Final',
 ]
 
 tasks.withType(JavaCompile) {
@@ -45,13 +45,12 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom 'io.spring.platform:platform-bom:Cairo-SR8'
-        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR4'
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR9'
     }
 }
 
 // override certain dependency provided by Spring platform using newer releases
-ext['cassandra.version'] = '3.6'
+ext['cassandra.version'] = '3.11.9'
 ext['cassandra-driver.version'] = '3.1.2'
 ext['activemq.version'] = '5.13.2'
 ext['spring-data-releasetrain.version'] = 'Gosling-SR2A'

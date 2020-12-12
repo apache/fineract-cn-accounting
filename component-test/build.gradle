@@ -25,16 +25,16 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.asciidoctor:asciidoctor-gradle-plugin:1.5.3")
+        classpath("org.asciidoctor:asciidoctor-gradle-plugin:1.5.7")
     }
 }
 
 plugins {
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'org.nosphere.apache.rat' version '0.6.0'
-    id 'com.jfrog.artifactory' version '4.15.1'
+    id 'com.jfrog.artifactory' version '4.18.2'
     id 'org.springframework.boot' version '2.2.6.RELEASE'
-    id "io.spring.dependency-management" version "1.0.9.RELEASE"
+    id "io.spring.dependency-management" version "1.0.10.RELEASE"
     id 'maven-publish'
     id 'java'
     id 'idea'
@@ -58,7 +58,7 @@ dependencies {
             [group: 'org.apache.fineract.cn', name: 'lang', version: versions.frameworklang],
             [group: 'org.springframework.boot', name: 'spring-boot-starter-test'],
             [group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'],
-            [group: 'junit', name: 'junit', version: '4.12']
+            [group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0']
     )
 }
 
