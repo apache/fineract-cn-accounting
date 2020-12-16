@@ -17,7 +17,7 @@
 
 buildscript {
     ext {
-        springBootVersion = '2.2.6.RELEASE'
+        springBootVersion = '2.4.1'
     }
 
     repositories {
@@ -33,7 +33,7 @@ plugins {
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'org.nosphere.apache.rat' version '0.6.0'
     id 'com.jfrog.artifactory' version '4.18.2'
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'org.springframework.boot' version '2.4.1'
     id "io.spring.dependency-management" version "1.0.10.RELEASE"
     id 'maven-publish'
     id 'java'
@@ -56,7 +56,7 @@ dependencies {
             [group: 'org.apache.fineract.cn', name: 'api', version: versions.frameworkapi],
             [group: 'org.apache.fineract.cn', name: 'test', version: versions.frameworktest],
             [group: 'org.apache.fineract.cn', name: 'lang', version: versions.frameworklang],
-            [group: 'org.springframework.boot', name: 'spring-boot-starter-test'],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.1'],
             [group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'],
             [group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0']
     )

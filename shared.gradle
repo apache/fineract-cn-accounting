@@ -45,24 +45,25 @@ repositories {
 
 dependencyManagement {
     imports {
+        //mavenBom 'io.spring.platform:platform-bom:Cairo-SR8'
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Hoxton.SR9'
     }
 }
 
 // override certain dependency provided by Spring platform using newer releases
 ext['cassandra.version'] = '3.11.9'
-ext['cassandra-driver.version'] = '3.1.2'
+ext['cassandra-driver.version'] = '4.9.0'
 ext['activemq.version'] = '5.13.2'
 ext['spring-data-releasetrain.version'] = 'Gosling-SR2A'
 
 dependencies {
     compile(
-            [group: 'com.google.code.findbugs', name: 'jsr305'],
+            [group: 'com.github.spotbugs', name: 'spotbugs', version: '4.2.0'],
             [group: 'org.apache.fineract.cn', name: 'postgresql', version: versions.frameworkpostgresql]
     )
 
     testCompile(
-            [group: 'org.springframework.boot', name: 'spring-boot-starter-test']
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.1']
     )
 }
 

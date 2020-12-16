@@ -17,11 +17,15 @@
 
 buildscript {
     ext {
-        springBootVersion = '2.2.6.RELEASE'
+        springBootVersion = '2.4.1'
     }
 
     repositories {
         jcenter()
+    }
+
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE"
     }
 }
 
@@ -29,7 +33,7 @@ plugins {
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'org.nosphere.apache.rat' version '0.6.0'
     id 'com.jfrog.artifactory' version '4.18.2'
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'org.springframework.boot' version '2.4.1'
     id "io.spring.dependency-management" version "1.0.10.RELEASE"
     id 'maven-publish'
     id 'java'
@@ -37,6 +41,8 @@ plugins {
 }
 
 apply from: '../shared.gradle'
+
+apply plugin: "io.spring.dependency-management"
 
 bootJar {
     enabled = false
