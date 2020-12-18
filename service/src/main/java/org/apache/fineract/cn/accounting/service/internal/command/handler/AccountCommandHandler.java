@@ -414,7 +414,7 @@ public class AccountCommandHandler {
     final AccountEntity accountEntity = this.accountRepository.findByIdentifier(accountIdentifier);
 
     final List<CommandEntity> commandEntities = this.commandRepository.findByAccount(accountEntity);
-    this.commandRepository.delete(commandEntities);
+    this.commandRepository.deleteAll(commandEntities);
 
     this.accountRepository.delete(accountEntity);
     return accountIdentifier;
