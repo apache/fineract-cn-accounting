@@ -35,7 +35,7 @@ public final class PageableBuilder {
     final Integer sizeToUse = size != null ? size : 20;
     final String sortColumnToUse = sortColumn != null ? sortColumn : "identifier";
     final Sort.Direction direction = sortDirection != null ? Sort.Direction.valueOf(sortDirection.toUpperCase()) : Sort.Direction.ASC;
-    return new PageRequest(pageIndexToUse, sizeToUse, direction, sortColumnToUse);
+    return PageRequest.of(pageIndexToUse, sizeToUse, direction, sortColumnToUse);
   }
 
 }
