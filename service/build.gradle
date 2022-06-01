@@ -44,7 +44,7 @@ bootRepackage {
 dependencies {
     compile(
             [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config'],
-            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka'],
+            [group: 'org.springframework.boot', name: 'spring-boot-starter-web'],
             [group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'],
             [group: 'org.apache.fineract.cn.accounting', name: 'api', version: project.version],
             [group: 'org.apache.fineract.cn.customer', name: 'api', version: versions.frameworkcustomer],

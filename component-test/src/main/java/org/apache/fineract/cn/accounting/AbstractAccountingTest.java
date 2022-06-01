@@ -96,7 +96,6 @@ public class AbstractAccountingTest extends SuiteTestEnvironment{
   @Configuration
   @EnableEventRecording
   @EnableFeignClients(basePackages = {"org.apache.fineract.cn.accounting.api.v1"})
-  @RibbonClient(name = APP_NAME)
   @Import({AccountingServiceConfiguration.class})
   @ComponentScan("org.apache.fineract.cn.accounting.listener")
   public static class TestConfiguration {
