@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @SuppressWarnings("unused")
-@FeignClient(value = "accounting-v1", path = "/accounting/v1", configuration = CustomFeignClientsConfiguration.class)
+@FeignClient(value = "${kubernetes.accounting.service.name}", path = "/accounting/v1", url = "http://${kubernetes.accounting.service.name}:${kubernetes.accounting.server.port}", configuration = CustomFeignClientsConfiguration.class)
 public interface LedgerManager {
 
   @RequestMapping(
